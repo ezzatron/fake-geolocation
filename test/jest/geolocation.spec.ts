@@ -5,8 +5,14 @@ import {
   GeolocationStore,
   createGeolocationStore,
 } from "../../src/index.js";
+import {
+  StdGeolocation,
+  StdGeolocationPosition,
+  StdPositionCallback,
+  StdPositionErrorCallback,
+} from "../../src/types/std.js";
 
-const positionA: GeolocationPosition = {
+const positionA: StdGeolocationPosition = {
   coords: {
     latitude: 40.71703581534977,
     longitude: -74.03457283319447,
@@ -18,7 +24,7 @@ const positionA: GeolocationPosition = {
   },
   timestamp: 1687923355537,
 };
-const positionB: GeolocationPosition = {
+const positionB: StdGeolocationPosition = {
   coords: {
     latitude: 12,
     longitude: 34,
@@ -33,7 +39,7 @@ const positionB: GeolocationPosition = {
 
 describe("Geolocation", () => {
   let geolocationStore: GeolocationStore;
-  let geolocation: Geolocation;
+  let geolocation: StdGeolocation;
 
   let successFn: jest.Mock;
   let errorFn: jest.Mock;
@@ -115,9 +121,9 @@ describe("Geolocation", () => {
 });
 
 async function getCurrentPosition(
-  geolocation: Geolocation,
-  successFn: PositionCallback,
-  errorFn?: PositionErrorCallback | null,
+  geolocation: StdGeolocation,
+  successFn: StdPositionCallback,
+  errorFn?: StdPositionErrorCallback | null,
 ): Promise<void> {
   return new Promise((resolve) => {
     geolocation.getCurrentPosition(

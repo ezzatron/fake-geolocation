@@ -1,6 +1,10 @@
 import { createPositionUnavailableError } from "./geolocation-position-error.js";
 import { GeolocationStore } from "./geolocation-store.js";
-import { StdGeolocation } from "./types/std.js";
+import {
+  StdGeolocation,
+  StdPositionCallback,
+  StdPositionErrorCallback,
+} from "./types/std.js";
 
 export class Geolocation {
   constructor({ geolocationStore }: { geolocationStore: GeolocationStore }) {
@@ -8,8 +12,8 @@ export class Geolocation {
   }
 
   getCurrentPosition(
-    successFn: PositionCallback,
-    errorFn?: PositionErrorCallback | null,
+    successFn: StdPositionCallback,
+    errorFn?: StdPositionErrorCallback | null,
   ): void {
     const position = this.#geolocationStore.get();
 

@@ -1,10 +1,12 @@
+import { StdGeolocationPosition } from "./types/std.js";
+
 export interface GeolocationStore {
-  get(): GeolocationPosition | undefined;
-  set(position: GeolocationPosition | undefined): void;
+  get(): StdGeolocationPosition | undefined;
+  set(position: StdGeolocationPosition | undefined): void;
 }
 
 export function createGeolocationStore(): GeolocationStore {
-  let position: GeolocationPosition | undefined;
+  let position: StdGeolocationPosition | undefined;
 
   return {
     get() {
