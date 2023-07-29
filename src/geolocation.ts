@@ -1,3 +1,4 @@
+import { createPositionUnavailableError } from "./geolocation-position-error.js";
 import { GeolocationStore } from "./geolocation-store.js";
 import { StdGeolocation } from "./types/std.js";
 
@@ -6,8 +7,17 @@ export class Geolocation {
     this.#geolocationStore = geolocationStore;
   }
 
-  getCurrentPosition(successFn: PositionCallback): void {
-    successFn(this.#geolocationStore.get()!);
+  getCurrentPosition(
+    successFn: PositionCallback,
+    errorFn?: PositionErrorCallback | null,
+  ): void {
+    const position = this.#geolocationStore.get();
+
+    if (position) {
+      successFn(position);
+    } else {
+      errorFn?.(createPositionUnavailableError());
+    }
   }
 
   watchPosition(): number {

@@ -1,6 +1,7 @@
 import { jest } from "@jest/globals";
 import {
   Geolocation,
+  GeolocationPositionError,
   GeolocationStore,
   createGeolocationStore,
 } from "../../src/index.js";
@@ -34,9 +35,42 @@ describe("Geolocation", () => {
   let geolocationStore: GeolocationStore;
   let geolocation: Geolocation;
 
+  let successFn: jest.Mock;
+  let errorFn: jest.Mock;
+
   beforeEach(() => {
     geolocationStore = createGeolocationStore();
     geolocation = new Geolocation({ geolocationStore });
+
+    successFn = jest.fn();
+    errorFn = jest.fn();
+  });
+
+  describe("when there is no position", () => {
+    beforeEach(() => {
+      geolocationStore.set(undefined);
+    });
+
+    describe("when reading the position", () => {
+      beforeEach(async () => {
+        await getCurrentPosition(geolocation, successFn, errorFn);
+      });
+
+      it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE", () => {
+        expect(errorFn).toHaveBeenCalled();
+        expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+        const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+        expect(error).toBeInstanceOf(GeolocationPositionError);
+        expect(error.code).toBe(GeolocationPositionError.POSITION_UNAVAILABLE);
+        expect(error.message).toBe("Unable to retrieve location");
+      });
+
+      it("does not call the success callback", () => {
+        expect(successFn).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe("when there is a position", () => {
@@ -45,16 +79,16 @@ describe("Geolocation", () => {
     });
 
     describe("when reading the position", () => {
-      let successFn: jest.Mock;
-
       beforeEach(async () => {
-        successFn = jest.fn();
-
-        await getCurrentPosition(geolocation, successFn);
+        await getCurrentPosition(geolocation, successFn, errorFn);
       });
 
-      it("should call the success callback with the position", () => {
+      it("calls the success callback with the position", () => {
         expect(successFn).toHaveBeenCalledWith(positionA);
+      });
+
+      it("does not call the error callback", () => {
+        expect(errorFn).not.toHaveBeenCalled();
       });
     });
 
@@ -64,16 +98,16 @@ describe("Geolocation", () => {
       });
 
       describe("when reading the position", () => {
-        let successFn: jest.Mock;
-
         beforeEach(async () => {
-          successFn = jest.fn();
-
-          await getCurrentPosition(geolocation, successFn);
+          await getCurrentPosition(geolocation, successFn, errorFn);
         });
 
-        it("should call the success callback with the new position", () => {
+        it("calls the success callback with the new position", () => {
           expect(successFn).toHaveBeenCalledWith(positionB);
+        });
+
+        it("does not call the error callback", () => {
+          expect(errorFn).not.toHaveBeenCalled();
         });
       });
     });
@@ -83,11 +117,18 @@ describe("Geolocation", () => {
 async function getCurrentPosition(
   geolocation: Geolocation,
   successFn: PositionCallback,
+  errorFn?: PositionErrorCallback | null,
 ): Promise<void> {
   return new Promise((resolve) => {
-    geolocation.getCurrentPosition((position) => {
-      successFn(position);
-      resolve();
-    });
+    geolocation.getCurrentPosition(
+      (position) => {
+        successFn(position);
+        resolve();
+      },
+      (error) => {
+        errorFn?.(error);
+        resolve();
+      },
+    );
   });
 }
