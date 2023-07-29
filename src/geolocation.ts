@@ -1,3 +1,5 @@
+import { StdGeolocation } from "./types/std.js";
+
 export class Geolocation {
   getCurrentPosition(successFn: PositionCallback): void {
     successFn({
@@ -13,4 +15,14 @@ export class Geolocation {
       timestamp: 1687923355537,
     });
   }
+
+  watchPosition(): number {
+    throw new Error("Method not implemented.");
+  }
+
+  clearWatch(): void {
+    throw new Error("Method not implemented clearWatch");
+  }
 }
+
+Geolocation satisfies new (...args: never[]) => StdGeolocation;
