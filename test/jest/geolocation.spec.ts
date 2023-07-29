@@ -2,8 +2,8 @@ import { jest } from "@jest/globals";
 import {
   Geolocation,
   GeolocationPositionError,
-  GeolocationStore,
-  createGeolocationStore,
+  LocationServices,
+  createLocationServices,
 } from "../../src/index.js";
 import {
   StdGeolocation,
@@ -38,15 +38,15 @@ const positionB: StdGeolocationPosition = {
 };
 
 describe("Geolocation", () => {
-  let geolocationStore: GeolocationStore;
+  let locationServices: LocationServices;
   let geolocation: StdGeolocation;
 
   let successFn: jest.Mock;
   let errorFn: jest.Mock;
 
   beforeEach(() => {
-    geolocationStore = createGeolocationStore();
-    geolocation = new Geolocation({ geolocationStore });
+    locationServices = createLocationServices();
+    geolocation = new Geolocation({ locationServices });
 
     successFn = jest.fn();
     errorFn = jest.fn();
@@ -54,7 +54,7 @@ describe("Geolocation", () => {
 
   describe("when there is no position", () => {
     beforeEach(() => {
-      geolocationStore.set(undefined);
+      locationServices.setPosition(undefined);
     });
 
     describe("when reading the position", () => {
@@ -81,7 +81,7 @@ describe("Geolocation", () => {
 
   describe("when there is a position", () => {
     beforeEach(() => {
-      geolocationStore.set(positionA);
+      locationServices.setPosition(positionA);
     });
 
     describe("when reading the position", () => {
@@ -100,7 +100,7 @@ describe("Geolocation", () => {
 
     describe("when the position changes", () => {
       beforeEach(() => {
-        geolocationStore.set(positionB);
+        locationServices.setPosition(positionB);
       });
 
       describe("when reading the position", () => {

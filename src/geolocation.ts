@@ -1,5 +1,5 @@
 import { createPositionUnavailableError } from "./geolocation-position-error.js";
-import { GeolocationStore } from "./geolocation-store.js";
+import { LocationServices } from "./location-services.js";
 import {
   StdGeolocation,
   StdPositionCallback,
@@ -7,15 +7,15 @@ import {
 } from "./types/std.js";
 
 export class Geolocation {
-  constructor({ geolocationStore }: { geolocationStore: GeolocationStore }) {
-    this.#geolocationStore = geolocationStore;
+  constructor({ locationServices }: { locationServices: LocationServices }) {
+    this.#locationServices = locationServices;
   }
 
   getCurrentPosition(
     successFn: StdPositionCallback,
     errorFn?: StdPositionErrorCallback | null,
   ): void {
-    const position = this.#geolocationStore.get();
+    const position = this.#locationServices.getPosition();
 
     if (position) {
       successFn(position);
@@ -32,7 +32,7 @@ export class Geolocation {
     throw new Error("Method not implemented clearWatch");
   }
 
-  #geolocationStore: GeolocationStore;
+  #locationServices: LocationServices;
 }
 
 Geolocation satisfies new (...args: never[]) => StdGeolocation;
