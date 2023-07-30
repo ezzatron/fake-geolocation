@@ -1,4 +1,5 @@
 import { sleep } from "./async.js";
+import { createPosition } from "./geolocation-position.js";
 import { StdGeolocationPosition } from "./types/std.js";
 
 export interface LocationServices {
@@ -19,7 +20,7 @@ export function createLocationServices(): LocationServices {
     },
 
     setPosition(nextPosition) {
-      position = nextPosition;
+      position = nextPosition && createPosition(nextPosition);
     },
   };
 }
