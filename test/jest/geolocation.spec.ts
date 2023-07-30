@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 import {
-  Geolocation,
   GeolocationPositionError,
   LocationServices,
+  createGeolocation,
   createLocationServices,
 } from "../../src/index.js";
 import {
@@ -46,10 +46,19 @@ describe("Geolocation", () => {
 
   beforeEach(() => {
     locationServices = createLocationServices();
-    geolocation = new Geolocation({ locationServices });
+    geolocation = createGeolocation({ locationServices });
 
     successFn = jest.fn();
     errorFn = jest.fn();
+  });
+
+  it("cannot be instantiated directly", () => {
+    const call = () => {
+      new (geolocation.constructor as new (p: object) => unknown)({});
+    };
+
+    expect(call).toThrow(TypeError);
+    expect(call).toThrow("Illegal constructor");
   });
 
   describe("when there is no position", () => {

@@ -2,5 +2,5 @@ export {
   GeolocationPositionError,
   createPositionUnavailableError,
 } from "./geolocation-position-error.js";
-export { Geolocation } from "./geolocation.js";
+export { Geolocation, createGeolocation } from "./geolocation.js";
 export * from "./location-services.js";

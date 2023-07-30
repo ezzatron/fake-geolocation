@@ -6,8 +6,25 @@ import {
   StdPositionErrorCallback,
 } from "./types/std.js";
 
+type GeolocationParameters = {
+  locationServices: LocationServices;
+};
+
+let canConstruct = false;
+
+export function createGeolocation(
+  parameters: GeolocationParameters,
+): StdGeolocation {
+  canConstruct = true;
+
+  return new Geolocation(parameters);
+}
+
 export class Geolocation {
-  constructor({ locationServices }: { locationServices: LocationServices }) {
+  constructor({ locationServices }: GeolocationParameters) {
+    if (!canConstruct) throw new TypeError("Illegal constructor");
+    canConstruct = false;
+
     this.#locationServices = locationServices;
   }
 
