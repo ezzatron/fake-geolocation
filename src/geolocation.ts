@@ -15,13 +15,11 @@ export class Geolocation {
     successFn: StdPositionCallback,
     errorFn?: StdPositionErrorCallback | null,
   ): void {
-    const position = this.#locationServices.getPosition();
-
-    if (position) {
-      successFn(position);
-    } else {
+    (async () => {
+      successFn(await this.#locationServices.getPosition());
+    })().catch(() => {
       errorFn?.(createPositionUnavailableError());
-    }
+    });
   }
 
   watchPosition(): number {

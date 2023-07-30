@@ -84,6 +84,15 @@ describe("Geolocation", () => {
       locationServices.setPosition(positionA);
     });
 
+    it("cannot be read synchronously", () => {
+      let position: StdGeolocationPosition | undefined;
+      geolocation.getCurrentPosition((nextPosition) => {
+        position = nextPosition;
+      });
+
+      expect(position).toBeUndefined();
+    });
+
     describe("when reading the position", () => {
       beforeEach(async () => {
         await getCurrentPosition(geolocation, successFn, errorFn);
