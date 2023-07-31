@@ -1,4 +1,8 @@
-import { createPositionUnavailableError } from "./geolocation-position-error.js";
+import { errorMessage } from "./error.js";
+import {
+  createPositionUnavailableError,
+  isGeolocationPositionError,
+} from "./geolocation-position-error.js";
 import { LocationServices } from "./location-services.js";
 import {
   StdGeolocation,
@@ -34,8 +38,18 @@ export class Geolocation {
   ): void {
     (async () => {
       successFn(await this.#locationServices.getPosition());
-    })().catch(() => {
-      errorFn?.(createPositionUnavailableError());
+    })().catch((error) => {
+      if (!errorFn) return;
+
+      if (isGeolocationPositionError(error)) {
+        errorFn(error);
+      } else {
+        errorFn(
+          createPositionUnavailableError(
+            `Location services error: ${errorMessage(error)}`,
+          ),
+        );
+      }
     });
   }
 

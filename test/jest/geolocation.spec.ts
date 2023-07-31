@@ -4,10 +4,12 @@ import {
   LocationServices,
   createGeolocation,
   createLocationServices,
+  createPositionUnavailableError,
 } from "../../src/index.js";
 import {
   StdGeolocation,
   StdGeolocationPosition,
+  StdGeolocationPositionError,
   StdPositionCallback,
   StdPositionErrorCallback,
 } from "../../src/types/std.js";
@@ -61,12 +63,62 @@ describe("Geolocation", () => {
     expect(call).toThrow("Illegal constructor");
   });
 
+  describe("when location services throws an error", () => {
+    describe("when the error is a GeolocationPositionError", () => {
+      let error: StdGeolocationPositionError;
+
+      beforeEach(() => {
+        error = createPositionUnavailableError("<message>");
+        jest.spyOn(locationServices, "getPosition").mockRejectedValue(error);
+      });
+
+      describe("when reading the position", () => {
+        beforeEach(async () => {
+          await getCurrentPosition(geolocation, successFn, errorFn);
+        });
+
+        it("calls the error callback with the same error", () => {
+          expect(errorFn).toHaveBeenCalled();
+          expect(errorFn.mock.calls[0][0]).toBe(error);
+        });
+      });
+    });
+
+    describe("when the error is not a GeolocationPositionError", () => {
+      let error: Error;
+
+      beforeEach(() => {
+        error = new Error("<message>");
+        jest.spyOn(locationServices, "getPosition").mockRejectedValue(error);
+      });
+
+      describe("when reading the position", () => {
+        beforeEach(async () => {
+          await getCurrentPosition(geolocation, successFn, errorFn);
+        });
+
+        it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and includes the original message", () => {
+          expect(errorFn).toHaveBeenCalled();
+          expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+          const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+          expect(error).toBeInstanceOf(GeolocationPositionError);
+          expect(error.code).toBe(
+            GeolocationPositionError.POSITION_UNAVAILABLE,
+          );
+          expect(error.message).toBe("Location services error: <message>");
+        });
+      });
+    });
+  });
+
   describe("when there is no position", () => {
     beforeEach(() => {
       locationServices.setPosition(undefined);
     });
 
-    describe("when reading the position", () => {
+    describe("when reading the position with an error callback", () => {
       beforeEach(async () => {
         await getCurrentPosition(geolocation, successFn, errorFn);
       });
@@ -80,6 +132,21 @@ describe("Geolocation", () => {
         expect(error).toBeInstanceOf(GeolocationPositionError);
         expect(error.code).toBe(GeolocationPositionError.POSITION_UNAVAILABLE);
         expect(error.message).toBe("Unable to retrieve location");
+      });
+
+      it("does not call the success callback", () => {
+        expect(successFn).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("when reading the position without an error callback", () => {
+      beforeEach(async () => {
+        await getCurrentPosition(
+          geolocation,
+          successFn,
+          undefined,
+          AbortSignal.timeout(10),
+        );
       });
 
       it("does not call the success callback", () => {
@@ -142,17 +209,36 @@ async function getCurrentPosition(
   geolocation: StdGeolocation,
   successFn: StdPositionCallback,
   errorFn?: StdPositionErrorCallback | null,
+  signal?: AbortSignal,
 ): Promise<void> {
   return new Promise((resolve) => {
-    geolocation.getCurrentPosition(
-      (position) => {
+    if (signal) {
+      if (signal.aborted) {
+        resolve();
+        return;
+      }
+
+      signal.addEventListener("abort", () => {
+        resolve();
+      });
+    }
+
+    if (errorFn) {
+      geolocation.getCurrentPosition(
+        (position) => {
+          successFn(position);
+          resolve();
+        },
+        (error) => {
+          errorFn(error);
+          resolve();
+        },
+      );
+    } else {
+      geolocation.getCurrentPosition((position) => {
         successFn(position);
         resolve();
-      },
-      (error) => {
-        errorFn?.(error);
-        resolve();
-      },
-    );
+      });
+    }
   });
 }

@@ -1,4 +1,5 @@
 import { sleep } from "./async.js";
+import { createPositionUnavailableError } from "./geolocation-position-error.js";
 import { createPosition } from "./geolocation-position.js";
 import { StdGeolocationPosition } from "./types/std.js";
 
@@ -16,7 +17,7 @@ export function createLocationServices(): LocationServices {
       await sleep(0);
 
       if (position) return position;
-      throw new Error("Position unavailable");
+      throw createPositionUnavailableError("Unable to retrieve location");
     },
 
     setPosition(nextPosition) {

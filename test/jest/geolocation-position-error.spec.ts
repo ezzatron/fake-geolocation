@@ -5,7 +5,7 @@ describe("GeolocationPositionError", () => {
   let error: StdGeolocationPositionError;
 
   beforeEach(() => {
-    error = createPositionUnavailableError();
+    error = createPositionUnavailableError("<message>");
   });
 
   it("cannot be instantiated directly", () => {
