@@ -14,6 +14,14 @@ export function createPositionUnavailableError(
   return new GeolocationPositionError(POSITION_UNAVAILABLE, message);
 }
 
+export function createTimeoutError(
+  message: string,
+): StdGeolocationPositionError {
+  canConstruct = true;
+
+  return new GeolocationPositionError(TIMEOUT, message);
+}
+
 export class GeolocationPositionError {
   public static readonly PERMISSION_DENIED = PERMISSION_DENIED;
   public static readonly POSITION_UNAVAILABLE = POSITION_UNAVAILABLE;

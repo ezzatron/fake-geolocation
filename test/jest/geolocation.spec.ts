@@ -12,6 +12,7 @@ import {
   StdGeolocationPositionError,
   StdPositionCallback,
   StdPositionErrorCallback,
+  StdPositionOptions,
 } from "../../src/types/std.js";
 
 const positionA: StdGeolocationPosition = {
@@ -145,6 +146,7 @@ describe("Geolocation", () => {
           geolocation,
           successFn,
           undefined,
+          undefined,
           AbortSignal.timeout(10),
         );
       });
@@ -203,12 +205,71 @@ describe("Geolocation", () => {
       });
     });
   });
+
+  describe("when reading the position with a timeout", () => {
+    describe("when the timeout is not exceeded", () => {
+      beforeEach(async () => {
+        locationServices.setPosition(positionA);
+
+        await getCurrentPosition(geolocation, successFn, errorFn, {
+          timeout: 1000,
+        });
+      });
+
+      it("calls the success callback with the position", () => {
+        expect(successFn).toHaveBeenCalledWith(positionA);
+      });
+    });
+
+    describe("when the timeout is exceeded", () => {
+      beforeEach(async () => {
+        locationServices.setPosition(positionA);
+
+        await getCurrentPosition(geolocation, successFn, errorFn, {
+          timeout: 0,
+        });
+      });
+
+      it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT", () => {
+        expect(errorFn).toHaveBeenCalled();
+        expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+        const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+        expect(error).toBeInstanceOf(GeolocationPositionError);
+        expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
+        expect(error.message).toBe("Timeout expired");
+      });
+    });
+
+    describe("when the timeout is negative", () => {
+      beforeEach(async () => {
+        locationServices.setPosition(positionA);
+
+        await getCurrentPosition(geolocation, successFn, errorFn, {
+          timeout: -1,
+        });
+      });
+
+      it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT", () => {
+        expect(errorFn).toHaveBeenCalled();
+        expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+        const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+        expect(error).toBeInstanceOf(GeolocationPositionError);
+        expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
+        expect(error.message).toBe("Timeout expired");
+      });
+    });
+  });
 });
 
 async function getCurrentPosition(
   geolocation: StdGeolocation,
   successFn: StdPositionCallback,
-  errorFn?: StdPositionErrorCallback | null,
+  errorFn?: StdPositionErrorCallback,
+  options?: StdPositionOptions,
   signal?: AbortSignal,
 ): Promise<void> {
   return new Promise((resolve) => {
@@ -223,22 +284,17 @@ async function getCurrentPosition(
       });
     }
 
-    if (errorFn) {
-      geolocation.getCurrentPosition(
-        (position) => {
-          successFn(position);
-          resolve();
-        },
-        (error) => {
-          errorFn(error);
-          resolve();
-        },
-      );
-    } else {
-      geolocation.getCurrentPosition((position) => {
+    geolocation.getCurrentPosition(
+      (position) => {
         successFn(position);
         resolve();
-      });
-    }
+      },
+      errorFn &&
+        ((error) => {
+          errorFn(error);
+          resolve();
+        }),
+      options,
+    );
   });
 }
