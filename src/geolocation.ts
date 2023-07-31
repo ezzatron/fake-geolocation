@@ -53,10 +53,12 @@ export class Geolocation {
     });
   }
 
+  /* istanbul ignore next */
   watchPosition(): number {
     throw new Error("Method not implemented.");
   }
 
+  /* istanbul ignore next */
   clearWatch(): void {
     throw new Error("Method not implemented clearWatch");
   }
