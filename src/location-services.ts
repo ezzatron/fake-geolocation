@@ -17,7 +17,7 @@ export function createLocationServices(): LocationServices {
       await sleep(0);
 
       if (position) return position;
-      throw createPositionUnavailableError("Unable to retrieve location");
+      throw createPositionUnavailableError("");
     },
 
     setPosition(nextPosition) {

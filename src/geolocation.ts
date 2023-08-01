@@ -74,7 +74,7 @@ export class Geolocation {
 
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
-        reject(createTimeoutError("Timeout expired"));
+        reject(createTimeoutError(""));
       }, timeout);
 
       this.#locationServices

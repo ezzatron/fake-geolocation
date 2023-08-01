@@ -124,7 +124,7 @@ describe("Geolocation", () => {
         await getCurrentPosition(geolocation, successFn, errorFn);
       });
 
-      it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE", () => {
+      it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
         expect(errorFn).toHaveBeenCalled();
         expect(errorFn.mock.calls[0][0]).toBeDefined();
 
@@ -132,7 +132,7 @@ describe("Geolocation", () => {
 
         expect(error).toBeInstanceOf(GeolocationPositionError);
         expect(error.code).toBe(GeolocationPositionError.POSITION_UNAVAILABLE);
-        expect(error.message).toBe("Unable to retrieve location");
+        expect(error.message).toBe("");
       });
 
       it("does not call the success callback", () => {
@@ -231,7 +231,7 @@ describe("Geolocation", () => {
           });
         });
 
-        it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE", async () => {
+        it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", async () => {
           expect(errorFn).toHaveBeenCalled();
           expect(errorFn.mock.calls[0][0]).toBeDefined();
 
@@ -241,7 +241,7 @@ describe("Geolocation", () => {
           expect(error.code).toBe(
             GeolocationPositionError.POSITION_UNAVAILABLE,
           );
-          expect(error.message).toBe("Unable to retrieve location");
+          expect(error.message).toBe("");
         });
       });
     });
@@ -255,7 +255,7 @@ describe("Geolocation", () => {
         });
       });
 
-      it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT", () => {
+      it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
         expect(errorFn).toHaveBeenCalled();
         expect(errorFn.mock.calls[0][0]).toBeDefined();
 
@@ -263,7 +263,7 @@ describe("Geolocation", () => {
 
         expect(error).toBeInstanceOf(GeolocationPositionError);
         expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
-        expect(error.message).toBe("Timeout expired");
+        expect(error.message).toBe("");
       });
     });
 
@@ -276,7 +276,7 @@ describe("Geolocation", () => {
         });
       });
 
-      it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT", () => {
+      it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
         expect(errorFn).toHaveBeenCalled();
         expect(errorFn.mock.calls[0][0]).toBeDefined();
 
@@ -284,7 +284,7 @@ describe("Geolocation", () => {
 
         expect(error).toBeInstanceOf(GeolocationPositionError);
         expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
-        expect(error.message).toBe("Timeout expired");
+        expect(error.message).toBe("");
       });
     });
   });
