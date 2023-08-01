@@ -304,9 +304,13 @@ async function getCurrentPosition(
         return;
       }
 
-      signal.addEventListener("abort", () => {
-        resolve();
-      });
+      signal.addEventListener(
+        "abort",
+        () => {
+          resolve();
+        },
+        { once: true },
+      );
     }
 
     geolocation.getCurrentPosition(
