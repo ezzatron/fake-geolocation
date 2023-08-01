@@ -208,16 +208,41 @@ describe("Geolocation", () => {
 
   describe("when reading the position with a timeout", () => {
     describe("when the timeout is not exceeded", () => {
-      beforeEach(async () => {
-        locationServices.setPosition(positionA);
+      describe("when there is a position", () => {
+        beforeEach(async () => {
+          locationServices.setPosition(positionA);
 
-        await getCurrentPosition(geolocation, successFn, errorFn, {
-          timeout: 1000,
+          await getCurrentPosition(geolocation, successFn, errorFn, {
+            timeout: 1000,
+          });
+        });
+
+        it("calls the success callback with the position", () => {
+          expect(successFn).toHaveBeenCalledWith(positionA);
         });
       });
 
-      it("calls the success callback with the position", () => {
-        expect(successFn).toHaveBeenCalledWith(positionA);
+      describe("when there is no position", () => {
+        beforeEach(async () => {
+          locationServices.setPosition(undefined);
+
+          await getCurrentPosition(geolocation, successFn, errorFn, {
+            timeout: 1000,
+          });
+        });
+
+        it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE", async () => {
+          expect(errorFn).toHaveBeenCalled();
+          expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+          const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+          expect(error).toBeInstanceOf(GeolocationPositionError);
+          expect(error.code).toBe(
+            GeolocationPositionError.POSITION_UNAVAILABLE,
+          );
+          expect(error.message).toBe("Unable to retrieve location");
+        });
       });
     });
 

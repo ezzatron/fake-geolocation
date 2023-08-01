@@ -67,35 +67,26 @@ export class Geolocation {
     throw new Error("Method not implemented clearWatch");
   }
 
-  async #getCurrentPosition({
+  #getCurrentPosition({
     timeout = Infinity,
   }: StdPositionOptions): Promise<StdGeolocationPosition> {
     if (!Number.isFinite(timeout)) return this.#locationServices.getPosition();
 
-    timeout = timeout < 0 ? 0 : timeout;
-
-    return Promise.race([
-      this.#timeout(AbortSignal.timeout(timeout)),
-      this.#locationServices.getPosition(),
-    ]);
-  }
-
-  #timeout(signal: AbortSignal): Promise<never> {
-    return new Promise((_resolve, reject) => {
-      /* istanbul ignore next */
-      if (signal.aborted) {
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
         reject(createTimeoutError("Timeout expired"));
+      }, timeout);
 
-        return;
-      }
-
-      signal.addEventListener(
-        "abort",
-        () => {
-          reject(createTimeoutError("Timeout expired"));
-        },
-        { once: true },
-      );
+      this.#locationServices
+        .getPosition()
+        .then(resolve, reject)
+        .finally(() => {
+          clearTimeout(timeoutId);
+        })
+        .catch(
+          /* istanbul ignore next */
+          () => {},
+        );
     });
   }
 
