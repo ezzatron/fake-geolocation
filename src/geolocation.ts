@@ -40,7 +40,7 @@ export class Geolocation {
     errorFn?: StdPositionErrorCallback | null,
     options?: StdPositionOptions | null,
   ): void {
-    this.#getCurrentPosition(options ?? {})
+    this.#readPosition(options ?? {})
       .then((position) => successFn(position))
       .catch((error) => {
         if (!errorFn) return;
@@ -67,7 +67,7 @@ export class Geolocation {
     throw new Error("Method not implemented clearWatch");
   }
 
-  #getCurrentPosition({
+  #readPosition({
     timeout = Infinity,
   }: StdPositionOptions): Promise<StdGeolocationPosition> {
     if (!Number.isFinite(timeout)) return this.#locationServices.getPosition();
