@@ -26,7 +26,7 @@ export function createLocationServices({
 
   return {
     async requestPermission() {
-      if (handlePermissionRequest) {
+      if (permissionState === PROMPT && handlePermissionRequest) {
         permissionState = await handlePermissionRequest();
       }
 

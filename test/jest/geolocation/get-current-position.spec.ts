@@ -128,6 +128,30 @@ describe("Geolocation.getCurrentPosition()", () => {
         expect(successFn).not.toHaveBeenCalled();
       });
     });
+
+    describe("when there is a permission request handler", () => {
+      let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+
+      beforeEach(async () => {
+        handlePermissionRequest = jest.fn();
+        locationServices = createLocationServices({
+          handlePermissionRequest,
+        });
+        geolocation = createGeolocation({ locationServices });
+
+        locationServices.setPermissionState(DENIED);
+      });
+
+      describe("when reading the position", () => {
+        beforeEach(async () => {
+          await getCurrentPosition(geolocation, successFn, errorFn);
+        });
+
+        it("does not call the permission request handler", () => {
+          expect(handlePermissionRequest).not.toHaveBeenCalled();
+        });
+      });
+    });
   });
 
   describe("when permission is granted", () => {
@@ -342,6 +366,30 @@ describe("Geolocation.getCurrentPosition()", () => {
           expect(error).toBeInstanceOf(GeolocationPositionError);
           expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
           expect(error.message).toBe("");
+        });
+      });
+    });
+
+    describe("when there is a permission request handler", () => {
+      let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+
+      beforeEach(async () => {
+        handlePermissionRequest = jest.fn();
+        locationServices = createLocationServices({
+          handlePermissionRequest,
+        });
+        geolocation = createGeolocation({ locationServices });
+
+        locationServices.setPermissionState(GRANTED);
+      });
+
+      describe("when reading the position", () => {
+        beforeEach(async () => {
+          await getCurrentPosition(geolocation, successFn, errorFn);
+        });
+
+        it("does not call the permission request handler", () => {
+          expect(handlePermissionRequest).not.toHaveBeenCalled();
         });
       });
     });
