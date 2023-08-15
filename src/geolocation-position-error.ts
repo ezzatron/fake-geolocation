@@ -6,6 +6,14 @@ const TIMEOUT: StdGeolocationPositionError["TIMEOUT"] = 3;
 
 let canConstruct = false;
 
+export function createPermissionDeniedError(
+  message: string,
+): StdGeolocationPositionError {
+  canConstruct = true;
+
+  return new GeolocationPositionError(PERMISSION_DENIED, message);
+}
+
 export function createPositionUnavailableError(
   message: string,
 ): StdGeolocationPositionError {

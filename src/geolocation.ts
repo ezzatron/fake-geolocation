@@ -1,5 +1,6 @@
 import { errorMessage } from "./error.js";
 import {
+  createPermissionDeniedError,
   createPositionUnavailableError,
   createTimeoutError,
   isGeolocationPositionError,
@@ -67,9 +68,13 @@ export class Geolocation {
     throw new Error("Method not implemented clearWatch");
   }
 
-  #readPosition({
+  async #readPosition({
     timeout = Infinity,
   }: StdPositionOptions): Promise<StdGeolocationPosition> {
+    if (!(await this.#locationServices.requestPermission())) {
+      throw createPermissionDeniedError("");
+    }
+
     if (!Number.isFinite(timeout)) return this.#locationServices.getPosition();
 
     return new Promise((resolve, reject) => {
