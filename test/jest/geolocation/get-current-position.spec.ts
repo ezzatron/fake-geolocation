@@ -391,7 +391,7 @@ describe("Geolocation.getCurrentPosition()", () => {
         geolocation = createGeolocation({ locationServices });
       });
 
-      describe("when the permission handler does not change the state", () => {
+      describe("when the permission request handler does not change the state", () => {
         beforeEach(() => {
           handlePermissionRequest.mockImplementation(
             async (): Promise<StdPermissionState> => PROMPT,
@@ -420,7 +420,7 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
       });
 
-      describe("when the permission handler denies the permission", () => {
+      describe("when the permission request handler denies the permission", () => {
         beforeEach(() => {
           handlePermissionRequest.mockImplementation(
             async (): Promise<StdPermissionState> => DENIED,
@@ -449,7 +449,7 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
       });
 
-      describe("when then permission handler grants the permission", () => {
+      describe("when then permission request handler grants the permission", () => {
         beforeEach(() => {
           handlePermissionRequest.mockImplementation(
             async (): Promise<StdPermissionState> => GRANTED,
