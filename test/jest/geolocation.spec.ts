@@ -1,7 +1,12 @@
 import { jest } from "@jest/globals";
-import { GRANTED } from "../../src/constants/permission-state.js";
+import {
+  DENIED,
+  GRANTED,
+  PROMPT,
+} from "../../src/constants/permission-state.js";
 import {
   GeolocationPositionError,
+  HandlePermissionRequest,
   MutableLocationServices,
   createGeolocation,
   createLocationServices,
@@ -11,6 +16,7 @@ import {
   StdGeolocation,
   StdGeolocationPosition,
   StdGeolocationPositionError,
+  StdPermissionState,
   StdPositionCallback,
   StdPositionErrorCallback,
   StdPositionOptions,
@@ -63,6 +69,49 @@ describe("Geolocation", () => {
 
     expect(call).toThrow(TypeError);
     expect(call).toThrow("Illegal constructor");
+  });
+
+  describe("when permission is denied", () => {
+    beforeEach(() => {
+      locationServices.setPermissionState(DENIED);
+    });
+
+    describe("when reading the position with an error callback", () => {
+      beforeEach(async () => {
+        await getCurrentPosition(geolocation, successFn, errorFn);
+      });
+
+      it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+        expect(errorFn).toHaveBeenCalled();
+        expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+        const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+        expect(error).toBeInstanceOf(GeolocationPositionError);
+        expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
+        expect(error.message).toBe("");
+      });
+
+      it("does not call the success callback", () => {
+        expect(successFn).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("when reading the position without an error callback", () => {
+      beforeEach(async () => {
+        await getCurrentPosition(
+          geolocation,
+          successFn,
+          undefined,
+          undefined,
+          AbortSignal.timeout(10),
+        );
+      });
+
+      it("does not call the success callback", () => {
+        expect(successFn).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe("when permission is granted", () => {
@@ -293,6 +342,232 @@ describe("Geolocation", () => {
           expect(error).toBeInstanceOf(GeolocationPositionError);
           expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
           expect(error.message).toBe("");
+        });
+      });
+    });
+  });
+
+  describe("when permission has not been requested", () => {
+    beforeEach(() => {
+      locationServices.setPermissionState(PROMPT);
+    });
+
+    describe("when there is no permission request handler", () => {
+      beforeEach(async () => {
+        locationServices = createLocationServices();
+        geolocation = createGeolocation({ locationServices });
+      });
+
+      describe("when reading the position with an error callback", () => {
+        beforeEach(async () => {
+          await getCurrentPosition(geolocation, successFn, errorFn);
+        });
+
+        it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+          expect(errorFn).toHaveBeenCalled();
+          expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+          const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+          expect(error).toBeInstanceOf(GeolocationPositionError);
+          expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
+          expect(error.message).toBe("");
+        });
+
+        it("does not call the success callback", () => {
+          expect(successFn).not.toHaveBeenCalled();
+        });
+      });
+
+      describe("when reading the position without an error callback", () => {
+        beforeEach(async () => {
+          await getCurrentPosition(
+            geolocation,
+            successFn,
+            undefined,
+            undefined,
+            AbortSignal.timeout(10),
+          );
+        });
+
+        it("does not call the success callback", () => {
+          expect(successFn).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe("when there is a permission request handler", () => {
+      let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+
+      beforeEach(async () => {
+        handlePermissionRequest = jest.fn();
+        locationServices = createLocationServices({
+          handlePermissionRequest,
+        });
+        geolocation = createGeolocation({ locationServices });
+      });
+
+      describe("when the permission handler does not change the state", () => {
+        beforeEach(() => {
+          handlePermissionRequest.mockImplementation(
+            async (): Promise<StdPermissionState> => PROMPT,
+          );
+        });
+
+        describe("when reading the position with an error callback", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(geolocation, successFn, errorFn);
+          });
+
+          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+            expect(errorFn).toHaveBeenCalled();
+            expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+            const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+            expect(error).toBeInstanceOf(GeolocationPositionError);
+            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
+            expect(error.message).toBe("");
+          });
+
+          it("does not call the success callback", () => {
+            expect(successFn).not.toHaveBeenCalled();
+          });
+        });
+
+        describe("when reading the position without an error callback", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successFn,
+              undefined,
+              undefined,
+              AbortSignal.timeout(10),
+            );
+          });
+
+          it("does not call the success callback", () => {
+            expect(successFn).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe("when the permission handler denies the permission", () => {
+        beforeEach(() => {
+          handlePermissionRequest.mockImplementation(
+            async (): Promise<StdPermissionState> => DENIED,
+          );
+        });
+
+        describe("when reading the position with an error callback", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(geolocation, successFn, errorFn);
+          });
+
+          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+            expect(errorFn).toHaveBeenCalled();
+            expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+            const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
+
+            expect(error).toBeInstanceOf(GeolocationPositionError);
+            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
+            expect(error.message).toBe("");
+          });
+
+          it("does not call the success callback", () => {
+            expect(successFn).not.toHaveBeenCalled();
+          });
+        });
+
+        describe("when reading the position without an error callback", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successFn,
+              undefined,
+              undefined,
+              AbortSignal.timeout(10),
+            );
+          });
+
+          it("does not call the success callback", () => {
+            expect(successFn).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe("when then permission handler grants the permission", () => {
+        beforeEach(() => {
+          handlePermissionRequest.mockImplementation(
+            async (): Promise<StdPermissionState> => GRANTED,
+          );
+        });
+
+        describe("when there is no position", () => {
+          beforeEach(() => {
+            locationServices.setPosition(undefined);
+          });
+
+          describe("when reading the position with an error callback", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn);
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
+              expect(errorFn).toHaveBeenCalled();
+              expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+              const error = errorFn.mock
+                .calls[0][0] as GeolocationPositionError;
+
+              expect(error).toBeInstanceOf(GeolocationPositionError);
+              expect(error.code).toBe(
+                GeolocationPositionError.POSITION_UNAVAILABLE,
+              );
+              expect(error.message).toBe("");
+            });
+
+            it("does not call the success callback", () => {
+              expect(successFn).not.toHaveBeenCalled();
+            });
+          });
+
+          describe("when reading the position without an error callback", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successFn,
+                undefined,
+                undefined,
+                AbortSignal.timeout(10),
+              );
+            });
+
+            it("does not call the success callback", () => {
+              expect(successFn).not.toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe("when there is a position", () => {
+          beforeEach(() => {
+            locationServices.setPosition(positionA);
+          });
+
+          describe("when reading the position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn);
+            });
+
+            it("calls the success callback with the position", () => {
+              expect(successFn).toHaveBeenCalledWith(positionA);
+            });
+
+            it("does not call the error callback", () => {
+              expect(errorFn).not.toHaveBeenCalled();
+            });
+          });
         });
       });
     });

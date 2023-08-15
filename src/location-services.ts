@@ -1,4 +1,4 @@
-import { sleep } from "./async.js";
+import { SyncOrAsync, sleep } from "./async.js";
 import { GRANTED, PROMPT } from "./constants/permission-state.js";
 import { createPositionUnavailableError } from "./geolocation-position-error.js";
 import { createPosition } from "./geolocation-position.js";
@@ -14,12 +14,22 @@ export interface MutableLocationServices extends LocationServices {
   setPosition(position: StdGeolocationPosition | undefined): void;
 }
 
-export function createLocationServices(): MutableLocationServices {
+export type HandlePermissionRequest = () => SyncOrAsync<StdPermissionState>;
+
+export function createLocationServices({
+  handlePermissionRequest,
+}: {
+  handlePermissionRequest?: HandlePermissionRequest;
+} = {}): MutableLocationServices {
   let permissionState: StdPermissionState = PROMPT;
   let position: StdGeolocationPosition | undefined;
 
   return {
     async requestPermission() {
+      if (handlePermissionRequest) {
+        permissionState = await handlePermissionRequest();
+      }
+
       return permissionState === GRANTED;
     },
 
