@@ -3,7 +3,7 @@ import {
   DENIED,
   GRANTED,
   PROMPT,
-} from "../../src/constants/permission-state.js";
+} from "../../../src/constants/permission-state.js";
 import {
   GeolocationPositionError,
   HandlePermissionRequest,
@@ -11,7 +11,7 @@ import {
   createGeolocation,
   createLocationServices,
   createPositionUnavailableError,
-} from "../../src/index.js";
+} from "../../../src/index.js";
 import {
   StdGeolocation,
   StdGeolocationPosition,
@@ -20,7 +20,7 @@ import {
   StdPositionCallback,
   StdPositionErrorCallback,
   StdPositionOptions,
-} from "../../src/types/std.js";
+} from "../../../src/types/std.js";
 
 const positionA: StdGeolocationPosition = {
   coords: {
@@ -47,7 +47,7 @@ const positionB: StdGeolocationPosition = {
   timestamp: 1690606392152,
 };
 
-describe("Geolocation", () => {
+describe("Geolocation.getCurrentPosition()", () => {
   let locationServices: MutableLocationServices;
   let geolocation: StdGeolocation;
 
@@ -60,15 +60,6 @@ describe("Geolocation", () => {
 
     successFn = jest.fn();
     errorFn = jest.fn();
-  });
-
-  it("cannot be instantiated directly", () => {
-    const call = () => {
-      new (geolocation.constructor as new (p: object) => unknown)({});
-    };
-
-    expect(call).toThrow(TypeError);
-    expect(call).toThrow("Illegal constructor");
   });
 
   describe("when reading the position will result in an error", () => {
