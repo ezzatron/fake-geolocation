@@ -60,14 +60,14 @@ describe("Geolocation.getCurrentPosition()", () => {
   });
 
   describe("when there is a permission request handler", () => {
-    let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+    let handlePermissionRequestA: jest.Mock<HandlePermissionRequest>;
 
     beforeEach(async () => {
-      handlePermissionRequest = jest.fn();
-      locationServices = createLocationServices({
-        handlePermissionRequest,
-      });
+      locationServices = createLocationServices();
       geolocation = createGeolocation({ locationServices });
+
+      handlePermissionRequestA = jest.fn();
+      locationServices.addPermissionRequestHandler(handlePermissionRequestA);
     });
 
     describe("when permission has not been requested", () => {
@@ -75,74 +75,283 @@ describe("Geolocation.getCurrentPosition()", () => {
         locationServices.setPermissionState(PROMPT);
       });
 
-      describe("when the permission request handler does not change the state", () => {
+      describe("when there is a position", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockImplementation(
-            async (): Promise<StdPermissionState> => PROMPT,
-          );
+          locationServices.setPosition(positionA);
         });
 
-        describe("when reading the position", () => {
-          beforeEach(async () => {
-            await getCurrentPosition(geolocation, successFn, errorFn);
-          });
-
-          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
-            expect(errorFn).toHaveBeenCalled();
-            expect(errorFn.mock.calls[0][0]).toBeDefined();
-
-            const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
-            expect(error.message).toBe("");
-          });
-
-          it("does not call the success callback", () => {
-            expect(successFn).not.toHaveBeenCalled();
-          });
-        });
-      });
-
-      describe("when the permission request handler denies the permission", () => {
-        beforeEach(() => {
-          handlePermissionRequest.mockImplementation(
-            async (): Promise<StdPermissionState> => DENIED,
-          );
-        });
-
-        describe("when reading the position", () => {
-          beforeEach(async () => {
-            await getCurrentPosition(geolocation, successFn, errorFn);
-          });
-
-          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
-            expect(errorFn).toHaveBeenCalled();
-            expect(errorFn.mock.calls[0][0]).toBeDefined();
-
-            const error = errorFn.mock.calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
-            expect(error.message).toBe("");
-          });
-
-          it("does not call the success callback", () => {
-            expect(successFn).not.toHaveBeenCalled();
-          });
-        });
-      });
-
-      describe("when then permission request handler grants the permission", () => {
-        beforeEach(() => {
-          handlePermissionRequest.mockImplementation(
-            async (): Promise<StdPermissionState> => GRANTED,
-          );
-        });
-
-        describe("when there is no position", () => {
+        describe("when the handler does not change the state", () => {
           beforeEach(() => {
-            locationServices.setPosition(undefined);
+            handlePermissionRequestA.mockImplementation(
+              async (): Promise<StdPermissionState> => PROMPT,
+            );
+          });
+
+          describe("when reading the position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn);
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+              expect(errorFn).toHaveBeenCalled();
+              expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+              const error = errorFn.mock
+                .calls[0][0] as GeolocationPositionError;
+
+              expect(error).toBeInstanceOf(GeolocationPositionError);
+              expect(error.code).toBe(
+                GeolocationPositionError.PERMISSION_DENIED,
+              );
+              expect(error.message).toBe("");
+            });
+
+            it("does not call the success callback", () => {
+              expect(successFn).not.toHaveBeenCalled();
+            });
+          });
+
+          describe("when the same handler is added again", () => {
+            beforeEach(() => {
+              locationServices.addPermissionRequestHandler(
+                handlePermissionRequestA,
+              );
+            });
+
+            describe("when reading the position", () => {
+              beforeEach(async () => {
+                await getCurrentPosition(geolocation, successFn, errorFn);
+              });
+
+              it("calls the handler twice", () => {
+                expect(handlePermissionRequestA).toHaveBeenCalledTimes(2);
+              });
+            });
+
+            describe("when the handler is removed", () => {
+              beforeEach(() => {
+                locationServices.removePermissionRequestHandler(
+                  handlePermissionRequestA,
+                );
+              });
+
+              describe("when reading the position", () => {
+                beforeEach(async () => {
+                  await getCurrentPosition(geolocation, successFn, errorFn);
+                });
+
+                it("calls the handler once", () => {
+                  expect(handlePermissionRequestA).toHaveBeenCalledTimes(1);
+                });
+              });
+            });
+          });
+        });
+
+        describe("when the handler denies the permission", () => {
+          beforeEach(() => {
+            handlePermissionRequestA.mockImplementation(
+              async (): Promise<StdPermissionState> => DENIED,
+            );
+          });
+
+          describe("when reading the position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn);
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+              expect(errorFn).toHaveBeenCalled();
+              expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+              const error = errorFn.mock
+                .calls[0][0] as GeolocationPositionError;
+
+              expect(error).toBeInstanceOf(GeolocationPositionError);
+              expect(error.code).toBe(
+                GeolocationPositionError.PERMISSION_DENIED,
+              );
+              expect(error.message).toBe("");
+            });
+
+            it("does not call the success callback", () => {
+              expect(successFn).not.toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe("when the handler grants the permission", () => {
+          beforeEach(() => {
+            handlePermissionRequestA.mockImplementation(
+              async (): Promise<StdPermissionState> => GRANTED,
+            );
+          });
+
+          describe("when reading the position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn);
+            });
+
+            it("calls the success callback with the position", () => {
+              expect(successFn).toHaveBeenCalledWith(positionA);
+            });
+
+            it("does not call the error callback", () => {
+              expect(errorFn).not.toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe("when the handler is removed", () => {
+          beforeEach(() => {
+            locationServices.removePermissionRequestHandler(
+              handlePermissionRequestA,
+            );
+          });
+
+          describe("when reading the position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn);
+            });
+
+            it("does not call the permission request handler", () => {
+              expect(handlePermissionRequestA).not.toHaveBeenCalled();
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+              expect(errorFn).toHaveBeenCalled();
+              expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+              const error = errorFn.mock
+                .calls[0][0] as GeolocationPositionError;
+
+              expect(error).toBeInstanceOf(GeolocationPositionError);
+              expect(error.code).toBe(
+                GeolocationPositionError.PERMISSION_DENIED,
+              );
+              expect(error.message).toBe("");
+            });
+
+            it("does not call the success callback", () => {
+              expect(successFn).not.toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe("when another handler is added", () => {
+          let handlePermissionRequestB: jest.Mock<HandlePermissionRequest>;
+
+          beforeEach(() => {
+            handlePermissionRequestB = jest.fn();
+            locationServices.addPermissionRequestHandler(
+              handlePermissionRequestB,
+            );
+          });
+
+          describe("when the newly-added handler does not change the state", () => {
+            beforeEach(() => {
+              handlePermissionRequestA.mockImplementation(
+                async (): Promise<StdPermissionState> => GRANTED,
+              );
+              handlePermissionRequestB.mockImplementation(
+                async (): Promise<StdPermissionState> => PROMPT,
+              );
+            });
+
+            describe("when reading the position", () => {
+              beforeEach(async () => {
+                await getCurrentPosition(geolocation, successFn, errorFn);
+              });
+
+              it("uses the response from the original handler", () => {
+                expect(successFn).toHaveBeenCalledWith(positionA);
+              });
+            });
+          });
+
+          describe("when the newly-added handler changes the state", () => {
+            beforeEach(() => {
+              handlePermissionRequestA.mockImplementation(
+                async (): Promise<StdPermissionState> => DENIED,
+              );
+              handlePermissionRequestB.mockImplementation(
+                async (): Promise<StdPermissionState> => GRANTED,
+              );
+            });
+
+            describe("when reading the position", () => {
+              beforeEach(async () => {
+                await getCurrentPosition(geolocation, successFn, errorFn);
+              });
+
+              it("uses the response from the newly-added handler", () => {
+                expect(successFn).toHaveBeenCalledWith(positionA);
+              });
+            });
+          });
+
+          describe("when the newly-added handler is removed", () => {
+            beforeEach(() => {
+              handlePermissionRequestA.mockImplementation(
+                async (): Promise<StdPermissionState> => GRANTED,
+              );
+              handlePermissionRequestB.mockImplementation(
+                async (): Promise<StdPermissionState> => DENIED,
+              );
+
+              locationServices.removePermissionRequestHandler(
+                handlePermissionRequestB,
+              );
+            });
+
+            describe("when reading the position", () => {
+              beforeEach(async () => {
+                await getCurrentPosition(geolocation, successFn, errorFn);
+              });
+
+              it("uses the response from the original handler", () => {
+                expect(successFn).toHaveBeenCalledWith(positionA);
+              });
+            });
+          });
+
+          describe("when the original handler is removed", () => {
+            beforeEach(() => {
+              handlePermissionRequestA.mockImplementation(
+                async (): Promise<StdPermissionState> => DENIED,
+              );
+              handlePermissionRequestB.mockImplementation(
+                async (): Promise<StdPermissionState> => GRANTED,
+              );
+
+              locationServices.removePermissionRequestHandler(
+                handlePermissionRequestA,
+              );
+            });
+
+            describe("when reading the position", () => {
+              beforeEach(async () => {
+                await getCurrentPosition(geolocation, successFn, errorFn);
+              });
+
+              it("uses the response from the newly-added handler", () => {
+                expect(successFn).toHaveBeenCalledWith(positionA);
+              });
+            });
+          });
+        });
+      });
+
+      describe("when there is no position", () => {
+        beforeEach(() => {
+          locationServices.setPosition(undefined);
+        });
+
+        describe("when the handler grants the permission", () => {
+          beforeEach(() => {
+            handlePermissionRequestA.mockImplementation(
+              async (): Promise<StdPermissionState> => GRANTED,
+            );
           });
 
           describe("when reading the position", () => {
@@ -169,26 +378,6 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
           });
         });
-
-        describe("when there is a position", () => {
-          beforeEach(() => {
-            locationServices.setPosition(positionA);
-          });
-
-          describe("when reading the position", () => {
-            beforeEach(async () => {
-              await getCurrentPosition(geolocation, successFn, errorFn);
-            });
-
-            it("calls the success callback with the position", () => {
-              expect(successFn).toHaveBeenCalledWith(positionA);
-            });
-
-            it("does not call the error callback", () => {
-              expect(errorFn).not.toHaveBeenCalled();
-            });
-          });
-        });
       });
     });
 
@@ -203,7 +392,7 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
 
         it("does not call the permission request handler", () => {
-          expect(handlePermissionRequest).not.toHaveBeenCalled();
+          expect(handlePermissionRequestA).not.toHaveBeenCalled();
         });
 
         it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
@@ -294,7 +483,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("does not call the permission request handler", () => {
-            expect(handlePermissionRequest).not.toHaveBeenCalled();
+            expect(handlePermissionRequestA).not.toHaveBeenCalled();
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
@@ -336,7 +525,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("does not call the permission request handler", () => {
-            expect(handlePermissionRequest).not.toHaveBeenCalled();
+            expect(handlePermissionRequestA).not.toHaveBeenCalled();
           });
 
           it("calls the success callback with the position", () => {

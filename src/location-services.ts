@@ -10,24 +10,33 @@ export interface LocationServices {
 }
 
 export interface MutableLocationServices extends LocationServices {
+  addPermissionRequestHandler(handler: HandlePermissionRequest): void;
+  removePermissionRequestHandler(handler: HandlePermissionRequest): void;
   setPermissionState(state: StdPermissionState): void;
   setPosition(position: StdGeolocationPosition | undefined): void;
 }
 
 export type HandlePermissionRequest = () => SyncOrAsync<StdPermissionState>;
 
-export function createLocationServices({
-  handlePermissionRequest,
-}: {
-  handlePermissionRequest?: HandlePermissionRequest;
-} = {}): MutableLocationServices {
+export function createLocationServices(): MutableLocationServices {
+  const permissionRequestHandlers: HandlePermissionRequest[] = [];
   let permissionState: StdPermissionState = PROMPT;
   let position: StdGeolocationPosition | undefined;
 
   return {
+    addPermissionRequestHandler(handler) {
+      permissionRequestHandlers.unshift(handler);
+    },
+
+    removePermissionRequestHandler(handler) {
+      const index = permissionRequestHandlers.indexOf(handler);
+      if (index !== -1) permissionRequestHandlers.splice(index, 1);
+    },
+
     async requestPermission() {
-      if (permissionState === PROMPT && handlePermissionRequest) {
-        permissionState = await handlePermissionRequest();
+      for (const handler of permissionRequestHandlers) {
+        if (permissionState !== PROMPT) break;
+        permissionState = await handler();
       }
 
       return permissionState === GRANTED;
