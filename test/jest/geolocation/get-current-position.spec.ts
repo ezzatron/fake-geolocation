@@ -63,7 +63,7 @@ describe("Geolocation.getCurrentPosition()", () => {
   describe("when there is a permission request handler", () => {
     let handlePermissionRequestA: jest.Mock<HandlePermissionRequest>;
 
-    beforeEach(async () => {
+    beforeEach(() => {
       locationServices = createLocationServices();
       geolocation = createGeolocation({ locationServices });
 
@@ -738,7 +738,7 @@ describe("Geolocation.getCurrentPosition()", () => {
   });
 
   describe("when there is no permission request handler", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       locationServices = createLocationServices();
       geolocation = createGeolocation({ locationServices });
     });

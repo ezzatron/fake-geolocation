@@ -3,7 +3,11 @@ import { GRANTED, PROMPT } from "./constants/permission-state.js";
 import { createPositionUnavailableError } from "./geolocation-position-error.js";
 import { createPosition } from "./geolocation-position.js";
 import { HandlePermissionRequest } from "./handle-permission-request.js";
-import { StdGeolocationPosition, StdPermissionState } from "./types/std.js";
+import {
+  StdGeolocationPosition,
+  StdPermissionState,
+  StdPermissionStatus,
+} from "./types/std.js";
 
 export interface LocationServices {
   getPermissionState(): StdPermissionState;
@@ -15,6 +19,7 @@ export interface MutableLocationServices extends LocationServices {
   addPermissionRequestHandler(handler: HandlePermissionRequest): void;
   removePermissionRequestHandler(handler: HandlePermissionRequest): void;
   setPermissionState(state: StdPermissionState): void;
+  watchPermission(status: StdPermissionStatus): () => void;
   setPosition(position: StdGeolocationPosition | undefined): void;
 }
 
@@ -48,6 +53,19 @@ export function createLocationServices(): MutableLocationServices {
 
     setPermissionState(nextState) {
       permissionState = nextState;
+    },
+
+    watchPermission(status) {
+      permissionState = status.state;
+
+      const handleChange = () => {
+        permissionState = status.state;
+      };
+      status.addEventListener("change", handleChange);
+
+      return () => {
+        status.removeEventListener("change", handleChange);
+      };
     },
 
     async getPosition() {
