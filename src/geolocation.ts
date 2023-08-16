@@ -37,19 +37,19 @@ export class Geolocation {
   }
 
   getCurrentPosition(
-    successFn: StdPositionCallback,
-    errorFn?: StdPositionErrorCallback | null,
+    successCallback: StdPositionCallback,
+    errorCallback?: StdPositionErrorCallback | null,
     options?: StdPositionOptions | null,
   ): void {
     this.#readPosition(options ?? {})
-      .then((position) => successFn(position))
+      .then((position) => successCallback(position))
       .catch((error) => {
-        if (!errorFn) return;
+        if (!errorCallback) return;
 
         if (isGeolocationPositionError(error)) {
-          errorFn(error);
+          errorCallback(error);
         } else {
-          errorFn(
+          errorCallback(
             createPositionUnavailableError(
               `Location services error: ${errorMessage(error)}`,
             ),
