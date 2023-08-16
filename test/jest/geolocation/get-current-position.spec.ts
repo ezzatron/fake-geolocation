@@ -1,4 +1,5 @@
 import { jest } from "@jest/globals";
+import { sleep } from "../../../src/async.js";
 import {
   DENIED,
   GRANTED,
@@ -80,7 +81,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           locationServices.setPosition(positionA);
         });
 
-        describe("when the handler does not change the state", () => {
+        describe("when the handler resets the permission immediately", () => {
           beforeEach(() => {
             handlePermissionRequestA.mockImplementation(
               async (): Promise<StdPermissionState> => PROMPT,
@@ -148,7 +149,41 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
         });
 
-        describe("when the handler denies the permission", () => {
+        describe("when the handler resets the permission after a delay", () => {
+          beforeEach(() => {
+            handlePermissionRequestA.mockImplementation(
+              async (): Promise<StdPermissionState> => {
+                await sleep(20);
+
+                return PROMPT;
+              },
+            );
+          });
+
+          describe("when reading the position with a timeout", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn, {
+                timeout: 10,
+              });
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+              expect(errorFn).toHaveBeenCalled();
+              expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+              const error = errorFn.mock
+                .calls[0][0] as GeolocationPositionError;
+
+              expect(error).toBeInstanceOf(GeolocationPositionError);
+              expect(error.code).toBe(
+                GeolocationPositionError.PERMISSION_DENIED,
+              );
+              expect(error.message).toBe("");
+            });
+          });
+        });
+
+        describe("when the handler denies the permission immediately", () => {
           beforeEach(() => {
             handlePermissionRequestA.mockImplementation(
               async (): Promise<StdPermissionState> => DENIED,
@@ -180,7 +215,41 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
         });
 
-        describe("when the handler grants the permission", () => {
+        describe("when the handler denies the permission after a delay", () => {
+          beforeEach(() => {
+            handlePermissionRequestA.mockImplementation(
+              async (): Promise<StdPermissionState> => {
+                await sleep(20);
+
+                return DENIED;
+              },
+            );
+          });
+
+          describe("when reading the position with a timeout", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn, {
+                timeout: 10,
+              });
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
+              expect(errorFn).toHaveBeenCalled();
+              expect(errorFn.mock.calls[0][0]).toBeDefined();
+
+              const error = errorFn.mock
+                .calls[0][0] as GeolocationPositionError;
+
+              expect(error).toBeInstanceOf(GeolocationPositionError);
+              expect(error.code).toBe(
+                GeolocationPositionError.PERMISSION_DENIED,
+              );
+              expect(error.message).toBe("");
+            });
+          });
+        });
+
+        describe("when the handler grants the permission immediately", () => {
           beforeEach(() => {
             handlePermissionRequestA.mockImplementation(
               async (): Promise<StdPermissionState> => GRANTED,
@@ -198,6 +267,30 @@ describe("Geolocation.getCurrentPosition()", () => {
 
             it("does not call the error callback", () => {
               expect(errorFn).not.toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe("when the handler grants the permission after a delay", () => {
+          beforeEach(() => {
+            handlePermissionRequestA.mockImplementation(
+              async (): Promise<StdPermissionState> => {
+                await sleep(20);
+
+                return GRANTED;
+              },
+            );
+          });
+
+          describe("when reading the position with a timeout", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(geolocation, successFn, errorFn, {
+                timeout: 10,
+              });
+            });
+
+            it("does not include the time spent waiting for permission in the timeout", () => {
+              expect(successFn).toHaveBeenCalledWith(positionA);
             });
           });
         });
