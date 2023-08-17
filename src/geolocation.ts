@@ -60,12 +60,12 @@ export class Geolocation {
 
   /* istanbul ignore next */
   watchPosition(): number {
-    throw new Error("Method not implemented.");
+    throw new Error("Not implemented");
   }
 
   /* istanbul ignore next */
   clearWatch(): void {
-    throw new Error("Method not implemented clearWatch");
+    throw new Error("Not implemented");
   }
 
   /**
