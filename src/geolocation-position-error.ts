@@ -50,26 +50,6 @@ export class GeolocationPositionError {
   }
 }
 
-export function isGeolocationPositionError(
-  error: unknown,
-): error is StdGeolocationPositionError {
-  return Boolean(
-    error &&
-      typeof error === "object" &&
-      error.constructor?.name === "GeolocationPositionError" &&
-      "PERMISSION_DENIED" in error &&
-      typeof error.PERMISSION_DENIED === "number" &&
-      "POSITION_UNAVAILABLE" in error &&
-      typeof error.POSITION_UNAVAILABLE === "number" &&
-      "TIMEOUT" in error &&
-      typeof error.TIMEOUT === "number" &&
-      "code" in error &&
-      typeof error.code === "number" &&
-      "message" in error &&
-      typeof error.message === "string",
-  );
-}
-
 GeolocationPositionError satisfies new (
   ...args: never[]
 ) => StdGeolocationPositionError;
