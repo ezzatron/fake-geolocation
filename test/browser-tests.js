@@ -93,27 +93,9 @@ async function maximumAgeAffectsTimeout() {
  * getCurrentPosition was called, not when the position was received.
  */
 async function timestampIsBasedOnAcquireTime() {
-  // cache a position
-  const positionA = await new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      (p) => {
-        resolve(p);
-      },
-      (e) => {
-        reject(e);
-      },
-    );
-  });
-  console.log({ positionA });
-
-  // sleep for 1ms
-  await new Promise((resolve) => {
-    setTimeout(resolve, 1);
-  });
-
   // get another position, recording timestamps
   const acquireTime = Date.now();
-  const positionB = await new Promise((resolve, reject) => {
+  const position = await new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
       (p) => {
         resolve(p);
@@ -125,10 +107,10 @@ async function timestampIsBasedOnAcquireTime() {
     );
   });
   const receiveTime = Date.now();
-  console.log({ positionB });
+  console.log({ positionB: position });
 
   // check that the timestamp is after the acquire time
-  if (positionB.timestamp > acquireTime) {
+  if (position.timestamp > acquireTime) {
     console.log("✅ Timestamp is after acquire time");
   } else {
     console.error("❌ Timestamp is before acquire time");
@@ -136,7 +118,8 @@ async function timestampIsBasedOnAcquireTime() {
 
   // log the deltas between timestamps
   console.log({
-    acquireDelta: positionB.timestamp - acquireTime,
-    receiveDelta: positionB.timestamp - receiveTime,
+    acquireDelta: position.timestamp - acquireTime,
+    receiveDelta: receiveTime - acquireTime,
+    deltaDelta: receiveTime - acquireTime - (position.timestamp - acquireTime),
   });
 }
