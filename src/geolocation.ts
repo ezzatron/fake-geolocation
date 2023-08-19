@@ -80,14 +80,34 @@ export class Geolocation {
     );
   }
 
-  /* istanbul ignore next */
+  /**
+   * § 6.3 watchPosition() method
+   */
   watchPosition(): number {
+    /*
+     * 1. If the current settings object's relevant global object's associated
+     *    Document is not fully active:
+     *    1. Call back with error passing errorCallback and
+     *       POSITION_UNAVAILABLE.
+     *    2. Return 0.
+     * 2. Let watchId be an implementation-defined unsigned long that is greater
+     *    than zero.
+     * 3. Append watchId to this's [[watchIDs]].
+     * 4. In parallel, request a position passing successCallback,
+     *    errorCallback, options, and watchId.
+     * 5. Return watchId.
+     */
     throw new Error("Not implemented");
   }
 
-  /* istanbul ignore next */
-  clearWatch(): void {
-    throw new Error("Not implemented");
+  /**
+   * § 6.4 clearWatch() method
+   */
+  clearWatch(watchId: number): void {
+    /*
+     * 1. Remove watchId from this's [[watchIDs]].
+     */
+    this.#removeWatchId(this.#watchIds, watchId);
   }
 
   /**
@@ -134,8 +154,7 @@ export class Geolocation {
        *    1. If watchId was passed, remove watchId from watchIDs.
        */
       if (typeof watchId === "number") {
-        const watchIdIndex = watchIds.indexOf(watchId);
-        if (watchIdIndex !== -1) watchIds.splice(watchIdIndex, 1);
+        this.#removeWatchId(watchIds, watchId);
       }
 
       /*
@@ -424,6 +443,11 @@ export class Geolocation {
         errorCallback?.(createPositionUnavailableError(""));
       }
     }
+  }
+
+  #removeWatchId(watchIds: number[], watchId: number): void {
+    const watchIdIndex = watchIds.indexOf(watchId);
+    if (watchIdIndex !== -1) watchIds.splice(watchIdIndex, 1);
   }
 
   #locationServices: LocationServices;
