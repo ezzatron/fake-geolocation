@@ -332,11 +332,11 @@ export class Geolocation {
                  *          1. Set position be a new GeolocationPosition passing
                  *             acquisitionTime and options.enableHighAccuracy.
                  */
-                // TODO: implement isHighAccuracy slot
-                position = createPosition({
+                position = createPosition(
                   coords,
-                  timestamp: acquisitionTime,
-                });
+                  acquisitionTime,
+                  options.enableHighAccuracy,
+                );
 
                 /*
                  * 5. (cont.)

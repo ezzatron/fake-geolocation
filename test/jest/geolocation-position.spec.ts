@@ -6,7 +6,6 @@ import {
 
 describe("GeolocationPosition", () => {
   let coords: StdGeolocationCoordinates;
-  let parameters: StdGeolocationPosition;
   let position: StdGeolocationPosition;
 
   beforeEach(() => {
@@ -19,12 +18,8 @@ describe("GeolocationPosition", () => {
       heading: 90,
       speed: 111,
     });
-    parameters = {
-      coords,
-      timestamp: 1687923355537,
-    };
 
-    position = createPosition(parameters);
+    position = createPosition(coords, 1687923355537, true);
   });
 
   it("cannot be instantiated directly", () => {
@@ -36,8 +31,7 @@ describe("GeolocationPosition", () => {
     expect(call).toThrow("Illegal constructor");
   });
 
-  it("copies the parameters", () => {
-    expect(position).not.toBe(parameters);
+  it("copies the coordinates", () => {
     expect(position.coords).not.toBe(coords);
   });
 

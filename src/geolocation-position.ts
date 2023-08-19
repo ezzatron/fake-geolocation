@@ -4,35 +4,39 @@ import {
   StdGeolocationPosition,
 } from "./types/std.js";
 
-type GeolocationPositionParameters = {
-  coords: StdGeolocationCoordinates;
-  timestamp: number;
-};
-
+const IS_HIGH_ACCURACY = Symbol("isHighAccuracy");
 let canConstruct = false;
 
-export function createPosition({
-  coords,
-  timestamp,
-}: GeolocationPositionParameters): StdGeolocationPosition {
+export function createPosition(
+  coords: StdGeolocationCoordinates,
+  timestamp: number,
+  isHighAccuracy: boolean,
+): StdGeolocationPosition {
   canConstruct = true;
 
-  return new GeolocationPosition({
-    coords: createCoordinates(coords),
+  return new GeolocationPosition(
+    createCoordinates(coords),
     timestamp,
-  });
+    isHighAccuracy,
+  );
 }
 
 export class GeolocationPosition {
   readonly coords: StdGeolocationCoordinates;
   readonly timestamp: number;
+  readonly [IS_HIGH_ACCURACY]: boolean;
 
-  constructor(parameters: GeolocationPositionParameters) {
+  constructor(
+    coords: StdGeolocationCoordinates,
+    timestamp: number,
+    isHighAccuracy: boolean,
+  ) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
-    this.coords = parameters.coords;
-    this.timestamp = parameters.timestamp;
+    this.coords = coords;
+    this.timestamp = timestamp;
+    this[IS_HIGH_ACCURACY] = isHighAccuracy;
   }
 }
 

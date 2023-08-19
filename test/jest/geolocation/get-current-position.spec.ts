@@ -11,6 +11,7 @@ import {
   MutableLocationServices,
   createGeolocation,
   createLocationServices,
+  createPosition,
 } from "../../../src/index.js";
 import {
   StdGeolocation,
@@ -287,10 +288,9 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the position", () => {
-              expect(successCallback).toHaveBeenCalledWith({
-                coords: coordsA,
-                timestamp: 111,
-              });
+              expect(successCallback).toHaveBeenCalledWith(
+                createPosition(coordsA, 111, false),
+              );
             });
 
             it("does not call the error callback", () => {
@@ -323,10 +323,9 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("does not include the time spent waiting for permission in the timeout", () => {
-              expect(successCallback).toHaveBeenCalledWith({
-                coords: coordsA,
-                timestamp: 131,
-              });
+              expect(successCallback).toHaveBeenCalledWith(
+                createPosition(coordsA, 131, false),
+              );
             });
           });
         });
@@ -401,10 +400,9 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the original handler", () => {
-                expect(successCallback).toHaveBeenCalledWith({
-                  coords: coordsA,
-                  timestamp: 111,
-                });
+                expect(successCallback).toHaveBeenCalledWith(
+                  createPosition(coordsA, 111, false),
+                );
               });
             });
           });
@@ -429,10 +427,9 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the newly-added handler", () => {
-                expect(successCallback).toHaveBeenCalledWith({
-                  coords: coordsA,
-                  timestamp: 111,
-                });
+                expect(successCallback).toHaveBeenCalledWith(
+                  createPosition(coordsA, 111, false),
+                );
               });
             });
           });
@@ -461,10 +458,9 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the original handler", () => {
-                expect(successCallback).toHaveBeenCalledWith({
-                  coords: coordsA,
-                  timestamp: 111,
-                });
+                expect(successCallback).toHaveBeenCalledWith(
+                  createPosition(coordsA, 111, false),
+                );
               });
             });
           });
@@ -493,10 +489,9 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the newly-added handler", () => {
-                expect(successCallback).toHaveBeenCalledWith({
-                  coords: coordsA,
-                  timestamp: 111,
-                });
+                expect(successCallback).toHaveBeenCalledWith(
+                  createPosition(coordsA, 111, false),
+                );
               });
             });
           });
@@ -681,10 +676,9 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the position", () => {
-            expect(successCallback).toHaveBeenCalledWith({
-              coords: coordsA,
-              timestamp: 111,
-            });
+            expect(successCallback).toHaveBeenCalledWith(
+              createPosition(coordsA, 111, false),
+            );
           });
 
           it("does not call the error callback", () => {
@@ -707,10 +701,9 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the new position", () => {
-              expect(successCallback).toHaveBeenCalledWith({
-                coords: coordsB,
-                timestamp: 111,
-              });
+              expect(successCallback).toHaveBeenCalledWith(
+                createPosition(coordsB, 111, false),
+              );
             });
 
             it("does not call the error callback", () => {
@@ -737,10 +730,9 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the position", () => {
-              expect(successCallback).toHaveBeenCalledWith({
-                coords: coordsA,
-                timestamp: 111,
-              });
+              expect(successCallback).toHaveBeenCalledWith(
+                createPosition(coordsA, 111, false),
+              );
             });
           });
 
@@ -913,10 +905,9 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the position", () => {
-            expect(successCallback).toHaveBeenCalledWith({
-              coords: coordsA,
-              timestamp: 111,
-            });
+            expect(successCallback).toHaveBeenCalledWith(
+              createPosition(coordsA, 111, false),
+            );
           });
 
           it("does not call the error callback", () => {

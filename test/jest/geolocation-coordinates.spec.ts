@@ -2,11 +2,11 @@ import { createCoordinates } from "../../src/index.js";
 import { StdGeolocationCoordinates } from "../../src/types/std.js";
 
 describe("GeolocationCoordinates", () => {
-  let parameters: StdGeolocationCoordinates;
+  let input: StdGeolocationCoordinates;
   let coordinates: StdGeolocationCoordinates;
 
   beforeEach(() => {
-    parameters = {
+    input = {
       latitude: 40.71703581534977,
       longitude: -74.03457283319447,
       accuracy: 25.019,
@@ -16,7 +16,7 @@ describe("GeolocationCoordinates", () => {
       speed: 111,
     };
 
-    coordinates = createCoordinates(parameters);
+    coordinates = createCoordinates(input);
   });
 
   it("cannot be instantiated directly", () => {
@@ -28,8 +28,8 @@ describe("GeolocationCoordinates", () => {
     expect(call).toThrow("Illegal constructor");
   });
 
-  it("copies the parameters", () => {
-    expect(coordinates).not.toBe(parameters);
+  it("copies the coordinates", () => {
+    expect(coordinates).not.toBe(input);
   });
 
   it("has a latitude property", () => {

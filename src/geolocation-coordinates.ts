@@ -1,23 +1,13 @@
 import { StdGeolocationCoordinates } from "./types/std.js";
 
-type GeolocationCoordinatesParameters = {
-  latitude: number;
-  longitude: number;
-  altitude: number | null;
-  accuracy: number;
-  altitudeAccuracy: number | null;
-  heading: number | null;
-  speed: number | null;
-};
-
 let canConstruct = false;
 
 export function createCoordinates(
-  parameters: GeolocationCoordinatesParameters,
+  coords: StdGeolocationCoordinates,
 ): StdGeolocationCoordinates {
   canConstruct = true;
 
-  return new GeolocationCoordinates(parameters);
+  return new GeolocationCoordinates(coords);
 }
 
 export class GeolocationCoordinates {
@@ -29,17 +19,17 @@ export class GeolocationCoordinates {
   readonly heading: number | null;
   readonly speed: number | null;
 
-  constructor(parameters: GeolocationCoordinatesParameters) {
+  constructor(coords: StdGeolocationCoordinates) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
-    this.latitude = parameters.latitude;
-    this.longitude = parameters.longitude;
-    this.altitude = parameters.altitude;
-    this.accuracy = parameters.accuracy;
-    this.altitudeAccuracy = parameters.altitudeAccuracy;
-    this.heading = parameters.heading;
-    this.speed = parameters.speed;
+    this.latitude = coords.latitude;
+    this.longitude = coords.longitude;
+    this.altitude = coords.altitude;
+    this.accuracy = coords.accuracy;
+    this.altitudeAccuracy = coords.altitudeAccuracy;
+    this.heading = coords.heading;
+    this.speed = coords.speed;
   }
 }
 
