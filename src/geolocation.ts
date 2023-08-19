@@ -1,14 +1,14 @@
-import { errorMessage } from "./error.js";
+import { GRANTED } from "./constants/permission-state.js";
 import {
+  GeolocationPositionError,
   createPermissionDeniedError,
   createPositionUnavailableError,
   createTimeoutError,
-  isGeolocationPositionError,
 } from "./geolocation-position-error.js";
+import { createPosition } from "./geolocation-position.js";
 import { LocationServices } from "./location-services.js";
 import {
   StdGeolocation,
-  StdGeolocationPosition,
   StdPositionCallback,
   StdPositionErrorCallback,
   StdPositionOptions,
@@ -34,28 +34,48 @@ export class Geolocation {
     canConstruct = false;
 
     this.#locationServices = locationServices;
+    this.#watchIds = [];
   }
 
+  /**
+   * § 6.2 getCurrentPosition() method
+   */
   getCurrentPosition(
     successCallback: StdPositionCallback,
     errorCallback?: StdPositionErrorCallback | null,
     options?: StdPositionOptions | null,
   ): void {
-    this.#requestPosition(options ?? {})
-      .then((position) => successCallback(position))
-      .catch((error) => {
-        if (!errorCallback) return;
+    const {
+      enableHighAccuracy = false,
+      maximumAge = 0,
+      timeout = Infinity,
+    } = options ?? {};
+    const normalizedOptions: Required<StdPositionOptions> = {
+      enableHighAccuracy,
+      maximumAge,
+      timeout,
+    };
 
-        if (isGeolocationPositionError(error)) {
-          errorCallback(error);
-        } else {
-          errorCallback(
-            createPositionUnavailableError(
-              `Location services error: ${errorMessage(error)}`,
-            ),
-          );
-        }
-      });
+    /*
+     * 1. If the current settings object's relevant global object's associated
+     *    Document is not fully active:
+     *    1. Call back with error errorCallback and POSITION_UNAVAILABLE.
+     *    2. Terminate this algorithm.
+     */
+    // step 1 is ignored since there is no "document"
+
+    /*
+     * 2. In parallel, request a position passing successCallback,
+     *    errorCallback, and options.
+     */
+    this.#requestPosition(
+      successCallback,
+      errorCallback ?? undefined,
+      normalizedOptions,
+    ).catch(
+      /* istanbul ignore next */
+      () => {},
+    );
   }
 
   /* istanbul ignore next */
@@ -76,12 +96,15 @@ export class Geolocation {
    * optional watchId:
    */
   async #requestPosition(
-    options: StdPositionOptions,
-  ): Promise<StdGeolocationPosition> {
+    successCallback: StdPositionCallback,
+    errorCallback: StdPositionErrorCallback | undefined,
+    options: Required<StdPositionOptions>,
+    watchId?: number,
+  ): Promise<void> {
     /*
      * 1. Let watchIDs be this's [[watchIDs]].
      */
-    // TODO: implement watchPosition()
+    const watchIds = this.#watchIds;
 
     /*
      * 2. Let document be the current settings object's relevant global object's
@@ -102,22 +125,43 @@ export class Geolocation {
      *    "geolocation".
      * 6. Set permission to request permission to use descriptor.
      * 7. If permission is "denied", then:
-     *    1. If watchId was passed, remove watchId from watchIDs.
-     *    2. Call back with error passing errorCallback and PERMISSION_DENIED.
-     *    3. Terminate this algorithm.
      */
     if (!(await this.#locationServices.requestPermission())) {
-      throw createPermissionDeniedError("");
+      /*
+       * 7. (cont.)
+       *    1. If watchId was passed, remove watchId from watchIDs.
+       */
+      if (typeof watchId === "number") {
+        const watchIdIndex = watchIds.indexOf(watchId);
+        if (watchIdIndex !== -1) watchIds.splice(watchIdIndex, 1);
+      }
+
+      /*
+       * 7. (cont.)
+       *    2. Call back with error passing errorCallback and PERMISSION_DENIED.
+       *    3. Terminate this algorithm.
+       */
+      errorCallback?.(createPermissionDeniedError(""));
+      return;
     }
 
     /*
      * 8. Wait to [acquire a position] passing _successCallback_,
      *    _errorCallback_, _options_, and _watchId_.
      */
-    return this.#acquirePosition(options);
+    await this.#acquirePosition(
+      successCallback,
+      errorCallback,
+      options,
+      watchId,
+    );
 
     /*
      *  9. If watchId was not passed, terminate this algorithm.
+     */
+    if (typeof watchId !== "number") return;
+
+    /*
      * 10. While watchIDs contains watchId:
      *     1. Wait for a significant change of geographic position. What
      *        constitutes a significant change of geographic position is left to
@@ -139,92 +183,225 @@ export class Geolocation {
    * PositionErrorCallback? errorCallback, PositionOptions options, and an
    * optional watchId.
    */
-  async #acquirePosition({
-    timeout = Infinity,
-  }: StdPositionOptions): Promise<StdGeolocationPosition> {
+  async #acquirePosition(
+    successCallback: StdPositionCallback,
+    errorCallback: StdPositionErrorCallback | undefined,
+    options: Required<StdPositionOptions>,
+    watchId?: number,
+  ): Promise<void> {
     /*
      * 1. If watchId was passed and this's [[watchIDs]] does not contain
      *    watchId, terminate this algorithm.
+     */
+    if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
+      return;
+    }
+
+    /*
      * 2. Let acquisitionTime be a new EpochTimeStamp that represents now.
      */
-    // TODO: implement watchPosition()
+    const acquisitionTime = Date.now();
+
+    /*
+     * 3. Let timeoutTime be the sum of acquisitionTime and options.timeout.
+     */
+    const timeoutTime = acquisitionTime + options.timeout;
+
+    /*
+     * 4. Let cachedPosition be this's [[cachedPosition]].
+     */
     // TODO: implement maximumAge option
 
-    if (!Number.isFinite(timeout)) return this.#locationServices.getPosition();
+    /*
+     * 5. Create an implementation-specific timeout task that elapses at
+     *    timeoutTime, during which it tries to acquire the device's position by
+     *    running the following steps:
+     */
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const timeoutDelay = timeoutTime - acquisitionTime;
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-    return new Promise((resolve, reject) => {
-      /*
-       * 3. Let timeoutTime be the sum of acquisitionTime and options.timeout.
-       */
-      const timeoutId = setTimeout(() => {
-        reject(createTimeoutError(""));
-      }, timeout);
+        if (Number.isFinite(timeoutDelay)) {
+          timeoutId = setTimeout(() => {
+            reject(GeolocationPositionError.TIMEOUT);
+          }, timeoutDelay);
+        }
 
-      /*
-       * 4. Let cachedPosition be this's [[cachedPosition]].
-       */
-      // TODO: implement maximumAge option
+        /*
+         * 5. (cont.)
+         *    1. Let permission be get the current permission state of
+         *       "geolocation".
+         */
+        const permission = this.#locationServices.getPermissionState();
 
-      /*
-       * 5. Create an implementation-specific timeout task that elapses at
-       *    timeoutTime, during which it tries to acquire the device's position
-       *    by running the following steps:
-       *    1. Let permission be get the current permission state of
-       *       "geolocation".
-       *    2. If permission is "denied":
-       *       1. Stop timeout.
-       *       2. Do the user or system denied permission failure case step.
-       */
-      // TODO: this might be relevant for watchPosition()
-
-      /*
-       * 5. (cont.)
-       *    3. If permission is "granted":
-       *       1. Let position be null.
-       *       2. If cachedPosition is not null, and options.maximumAge is
-       *          greater than 0:
-       *          1. Let cacheTime be acquisitionTime minus the value of the
-       *             options.maximumAge member.
-       *          2. If cachedPosition's timestamp's value is greater than
-       *             cacheTime, and cachedPosition.[[isHighAccuracy]] equals
-       *             options.enableHighAccuracy, set position to cachedPosition.
-       */
-      // TODO: implement maximumAge option
-
-      /*
-       * 5. (cont.)
-       *    3. (cont.)
-       *       3. Otherwise, if position is not cachedPosition, try to acquire
-       *          position data from the underlying system, optionally taking
-       *          into consideration the value of options.enableHighAccuracy
-       *          during acquisition.
-       *       4. If the timeout elapses during acquisition, or acquiring the
-       *          device's position results in failure:
-       *          1. Stop the timeout.
-       *          2. Go to dealing with failures.
-       *          3. Terminate this algorithm.
-       *       1. If acquiring the position data from the system succeeds:
-       *          1. Set position be a new GeolocationPosition passing
-       *             acquisitionTime and options.enableHighAccuracy.
-       *          2. Set this's [[cachedPosition]] to position.
-       *       6. Stop the timeout.
-       *       7. Queue a task on the geolocation task source with a step that
-       *          invokes successCallback with position.
-       */
-      this.#locationServices
-        .getPosition()
-        .then(resolve, reject)
-        .finally(() => {
+        /*
+         * 5. (cont.)
+         *    2. If permission is "denied":
+         */
+        if (permission !== GRANTED) {
+          /*
+           * 5. (cont.)
+           *    2. (cont.)
+           *       1. Stop timeout.
+           */
           clearTimeout(timeoutId);
-        })
-        .catch(
-          /* istanbul ignore next */
-          () => {},
-        );
-    });
+
+          /*
+           * 5. (cont.)
+           *    2. (cont.)
+           *       2. Do the user or system denied permission failure case step.
+           */
+          reject(GeolocationPositionError.PERMISSION_DENIED);
+        }
+
+        /*
+         * 5. (cont.)
+         *    3. If permission is "granted":
+         */
+        if (permission === GRANTED) {
+          /*
+           * 5. (cont.)
+           *    3. (cont.)
+           *       1. Let position be null.
+           */
+          let position = null;
+
+          /*
+           * 5. (cont.)
+           *    3. (cont.)
+           *       2. If cachedPosition is not null, and options.maximumAge is
+           *          greater than 0:
+           *          1. Let cacheTime be acquisitionTime minus the value of the
+           *             options.maximumAge member.
+           *          2. If cachedPosition's timestamp's value is greater than
+           *             cacheTime, and cachedPosition.[[isHighAccuracy]] equals
+           *             options.enableHighAccuracy, set position to
+           *             cachedPosition.
+           */
+          // TODO: implement maximumAge option
+
+          /*
+           * 5. (cont.)
+           *    3. (cont.)
+           *       3. Otherwise, if position is not cachedPosition, try to
+           *          acquire position data from the underlying system,
+           *          optionally taking into consideration the value of
+           *          options.enableHighAccuracy during acquisition.
+           */
+          this.#locationServices
+            .acquireCoordinates(options.enableHighAccuracy)
+            .then((coords) => {
+              /*
+               * 5. (cont.)
+               *    3. (cont.)
+               *       4. If the timeout elapses during acquisition, or acquiring
+               *          the device's position results in failure:
+               */
+              if (!coords) {
+                /*
+                 * 5. (cont.)
+                 *    3. (cont.)
+                 *       4. (cont.)
+                 *          1. Stop the timeout.
+                 */
+                clearTimeout(timeoutId);
+
+                /*
+                 * 5. (cont.)
+                 *    3. (cont.)
+                 *       4. (cont.)
+                 *          2. Go to dealing with failures.
+                 *          3. Terminate this algorithm.
+                 */
+                reject(GeolocationPositionError.POSITION_UNAVAILABLE);
+                return;
+              }
+
+              /*
+               * 5. (cont.)
+               *    3. (cont.)
+               *       5. If acquiring the position data from the system
+               *          succeeds:
+               */
+              if (coords) {
+                /*
+                 * 5. (cont.)
+                 *    3. (cont.)
+                 *       5. (cont.)
+                 *          1. Set position be a new GeolocationPosition passing
+                 *             acquisitionTime and options.enableHighAccuracy.
+                 */
+                // TODO: implement isHighAccuracy slot
+                position = createPosition({
+                  coords,
+                  timestamp: acquisitionTime,
+                });
+
+                /*
+                 * 5. (cont.)
+                 *    3. (cont.)
+                 *       5. (cont.)
+                 *          2. Set this's [[cachedPosition]] to position.
+                 */
+                // TODO: implement maximumAge option
+
+                /*
+                 * 5. (cont.)
+                 *    3. (cont.)
+                 *       6. Stop the timeout.
+                 */
+                clearTimeout(timeoutId);
+
+                /*
+                 * 5. (cont.)
+                 *    3. (cont.)
+                 *       7. Queue a task on the geolocation task source with a
+                 *          step that invokes successCallback with position.
+                 */
+                successCallback(position);
+              }
+
+              resolve();
+              return;
+            })
+            .catch((error) => {
+              clearTimeout(timeoutId);
+              reject(error);
+            });
+        }
+      });
+    } catch (condition) {
+      /*
+       * Dealing with failures:
+       *
+       * If acquiring a position fails, do one of the following based on the
+       * condition that matches the failure:
+       */
+      if (condition === GeolocationPositionError.PERMISSION_DENIED) {
+        /*
+         * - User or system denied permission:
+         *   - Call back with error passing errorCallback and PERMISSION_DENIED.
+         */
+        errorCallback?.(createPermissionDeniedError(""));
+      } else if (condition === GeolocationPositionError.TIMEOUT) {
+        /*
+         * - Timeout elapsed:
+         *   - Call back with error with errorCallback and TIMEOUT.
+         */
+        errorCallback?.(createTimeoutError(""));
+      } else {
+        /*
+         * Data acquisition error or any other reason:
+         * - Call back with error passing errorCallback and POSITION_UNAVAILABLE.
+         */
+        errorCallback?.(createPositionUnavailableError(""));
+      }
+    }
   }
 
   #locationServices: LocationServices;
+  #watchIds: number[];
 }
 
 Geolocation satisfies new (...args: never[]) => StdGeolocation;

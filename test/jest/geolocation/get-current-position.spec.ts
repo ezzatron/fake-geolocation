@@ -11,41 +11,34 @@ import {
   MutableLocationServices,
   createGeolocation,
   createLocationServices,
-  createPositionUnavailableError,
 } from "../../../src/index.js";
 import {
   StdGeolocation,
+  StdGeolocationCoordinates,
   StdGeolocationPosition,
-  StdGeolocationPositionError,
   StdPermissionState,
   StdPositionCallback,
   StdPositionErrorCallback,
   StdPositionOptions,
 } from "../../../src/types/std.js";
 
-const positionA: StdGeolocationPosition = {
-  coords: {
-    latitude: 40.71703581534977,
-    longitude: -74.03457283319447,
-    accuracy: 25.019,
-    altitude: 22.27227783203125,
-    altitudeAccuracy: 9.838127136230469,
-    heading: null,
-    speed: null,
-  },
-  timestamp: 1687923355537,
+const coordsA: StdGeolocationCoordinates = {
+  latitude: 40.71703581534977,
+  longitude: -74.03457283319447,
+  accuracy: 25.019,
+  altitude: 22.27227783203125,
+  altitudeAccuracy: 9.838127136230469,
+  heading: null,
+  speed: null,
 };
-const positionB: StdGeolocationPosition = {
-  coords: {
-    latitude: 12,
-    longitude: 34,
-    accuracy: 56,
-    altitude: 78,
-    altitudeAccuracy: 9,
-    heading: null,
-    speed: null,
-  },
-  timestamp: 1690606392152,
+const coordsB: StdGeolocationCoordinates = {
+  latitude: 12,
+  longitude: 34,
+  accuracy: 56,
+  altitude: 78,
+  altitudeAccuracy: 9,
+  heading: null,
+  speed: null,
 };
 
 describe("Geolocation.getCurrentPosition()", () => {
@@ -76,9 +69,9 @@ describe("Geolocation.getCurrentPosition()", () => {
         locationServices.setPermissionState(PROMPT);
       });
 
-      describe("when there is a position", () => {
+      describe("when coords can be acquired", () => {
         beforeEach(() => {
-          locationServices.setPosition(positionA);
+          locationServices.setCoordinates(coordsA);
         });
 
         describe("when the handler resets the permission immediately", () => {
@@ -292,7 +285,10 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the position", () => {
-              expect(successCallback).toHaveBeenCalledWith(positionA);
+              expect(successCallback).toHaveBeenCalledWith({
+                coords: coordsA,
+                timestamp: expect.any(Number) as number,
+              });
             });
 
             it("does not call the error callback", () => {
@@ -325,7 +321,10 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("does not include the time spent waiting for permission in the timeout", () => {
-              expect(successCallback).toHaveBeenCalledWith(positionA);
+              expect(successCallback).toHaveBeenCalledWith({
+                coords: coordsA,
+                timestamp: expect.any(Number) as number,
+              });
             });
           });
         });
@@ -400,7 +399,10 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the original handler", () => {
-                expect(successCallback).toHaveBeenCalledWith(positionA);
+                expect(successCallback).toHaveBeenCalledWith({
+                  coords: coordsA,
+                  timestamp: expect.any(Number) as number,
+                });
               });
             });
           });
@@ -425,7 +427,10 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the newly-added handler", () => {
-                expect(successCallback).toHaveBeenCalledWith(positionA);
+                expect(successCallback).toHaveBeenCalledWith({
+                  coords: coordsA,
+                  timestamp: expect.any(Number) as number,
+                });
               });
             });
           });
@@ -454,7 +459,10 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the original handler", () => {
-                expect(successCallback).toHaveBeenCalledWith(positionA);
+                expect(successCallback).toHaveBeenCalledWith({
+                  coords: coordsA,
+                  timestamp: expect.any(Number) as number,
+                });
               });
             });
           });
@@ -483,16 +491,19 @@ describe("Geolocation.getCurrentPosition()", () => {
               });
 
               it("uses the response from the newly-added handler", () => {
-                expect(successCallback).toHaveBeenCalledWith(positionA);
+                expect(successCallback).toHaveBeenCalledWith({
+                  coords: coordsA,
+                  timestamp: expect.any(Number) as number,
+                });
               });
             });
           });
         });
       });
 
-      describe("when there is no position", () => {
+      describe("when coords cannot be acquired", () => {
         beforeEach(() => {
-          locationServices.setPosition(undefined);
+          locationServices.setCoordinates(undefined);
         });
 
         describe("when the handler grants the permission", () => {
@@ -570,72 +581,41 @@ describe("Geolocation.getCurrentPosition()", () => {
         locationServices.setPermissionState(GRANTED);
       });
 
-      describe("when location services throws an error", () => {
-        describe("when the error is a GeolocationPositionError", () => {
-          let error: StdGeolocationPositionError;
-
-          beforeEach(() => {
-            error = createPositionUnavailableError("<message>");
-            jest
-              .spyOn(locationServices, "getPosition")
-              .mockRejectedValue(error);
-          });
-
-          describe("when reading the position", () => {
-            beforeEach(async () => {
-              await getCurrentPosition(
-                geolocation,
-                successCallback,
-                errorCallback,
-              );
-            });
-
-            it("calls the error callback with the same error", () => {
-              expect(errorCallback).toHaveBeenCalled();
-              expect(errorCallback.mock.calls[0][0]).toBe(error);
-            });
-          });
+      describe("when acquiring coords throws an error", () => {
+        beforeEach(() => {
+          jest
+            .spyOn(locationServices, "acquireCoordinates")
+            .mockRejectedValue(new Error("An error occurred"));
         });
 
-        describe("when the error is not a GeolocationPositionError", () => {
-          let error: Error;
-
-          beforeEach(() => {
-            error = new Error("<message>");
-            jest
-              .spyOn(locationServices, "getPosition")
-              .mockRejectedValue(error);
+        describe("when reading the position", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+            );
           });
 
-          describe("when reading the position", () => {
-            beforeEach(async () => {
-              await getCurrentPosition(
-                geolocation,
-                successCallback,
-                errorCallback,
-              );
-            });
+          it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
+            expect(errorCallback).toHaveBeenCalled();
+            expect(errorCallback.mock.calls[0][0]).toBeDefined();
 
-            it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and includes the original message", () => {
-              expect(errorCallback).toHaveBeenCalled();
-              expect(errorCallback.mock.calls[0][0]).toBeDefined();
+            const error = errorCallback.mock
+              .calls[0][0] as GeolocationPositionError;
 
-              const error = errorCallback.mock
-                .calls[0][0] as GeolocationPositionError;
-
-              expect(error).toBeInstanceOf(GeolocationPositionError);
-              expect(error.code).toBe(
-                GeolocationPositionError.POSITION_UNAVAILABLE,
-              );
-              expect(error.message).toBe("Location services error: <message>");
-            });
+            expect(error).toBeInstanceOf(GeolocationPositionError);
+            expect(error.code).toBe(
+              GeolocationPositionError.POSITION_UNAVAILABLE,
+            );
+            expect(error.message).toBe("");
           });
         });
       });
 
-      describe("when there is no position", () => {
+      describe("when coords cannot be acquired", () => {
         beforeEach(() => {
-          locationServices.setPosition(undefined);
+          locationServices.setCoordinates(undefined);
         });
 
         describe("when reading the position", () => {
@@ -671,9 +651,9 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
       });
 
-      describe("when there is a position", () => {
+      describe("when coords can be acquired", () => {
         beforeEach(() => {
-          locationServices.setPosition(positionA);
+          locationServices.setCoordinates(coordsA);
         });
 
         it("cannot be read synchronously", () => {
@@ -699,7 +679,10 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the position", () => {
-            expect(successCallback).toHaveBeenCalledWith(positionA);
+            expect(successCallback).toHaveBeenCalledWith({
+              coords: coordsA,
+              timestamp: expect.any(Number) as number,
+            });
           });
 
           it("does not call the error callback", () => {
@@ -707,9 +690,9 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
         });
 
-        describe("when the position changes", () => {
+        describe("when the coords change", () => {
           beforeEach(() => {
-            locationServices.setPosition(positionB);
+            locationServices.setCoordinates(coordsB);
           });
 
           describe("when reading the position", () => {
@@ -722,7 +705,10 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the new position", () => {
-              expect(successCallback).toHaveBeenCalledWith(positionB);
+              expect(successCallback).toHaveBeenCalledWith({
+                coords: coordsB,
+                timestamp: expect.any(Number) as number,
+              });
             });
 
             it("does not call the error callback", () => {
@@ -734,9 +720,9 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when reading the position with a timeout", () => {
         describe("when the timeout is not exceeded", () => {
-          describe("when there is a position", () => {
+          describe("when coords can be acquired", () => {
             beforeEach(async () => {
-              locationServices.setPosition(positionA);
+              locationServices.setCoordinates(coordsA);
 
               await getCurrentPosition(
                 geolocation,
@@ -749,13 +735,16 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the position", () => {
-              expect(successCallback).toHaveBeenCalledWith(positionA);
+              expect(successCallback).toHaveBeenCalledWith({
+                coords: coordsA,
+                timestamp: expect.any(Number) as number,
+              });
             });
           });
 
-          describe("when there is no position", () => {
+          describe("when coords cannot be acquired", () => {
             beforeEach(async () => {
-              locationServices.setPosition(undefined);
+              locationServices.setCoordinates(undefined);
 
               await getCurrentPosition(
                 geolocation,
@@ -785,7 +774,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
         describe("when the timeout is exceeded", () => {
           beforeEach(async () => {
-            locationServices.setPosition(positionA);
+            locationServices.setCoordinates(coordsA);
 
             await getCurrentPosition(
               geolocation,
@@ -812,7 +801,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
         describe("when the timeout is negative", () => {
           beforeEach(async () => {
-            locationServices.setPosition(positionA);
+            locationServices.setCoordinates(coordsA);
 
             await getCurrentPosition(
               geolocation,
@@ -907,9 +896,9 @@ describe("Geolocation.getCurrentPosition()", () => {
         locationServices.setPermissionState(GRANTED);
       });
 
-      describe("when there is a position", () => {
+      describe("when coords can be acquired", () => {
         beforeEach(() => {
-          locationServices.setPosition(positionA);
+          locationServices.setCoordinates(coordsA);
         });
 
         describe("when reading the position", () => {
@@ -922,7 +911,10 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the position", () => {
-            expect(successCallback).toHaveBeenCalledWith(positionA);
+            expect(successCallback).toHaveBeenCalledWith({
+              coords: coordsA,
+              timestamp: expect.any(Number) as number,
+            });
           });
 
           it("does not call the error callback", () => {

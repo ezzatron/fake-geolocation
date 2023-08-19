@@ -40,7 +40,7 @@ export function createUser({
     },
 
     jumpToCoordinates(coords: StdGeolocationCoordinates) {
-      locationServices.setPosition({ coords, timestamp: Date.now() });
+      locationServices.setCoordinates(coords);
     },
   };
 }

@@ -154,32 +154,15 @@ describe("User", () => {
       user = createUser({ locationServices });
     });
 
-    describe("when permission is granted", () => {
+    describe("when jumping to coords", () => {
       beforeEach(() => {
-        user.grantGeolocationPermission();
+        user.jumpToCoordinates(coordinatesA);
       });
 
-      describe("when jumping to coordinates", () => {
-        beforeEach(() => {
-          // use fake timers so that the timestamp can be tested
-          jest.useFakeTimers({ advanceTimers: true, now: 111 });
-
-          user.jumpToCoordinates(coordinatesA);
-        });
-
-        afterEach(() => {
-          jest.useRealTimers();
-        });
-
-        it("updates the position coordinates", async () => {
-          expect((await locationServices.getPosition()).coords).toEqual(
-            coordinatesA,
-          );
-        });
-
-        it("updates the position timestamp to the current time", async () => {
-          expect((await locationServices.getPosition()).timestamp).toBe(111);
-        });
+      it("updates the coords", async () => {
+        expect(await locationServices.acquireCoordinates(true)).toEqual(
+          coordinatesA,
+        );
       });
     });
   });

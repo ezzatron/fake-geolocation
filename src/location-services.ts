@@ -1,10 +1,9 @@
 import { sleep } from "./async.js";
 import { GRANTED, PROMPT } from "./constants/permission-state.js";
-import { createPositionUnavailableError } from "./geolocation-position-error.js";
-import { createPosition } from "./geolocation-position.js";
+import { createCoordinates } from "./geolocation-coordinates.js";
 import { HandlePermissionRequest } from "./handle-permission-request.js";
 import {
-  StdGeolocationPosition,
+  StdGeolocationCoordinates,
   StdPermissionState,
   StdPermissionStatus,
 } from "./types/std.js";
@@ -12,7 +11,9 @@ import {
 export interface LocationServices {
   getPermissionState(): StdPermissionState;
   requestPermission(): Promise<boolean>;
-  getPosition(): Promise<StdGeolocationPosition>;
+  acquireCoordinates(
+    enableHighAccuracy: boolean,
+  ): Promise<StdGeolocationCoordinates | undefined>;
 }
 
 export interface MutableLocationServices extends LocationServices {
@@ -20,13 +21,15 @@ export interface MutableLocationServices extends LocationServices {
   removePermissionRequestHandler(handler: HandlePermissionRequest): void;
   setPermissionState(state: StdPermissionState): void;
   watchPermission(status: StdPermissionStatus): () => void;
-  setPosition(position: StdGeolocationPosition | undefined): void;
+  setCoordinates(coords: StdGeolocationCoordinates | undefined): void;
 }
 
-export function createLocationServices(): MutableLocationServices {
+export function createLocationServices({
+  acquireDelay = 0,
+}: { acquireDelay?: number } = {}): MutableLocationServices {
   const permissionRequestHandlers: HandlePermissionRequest[] = [];
   let permissionState: StdPermissionState = PROMPT;
-  let position: StdGeolocationPosition | undefined;
+  let coords: StdGeolocationCoordinates | undefined;
 
   return {
     addPermissionRequestHandler(handler) {
@@ -68,16 +71,14 @@ export function createLocationServices(): MutableLocationServices {
       };
     },
 
-    async getPosition() {
-      // systems should not rely on the position being available immediately
-      await sleep(0);
+    async acquireCoordinates() {
+      await sleep(acquireDelay);
 
-      if (position) return position;
-      throw createPositionUnavailableError("");
+      return coords;
     },
 
-    setPosition(nextPosition) {
-      position = nextPosition && createPosition(nextPosition);
+    setCoordinates(nextCoords) {
+      coords = nextCoords && createCoordinates(nextCoords);
     },
   };
 }
