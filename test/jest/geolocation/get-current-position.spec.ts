@@ -320,7 +320,7 @@ describe("Geolocation.getCurrentPosition()", () => {
                 successCallback,
                 errorCallback,
                 {
-                  timeout: 40,
+                  timeout: delay - 20,
                 },
               );
             });

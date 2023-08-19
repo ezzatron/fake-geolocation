@@ -9,6 +9,7 @@ import { createPosition, isHighAccuracy } from "./geolocation-position.js";
 import { LocationServices } from "./location-services.js";
 import {
   StdGeolocation,
+  StdGeolocationCoordinates,
   StdGeolocationPosition,
   StdPositionCallback,
   StdPositionErrorCallback,
@@ -333,21 +334,18 @@ export class Geolocation {
          *          during acquisition.
          */
         if (!position) {
-          const coords = await this.#locationServices.acquireCoordinates(
-            options.enableHighAccuracy,
-          );
+          let coords: StdGeolocationCoordinates;
 
-          /*
-           * 5. (cont.)
-           *    3. (cont.)
-           *       4. If the timeout elapses during acquisition, or acquiring
-           *          the device's position results in failure:
-           */
-          if (!coords) {
+          try {
+            coords = await this.#locationServices.acquireCoordinates(
+              options.enableHighAccuracy,
+            );
+          } catch {
             /*
              * 5. (cont.)
              *    3. (cont.)
-             *       4. (cont.)
+             *       4. If the timeout elapses during acquisition, or acquiring
+             *          the device's position results in failure:
              *          1. Stop the timeout.
              */
             clearTimeout(timeoutId);
@@ -366,21 +364,14 @@ export class Geolocation {
            * 5. (cont.)
            *    3. (cont.)
            *       5. If acquiring the position data from the system succeeds:
+           *          1. Set position be a new GeolocationPosition passing
+           *             acquisitionTime and options.enableHighAccuracy.
            */
-          if (coords) {
-            /*
-             * 5. (cont.)
-             *    3. (cont.)
-             *       5. (cont.)
-             *          1. Set position be a new GeolocationPosition passing
-             *             acquisitionTime and options.enableHighAccuracy.
-             */
-            position = createPosition(
-              coords,
-              acquisitionTime,
-              options.enableHighAccuracy,
-            );
-          }
+          position = createPosition(
+            coords,
+            acquisitionTime,
+            options.enableHighAccuracy,
+          );
         }
 
         /*
@@ -404,7 +395,7 @@ export class Geolocation {
          *       7. Queue a task on the geolocation task source with a step that
          *          invokes successCallback with position.
          */
-        if (position) return position;
+        return position;
       }
 
       throw GeolocationPositionError.POSITION_UNAVAILABLE;

@@ -13,7 +13,7 @@ export interface LocationServices {
   requestPermission(): Promise<boolean>;
   acquireCoordinates(
     enableHighAccuracy: boolean,
-  ): Promise<StdGeolocationCoordinates | undefined>;
+  ): Promise<StdGeolocationCoordinates>;
 }
 
 export interface MutableLocationServices extends LocationServices {
@@ -74,7 +74,8 @@ export function createLocationServices({
     async acquireCoordinates() {
       await sleep(acquireDelay);
 
-      return coords;
+      if (coords) return coords;
+      throw new Error("Unable to acquire coordinates");
     },
 
     setCoordinates(nextCoords) {
