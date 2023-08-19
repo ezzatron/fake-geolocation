@@ -308,122 +308,114 @@ export class Geolocation {
       /*
        * 5. (cont.)
        *    3. If permission is "granted":
+       *       1. Let position be null.
        */
-      if (permission.state === GRANTED) {
+      let position: StdGeolocationPosition | null = null;
+
+      /*
+       * 5. (cont.)
+       *    3. (cont.)
+       *       2. If cachedPosition is not null, and options.maximumAge is
+       *          greater than 0:
+       */
+      if (cachedPosition != null && options.maximumAge > 0) {
         /*
          * 5. (cont.)
          *    3. (cont.)
-         *       1. Let position be null.
+         *       2. (cont.)
+         *          1. Let cacheTime be acquisitionTime minus the value of the
+         *             options.maximumAge member.
          */
-        let position: StdGeolocationPosition | null = null;
+        const cacheTime = acquisitionTime - options.maximumAge;
 
         /*
          * 5. (cont.)
          *    3. (cont.)
-         *       2. If cachedPosition is not null, and options.maximumAge is
-         *          greater than 0:
+         *       2. (cont.)
+         *          2. If cachedPosition's timestamp's value is greater than
+         *             cacheTime, and cachedPosition.[[isHighAccuracy]] equals
+         *             options.enableHighAccuracy, set position to
+         *             cachedPosition.
          */
-        if (cachedPosition != null && options.maximumAge > 0) {
-          /*
-           * 5. (cont.)
-           *    3. (cont.)
-           *       2. (cont.)
-           *          1. Let cacheTime be acquisitionTime minus the value of the
-           *             options.maximumAge member.
-           */
-          const cacheTime = acquisitionTime - options.maximumAge;
-
-          /*
-           * 5. (cont.)
-           *    3. (cont.)
-           *       2. (cont.)
-           *          2. If cachedPosition's timestamp's value is greater than
-           *             cacheTime, and cachedPosition.[[isHighAccuracy]] equals
-           *             options.enableHighAccuracy, set position to
-           *             cachedPosition.
-           */
-          if (
-            cachedPosition.timestamp > cacheTime &&
-            isHighAccuracy(cachedPosition) === options.enableHighAccuracy
-          ) {
-            position = cachedPosition;
-          }
+        if (
+          cachedPosition.timestamp > cacheTime &&
+          isHighAccuracy(cachedPosition) === options.enableHighAccuracy
+        ) {
+          position = cachedPosition;
         }
-
-        /*
-         * 5. (cont.)
-         *    3. (cont.)
-         *       3. Otherwise, if position is not cachedPosition, try to acquire
-         *          position data from the underlying system, optionally taking
-         *          into consideration the value of options.enableHighAccuracy
-         *          during acquisition.
-         */
-        if (!position) {
-          let coords: StdGeolocationCoordinates;
-
-          try {
-            coords = await this.#locationServices.acquireCoordinates(
-              options.enableHighAccuracy,
-            );
-          } catch {
-            /*
-             * 5. (cont.)
-             *    3. (cont.)
-             *       4. If the timeout elapses during acquisition, or acquiring
-             *          the device's position results in failure:
-             *          1. Stop the timeout.
-             */
-            clearTimeout(timeoutId);
-
-            /*
-             * 5. (cont.)
-             *    3. (cont.)
-             *       4. (cont.)
-             *          2. Go to dealing with failures.
-             *          3. Terminate this algorithm.
-             */
-            throw GeolocationPositionError.POSITION_UNAVAILABLE;
-          }
-
-          /*
-           * 5. (cont.)
-           *    3. (cont.)
-           *       5. If acquiring the position data from the system succeeds:
-           *          1. Set position be a new GeolocationPosition passing
-           *             acquisitionTime and options.enableHighAccuracy.
-           */
-          position = createPosition(
-            coords,
-            acquisitionTime,
-            options.enableHighAccuracy,
-          );
-        }
-
-        /*
-         * 5. (cont.)
-         *    3. (cont.)
-         *       5. (cont.)
-         *          2. Set this's [[cachedPosition]] to position.
-         */
-        this.#cachedPosition = position;
-
-        /*
-         * 5. (cont.)
-         *    3. (cont.)
-         *       6. Stop the timeout.
-         */
-        clearTimeout(timeoutId);
-
-        /*
-         * 5. (cont.)
-         *    3. (cont.)
-         *       7. Queue a task on the geolocation task source with a step that
-         *          invokes successCallback with position.
-         */
-        return position;
       }
 
-      throw GeolocationPositionError.POSITION_UNAVAILABLE;
+      /*
+       * 5. (cont.)
+       *    3. (cont.)
+       *       3. Otherwise, if position is not cachedPosition, try to acquire
+       *          position data from the underlying system, optionally taking
+       *          into consideration the value of options.enableHighAccuracy
+       *          during acquisition.
+       */
+      if (!position) {
+        let coords: StdGeolocationCoordinates;
+
+        try {
+          coords = await this.#locationServices.acquireCoordinates(
+            options.enableHighAccuracy,
+          );
+        } catch {
+          /*
+           * 5. (cont.)
+           *    3. (cont.)
+           *       4. If the timeout elapses during acquisition, or acquiring
+           *          the device's position results in failure:
+           *          1. Stop the timeout.
+           */
+          clearTimeout(timeoutId);
+
+          /*
+           * 5. (cont.)
+           *    3. (cont.)
+           *       4. (cont.)
+           *          2. Go to dealing with failures.
+           *          3. Terminate this algorithm.
+           */
+          throw GeolocationPositionError.POSITION_UNAVAILABLE;
+        }
+
+        /*
+         * 5. (cont.)
+         *    3. (cont.)
+         *       5. If acquiring the position data from the system succeeds:
+         *          1. Set position be a new GeolocationPosition passing
+         *             acquisitionTime and options.enableHighAccuracy.
+         */
+        position = createPosition(
+          coords,
+          acquisitionTime,
+          options.enableHighAccuracy,
+        );
+      }
+
+      /*
+       * 5. (cont.)
+       *    3. (cont.)
+       *       5. (cont.)
+       *          2. Set this's [[cachedPosition]] to position.
+       */
+      this.#cachedPosition = position;
+
+      /*
+       * 5. (cont.)
+       *    3. (cont.)
+       *       6. Stop the timeout.
+       */
+      clearTimeout(timeoutId);
+
+      /*
+       * 5. (cont.)
+       *    3. (cont.)
+       *       7. Queue a task on the geolocation task source with a step that
+       *          invokes successCallback with position.
+       */
+      return position;
     })();
 
     const tasks = [workTask];
