@@ -49,6 +49,8 @@ describe("Geolocation.getCurrentPosition()", () => {
   let errorCallback: jest.Mock;
 
   beforeEach(() => {
+    jest.setSystemTime(111);
+
     successCallback = jest.fn();
     errorCallback = jest.fn();
   });
@@ -287,7 +289,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             it("calls the success callback with the position", () => {
               expect(successCallback).toHaveBeenCalledWith({
                 coords: coordsA,
-                timestamp: expect.any(Number) as number,
+                timestamp: 111,
               });
             });
 
@@ -323,7 +325,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             it("does not include the time spent waiting for permission in the timeout", () => {
               expect(successCallback).toHaveBeenCalledWith({
                 coords: coordsA,
-                timestamp: expect.any(Number) as number,
+                timestamp: 131,
               });
             });
           });
@@ -401,7 +403,7 @@ describe("Geolocation.getCurrentPosition()", () => {
               it("uses the response from the original handler", () => {
                 expect(successCallback).toHaveBeenCalledWith({
                   coords: coordsA,
-                  timestamp: expect.any(Number) as number,
+                  timestamp: 111,
                 });
               });
             });
@@ -429,7 +431,7 @@ describe("Geolocation.getCurrentPosition()", () => {
               it("uses the response from the newly-added handler", () => {
                 expect(successCallback).toHaveBeenCalledWith({
                   coords: coordsA,
-                  timestamp: expect.any(Number) as number,
+                  timestamp: 111,
                 });
               });
             });
@@ -461,7 +463,7 @@ describe("Geolocation.getCurrentPosition()", () => {
               it("uses the response from the original handler", () => {
                 expect(successCallback).toHaveBeenCalledWith({
                   coords: coordsA,
-                  timestamp: expect.any(Number) as number,
+                  timestamp: 111,
                 });
               });
             });
@@ -493,7 +495,7 @@ describe("Geolocation.getCurrentPosition()", () => {
               it("uses the response from the newly-added handler", () => {
                 expect(successCallback).toHaveBeenCalledWith({
                   coords: coordsA,
-                  timestamp: expect.any(Number) as number,
+                  timestamp: 111,
                 });
               });
             });
@@ -681,7 +683,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           it("calls the success callback with the position", () => {
             expect(successCallback).toHaveBeenCalledWith({
               coords: coordsA,
-              timestamp: expect.any(Number) as number,
+              timestamp: 111,
             });
           });
 
@@ -707,7 +709,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             it("calls the success callback with the new position", () => {
               expect(successCallback).toHaveBeenCalledWith({
                 coords: coordsB,
-                timestamp: expect.any(Number) as number,
+                timestamp: 111,
               });
             });
 
@@ -737,7 +739,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             it("calls the success callback with the position", () => {
               expect(successCallback).toHaveBeenCalledWith({
                 coords: coordsA,
-                timestamp: expect.any(Number) as number,
+                timestamp: 111,
               });
             });
           });
@@ -913,7 +915,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           it("calls the success callback with the position", () => {
             expect(successCallback).toHaveBeenCalledWith({
               coords: coordsA,
-              timestamp: expect.any(Number) as number,
+              timestamp: 111,
             });
           });
 

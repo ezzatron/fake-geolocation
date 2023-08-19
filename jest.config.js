@@ -16,9 +16,14 @@ const config = {
     ],
   },
   testMatch: [isTestFile ? "**/*.spec.ts" : "<rootDir>/test/**/*.spec.*"],
-  resetMocks: true,
-  collectCoverageFrom: ["<rootDir>/src/**/*"],
   coverageDirectory: "artifacts/coverage/jest",
+  collectCoverageFrom: ["<rootDir>/src/**/*"],
+
+  resetMocks: true,
+  fakeTimers: {
+    advanceTimers: true,
+    enableGlobally: true,
+  },
 };
 
 export default config;
