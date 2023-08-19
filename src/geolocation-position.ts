@@ -41,3 +41,7 @@ export class GeolocationPosition {
 }
 
 GeolocationPosition satisfies new (...args: never[]) => StdGeolocationPosition;
+
+export function isHighAccuracy(position: StdGeolocationPosition) {
+  return IS_HIGH_ACCURACY in position && position[IS_HIGH_ACCURACY];
+}

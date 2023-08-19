@@ -43,6 +43,7 @@ const coordsB: StdGeolocationCoordinates = {
 };
 
 describe("Geolocation.getCurrentPosition()", () => {
+  const startTime = 100;
   let locationServices: MutableLocationServices;
   let geolocation: StdGeolocation;
 
@@ -50,7 +51,7 @@ describe("Geolocation.getCurrentPosition()", () => {
   let errorCallback: jest.Mock;
 
   beforeEach(() => {
-    jest.setSystemTime(111);
+    jest.setSystemTime(startTime);
 
     successCallback = jest.fn();
     errorCallback = jest.fn();
@@ -161,7 +162,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           beforeEach(() => {
             handlePermissionRequestA.mockImplementation(
               async (): Promise<StdPermissionState> => {
-                await sleep(20);
+                await sleep(60);
 
                 return PROMPT;
               },
@@ -175,7 +176,7 @@ describe("Geolocation.getCurrentPosition()", () => {
                 successCallback,
                 errorCallback,
                 {
-                  timeout: 10,
+                  timeout: 40,
                 },
               );
             });
@@ -236,7 +237,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           beforeEach(() => {
             handlePermissionRequestA.mockImplementation(
               async (): Promise<StdPermissionState> => {
-                await sleep(20);
+                await sleep(60);
 
                 return DENIED;
               },
@@ -250,7 +251,7 @@ describe("Geolocation.getCurrentPosition()", () => {
                 successCallback,
                 errorCallback,
                 {
-                  timeout: 10,
+                  timeout: 40,
                 },
               );
             });
@@ -289,7 +290,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
             it("calls the success callback with the position", () => {
               expect(successCallback).toHaveBeenCalledWith(
-                createPosition(coordsA, 111, false),
+                createPosition(coordsA, startTime, false),
               );
             });
 
@@ -300,10 +301,12 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
 
         describe("when the handler grants the permission after a delay", () => {
+          const delay = 60;
+
           beforeEach(() => {
             handlePermissionRequestA.mockImplementation(
               async (): Promise<StdPermissionState> => {
-                await sleep(20);
+                await sleep(delay);
 
                 return GRANTED;
               },
@@ -317,14 +320,14 @@ describe("Geolocation.getCurrentPosition()", () => {
                 successCallback,
                 errorCallback,
                 {
-                  timeout: 10,
+                  timeout: 40,
                 },
               );
             });
 
             it("does not include the time spent waiting for permission in the timeout", () => {
               expect(successCallback).toHaveBeenCalledWith(
-                createPosition(coordsA, 131, false),
+                createPosition(coordsA, startTime + delay, false),
               );
             });
           });
@@ -401,7 +404,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
               it("uses the response from the original handler", () => {
                 expect(successCallback).toHaveBeenCalledWith(
-                  createPosition(coordsA, 111, false),
+                  createPosition(coordsA, startTime, false),
                 );
               });
             });
@@ -428,7 +431,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
               it("uses the response from the newly-added handler", () => {
                 expect(successCallback).toHaveBeenCalledWith(
-                  createPosition(coordsA, 111, false),
+                  createPosition(coordsA, startTime, false),
                 );
               });
             });
@@ -459,7 +462,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
               it("uses the response from the original handler", () => {
                 expect(successCallback).toHaveBeenCalledWith(
-                  createPosition(coordsA, 111, false),
+                  createPosition(coordsA, startTime, false),
                 );
               });
             });
@@ -490,7 +493,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
               it("uses the response from the newly-added handler", () => {
                 expect(successCallback).toHaveBeenCalledWith(
-                  createPosition(coordsA, 111, false),
+                  createPosition(coordsA, startTime, false),
                 );
               });
             });
@@ -677,7 +680,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
           it("calls the success callback with the position", () => {
             expect(successCallback).toHaveBeenCalledWith(
-              createPosition(coordsA, 111, false),
+              createPosition(coordsA, startTime, false),
             );
           });
 
@@ -702,7 +705,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
             it("calls the success callback with the new position", () => {
               expect(successCallback).toHaveBeenCalledWith(
-                createPosition(coordsB, 111, false),
+                createPosition(coordsB, startTime, false),
               );
             });
 
@@ -731,7 +734,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
             it("calls the success callback with the position", () => {
               expect(successCallback).toHaveBeenCalledWith(
-                createPosition(coordsA, 111, false),
+                createPosition(coordsA, startTime, false),
               );
             });
           });
@@ -906,7 +909,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
           it("calls the success callback with the position", () => {
             expect(successCallback).toHaveBeenCalledWith(
-              createPosition(coordsA, 111, false),
+              createPosition(coordsA, startTime, false),
             );
           });
 
