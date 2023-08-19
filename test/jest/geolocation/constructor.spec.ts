@@ -1,4 +1,13 @@
 import {
+  Permissions,
+  User as PermissionsUser,
+  createPermissionStore,
+  createPermissions,
+  createUser as createPermissionsUser,
+} from "fake-permissions";
+import { GEOLOCATION } from "fake-permissions/constants/permission-name";
+import { PROMPT } from "fake-permissions/constants/permission-state";
+import {
   MutableLocationServices,
   createGeolocation,
   createLocationServices,
@@ -7,11 +16,24 @@ import { StdGeolocation } from "../../../src/types/std.js";
 
 describe("Geolocation", () => {
   let locationServices: MutableLocationServices;
+  let permissions: Permissions<typeof GEOLOCATION>;
+  let permissionsUser: PermissionsUser<typeof GEOLOCATION>;
   let geolocation: StdGeolocation;
 
   beforeEach(() => {
     locationServices = createLocationServices();
-    geolocation = createGeolocation({ locationServices });
+
+    const permissionStore = createPermissionStore({
+      initialStates: new Map([[{ name: GEOLOCATION }, PROMPT]]),
+    });
+    permissions = createPermissions({ permissionStore });
+    permissionsUser = createPermissionsUser({ permissionStore });
+
+    geolocation = createGeolocation({
+      locationServices,
+      permissions,
+      permissionsUser,
+    });
   });
 
   it("cannot be instantiated directly", () => {

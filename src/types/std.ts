@@ -5,6 +5,3 @@ export type StdGeolocationPositionError = globalThis.GeolocationPositionError;
 export type StdPositionCallback = globalThis.PositionCallback;
 export type StdPositionErrorCallback = globalThis.PositionErrorCallback;
 export type StdPositionOptions = globalThis.PositionOptions;
-
-export type StdPermissionState = globalThis.PermissionState;
-export type StdPermissionStatus = globalThis.PermissionStatus;

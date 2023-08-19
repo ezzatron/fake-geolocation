@@ -1,4 +1,10 @@
-import { GRANTED } from "./constants/permission-state.js";
+import {
+  PermissionDescriptor,
+  Permissions,
+  User as PermissionsUser,
+} from "fake-permissions";
+import { GEOLOCATION } from "fake-permissions/constants/permission-name";
+import { DENIED, GRANTED } from "fake-permissions/constants/permission-state";
 import {
   GeolocationPositionError,
   createPermissionDeniedError,
@@ -18,6 +24,8 @@ import {
 
 type GeolocationParameters = {
   locationServices: LocationServices;
+  permissions: Permissions<typeof GEOLOCATION>;
+  permissionsUser: PermissionsUser<typeof GEOLOCATION>;
 };
 
 let canConstruct = false;
@@ -31,11 +39,17 @@ export function createGeolocation(
 }
 
 export class Geolocation {
-  constructor({ locationServices }: GeolocationParameters) {
+  constructor({
+    locationServices,
+    permissions,
+    permissionsUser,
+  }: GeolocationParameters) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
     this.#locationServices = locationServices;
+    this.#permissions = permissions;
+    this.#permissionsUser = permissionsUser;
     this.#cachedPosition = null;
     this.#watchIds = [];
   }
@@ -146,10 +160,21 @@ export class Geolocation {
     /*
      * 5. Let descriptor be a new PermissionDescriptor whose name is
      *    "geolocation".
+     */
+    const descriptor: PermissionDescriptor<typeof GEOLOCATION> = {
+      name: GEOLOCATION,
+    };
+
+    /*
      * 6. Set permission to request permission to use descriptor.
+     */
+    await this.#permissionsUser.requestPermission(descriptor);
+    const permission = await this.#permissions.query(descriptor);
+
+    /*
      * 7. If permission is "denied", then:
      */
-    if (!(await this.#locationServices.requestPermission())) {
+    if (permission.state === DENIED) {
       /*
        * 7. (cont.)
        *    1. If watchId was passed, remove watchId from watchIDs.
@@ -258,13 +283,13 @@ export class Geolocation {
        *    1. Let permission be get the current permission state of
        *       "geolocation".
        */
-      const permission = this.#locationServices.getPermissionState();
+      const permission = await this.#permissions.query({ name: GEOLOCATION });
 
       /*
        * 5. (cont.)
        *    2. If permission is "denied":
        */
-      if (permission !== GRANTED) {
+      if (permission.state !== GRANTED) {
         /*
          * 5. (cont.)
          *    2. (cont.)
@@ -284,7 +309,7 @@ export class Geolocation {
        * 5. (cont.)
        *    3. If permission is "granted":
        */
-      if (permission === GRANTED) {
+      if (permission.state === GRANTED) {
         /*
          * 5. (cont.)
          *    3. (cont.)
@@ -442,6 +467,8 @@ export class Geolocation {
   }
 
   #locationServices: LocationServices;
+  #permissions: Permissions<typeof GEOLOCATION>;
+  #permissionsUser: PermissionsUser<typeof GEOLOCATION>;
   #cachedPosition: GeolocationPosition | null;
   #watchIds: number[];
 }
