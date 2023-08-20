@@ -1,3 +1,6 @@
+import { createPermissionStore } from "fake-permissions";
+import { GEOLOCATION } from "fake-permissions/constants/permission-name";
+import { PROMPT } from "fake-permissions/constants/permission-state";
 import {
   MutableLocationServices,
   User,
@@ -22,7 +25,12 @@ describe("User", () => {
 
   beforeEach(() => {
     locationServices = createLocationServices();
-    user = createUser({ locationServices });
+
+    const permissionStore = createPermissionStore({
+      initialStates: new Map([[{ name: GEOLOCATION }, PROMPT]]),
+    });
+
+    user = createUser({ locationServices, permissionStore });
   });
 
   describe("when jumping to coords", () => {

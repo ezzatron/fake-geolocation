@@ -1,23 +1,23 @@
 import {
   Permissions,
-  User as PermissionsUser,
   createPermissionStore,
   createPermissions,
-  createUser as createPermissionsUser,
 } from "fake-permissions";
 import { GEOLOCATION } from "fake-permissions/constants/permission-name";
 import { PROMPT } from "fake-permissions/constants/permission-state";
 import {
   MutableLocationServices,
+  User,
   createGeolocation,
   createLocationServices,
+  createUser,
 } from "../../../src/index.js";
 import { StdGeolocation } from "../../../src/types/std.js";
 
 describe("Geolocation", () => {
   let locationServices: MutableLocationServices;
   let permissions: Permissions<typeof GEOLOCATION>;
-  let permissionsUser: PermissionsUser<typeof GEOLOCATION>;
+  let user: User;
   let geolocation: StdGeolocation;
 
   beforeEach(() => {
@@ -27,11 +27,12 @@ describe("Geolocation", () => {
       initialStates: new Map([[{ name: GEOLOCATION }, PROMPT]]),
     });
     permissions = createPermissions({ permissionStore });
-    permissionsUser = createPermissionsUser({ permissionStore });
+
+    user = createUser({ locationServices, permissionStore });
 
     geolocation = createGeolocation({
       async requestPermission(descriptor) {
-        return permissionsUser.requestPermission(descriptor);
+        return user.requestPermission(descriptor);
       },
 
       locationServices,
