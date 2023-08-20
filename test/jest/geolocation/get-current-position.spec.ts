@@ -80,9 +80,12 @@ describe("Geolocation.getCurrentPosition()", () => {
     });
 
     geolocation = createGeolocation({
+      async requestPermission(descriptor) {
+        return permissionsUser.requestPermission(descriptor);
+      },
+
       locationServices,
       permissions,
-      permissionsUser,
     });
 
     successCallback = jest.fn();

@@ -1,7 +1,7 @@
 import {
+  HandlePermissionRequest,
   PermissionDescriptor,
   Permissions,
-  User as PermissionsUser,
 } from "fake-permissions";
 import { GEOLOCATION } from "fake-permissions/constants/permission-name";
 import { DENIED, GRANTED } from "fake-permissions/constants/permission-state";
@@ -25,7 +25,7 @@ import {
 type GeolocationParameters = {
   locationServices: LocationServices;
   permissions: Permissions<typeof GEOLOCATION>;
-  permissionsUser: PermissionsUser<typeof GEOLOCATION>;
+  requestPermission: HandlePermissionRequest<typeof GEOLOCATION>;
 };
 
 let canConstruct = false;
@@ -42,14 +42,14 @@ export class Geolocation {
   constructor({
     locationServices,
     permissions,
-    permissionsUser,
+    requestPermission,
   }: GeolocationParameters) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
     this.#locationServices = locationServices;
     this.#permissions = permissions;
-    this.#permissionsUser = permissionsUser;
+    this.#requestPermission = requestPermission;
     this.#cachedPosition = null;
     this.#watchIds = [];
   }
@@ -168,13 +168,12 @@ export class Geolocation {
     /*
      * 6. Set permission to request permission to use descriptor.
      */
-    await this.#permissionsUser.requestPermission(descriptor);
-    const permission = await this.#permissions.query(descriptor);
+    const permission = await this.#requestPermission(descriptor);
 
     /*
      * 7. If permission is "denied", then:
      */
-    if (permission.state === DENIED) {
+    if (permission === DENIED) {
       /*
        * 7. (cont.)
        *    1. If watchId was passed, remove watchId from watchIDs.
@@ -460,7 +459,7 @@ export class Geolocation {
 
   #locationServices: LocationServices;
   #permissions: Permissions<typeof GEOLOCATION>;
-  #permissionsUser: PermissionsUser<typeof GEOLOCATION>;
+  #requestPermission: HandlePermissionRequest<typeof GEOLOCATION>;
   #cachedPosition: GeolocationPosition | null;
   #watchIds: number[];
 }

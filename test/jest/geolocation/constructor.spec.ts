@@ -30,9 +30,12 @@ describe("Geolocation", () => {
     permissionsUser = createPermissionsUser({ permissionStore });
 
     geolocation = createGeolocation({
+      async requestPermission(descriptor) {
+        return permissionsUser.requestPermission(descriptor);
+      },
+
       locationServices,
       permissions,
-      permissionsUser,
     });
   });
 
