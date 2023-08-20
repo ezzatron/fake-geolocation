@@ -168,12 +168,13 @@ export class Geolocation {
     /*
      * 6. Set permission to request permission to use descriptor.
      */
-    const permission = await this.#requestPermission(descriptor);
+    await this.#requestPermission(descriptor);
+    const permission = await this.#permissions.query(descriptor);
 
     /*
      * 7. If permission is "denied", then:
      */
-    if (permission === DENIED) {
+    if (permission.state === DENIED) {
       /*
        * 7. (cont.)
        *    1. If watchId was passed, remove watchId from watchIDs.
