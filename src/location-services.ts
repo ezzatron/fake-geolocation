@@ -21,7 +21,7 @@ export function createLocationServices({
     async acquireCoordinates() {
       await sleep(acquireDelay);
 
-      if (coords) return coords;
+      if (coords) return createCoordinates(coords);
       throw new Error("Unable to acquire coordinates");
     },
 

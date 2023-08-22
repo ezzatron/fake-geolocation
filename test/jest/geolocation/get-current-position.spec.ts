@@ -597,6 +597,204 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
       });
     });
+
+    describe("when reading the position with a maximum age of Infinity", () => {
+      beforeEach(async () => {
+        locationServices.setCoordinates(coordsA);
+      });
+
+      describe("when there is a cached high accuracy position", () => {
+        let cachedPosition: StdGeolocationPosition;
+
+        beforeEach(async () => {
+          await getCurrentPosition(
+            geolocation,
+            (position) => {
+              cachedPosition = position;
+            },
+            undefined,
+            {
+              enableHighAccuracy: true,
+            },
+          );
+
+          locationServices.setCoordinates(coordsB);
+        });
+
+        it("has cached the position", () => {
+          expect(cachedPosition).toMatchObject(
+            createPosition(coordsA, startTime, true),
+          );
+        });
+
+        describe("when reading the position with high accuracy", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: Infinity, enableHighAccuracy: true },
+            );
+          });
+
+          it("calls the success callback with the cached position", () => {
+            expect(successCallback).toHaveBeenCalledWith(cachedPosition);
+            expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+          });
+        });
+
+        describe("when reading the position with low accuracy", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: Infinity, enableHighAccuracy: false },
+            );
+          });
+
+          it("calls the success callback with the cached position", () => {
+            expect(successCallback).toHaveBeenCalledWith(cachedPosition);
+            expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+          });
+        });
+
+        describe("when reading the position with a timeout of 0", () => {
+          describe("when reading the position with high accuracy", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { maximumAge: Infinity, timeout: 0, enableHighAccuracy: true },
+              );
+            });
+
+            it("calls the success callback with the cached position", () => {
+              expect(successCallback).toHaveBeenCalledWith(cachedPosition);
+              expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+            });
+          });
+
+          describe("when reading the position with low accuracy", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { maximumAge: Infinity, timeout: 0, enableHighAccuracy: false },
+              );
+            });
+
+            it("calls the success callback with the cached position", () => {
+              expect(successCallback).toHaveBeenCalledWith(cachedPosition);
+              expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+            });
+          });
+        });
+      });
+
+      describe("when there is a cached low accuracy position", () => {
+        let cachedPosition: StdGeolocationPosition;
+
+        beforeEach(async () => {
+          await getCurrentPosition(
+            geolocation,
+            (position) => {
+              cachedPosition = position;
+            },
+            undefined,
+            {
+              enableHighAccuracy: false,
+            },
+          );
+
+          locationServices.setCoordinates(coordsB);
+        });
+
+        it("has cached the position", () => {
+          expect(cachedPosition).toMatchObject(
+            createPosition(coordsA, startTime, false),
+          );
+        });
+
+        describe("when reading the position with high accuracy", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: Infinity, enableHighAccuracy: true },
+            );
+          });
+
+          it("calls the success callback with a new position", () => {
+            expect(successCallback).toHaveBeenCalledWith(
+              createPosition(coordsB, startTime + 20, true),
+            );
+          });
+        });
+
+        describe("when reading the position with low accuracy", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: Infinity, enableHighAccuracy: false },
+            );
+          });
+
+          it("calls the success callback with the cached position", () => {
+            expect(cachedPosition).toMatchObject({ coords: coordsA });
+            expect(successCallback).toHaveBeenCalledWith(cachedPosition);
+            expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+          });
+        });
+
+        describe("when reading the position with a timeout of 0", () => {
+          describe("when reading the position with high accuracy", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { maximumAge: Infinity, timeout: 0, enableHighAccuracy: true },
+              );
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
+              expect(errorCallback).toHaveBeenCalled();
+              expect(errorCallback.mock.calls[0][0]).toBeDefined();
+
+              const error = errorCallback.mock
+                .calls[0][0] as GeolocationPositionError;
+
+              expect(error).toBeInstanceOf(GeolocationPositionError);
+              expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
+              expect(error.message).toBe("");
+            });
+          });
+
+          describe("when reading the position with low accuracy", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { maximumAge: Infinity, timeout: 0, enableHighAccuracy: false },
+              );
+            });
+
+            it("calls the success callback with the cached position", () => {
+              expect(cachedPosition).toMatchObject({ coords: coordsA });
+              expect(successCallback).toHaveBeenCalledWith(cachedPosition);
+              expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+            });
+          });
+        });
+      });
+    });
   });
 
   describe("when reading the position will result in an error", () => {
