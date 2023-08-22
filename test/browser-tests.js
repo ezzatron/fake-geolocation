@@ -123,3 +123,88 @@ async function timestampIsBasedOnAcquireTime() {
     deltaDelta: receiveTime - acquireTime - (position.timestamp - acquireTime),
   });
 }
+
+/**
+ * This test shows that there is only one cached position, and that the cached
+ * position is only used if its highAccuracy value matches
+ * options.enableHighAccuracy.
+ *
+ * Results:
+ *
+ * - Firefox will use a cached high accuracy position even if you ask for a low
+ *   accuracy one. It will not use a cached low accuracy position if you ask for
+ *   a high accuracy one.
+ * - All other browsers tested seem to completely ignore the accuracy of the
+ *   cached position. You will get a cached position if there is one, regardless
+ *   of the accuracy you request.
+ */
+async function singularCachedPosition() {
+  // cache a low accuracy position
+  const positionA = await new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        resolve(p);
+      },
+      (e) => {
+        reject(e);
+      },
+      { enableHighAccuracy: false },
+    );
+  });
+  console.log({ positionA });
+
+  // sleep for 1ms
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1);
+  });
+
+  // get a high accuracy position with maximumAge = Infinity
+  const positionB = await new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        resolve(p);
+      },
+      (e) => {
+        reject(e);
+      },
+      { enableHighAccuracy: true, maximumAge: Infinity },
+    );
+  });
+  console.log({ positionB });
+
+  // sleep for 1ms
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1);
+  });
+
+  // get a low accuracy position with maximumAge = Infinity
+  const positionC = await new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        resolve(p);
+      },
+      (e) => {
+        reject(e);
+      },
+      { enableHighAccuracy: false, maximumAge: Infinity },
+    );
+  });
+  console.log({ positionC });
+
+  // check that the second position was not cached
+  if (positionB.timestamp === positionA.timestamp) {
+    console.error("❌ Position was cached");
+  } else {
+    console.log("✅ Position was not cached");
+  }
+
+  // check that the third position was not cached
+  if (
+    positionC.timestamp === positionA.timestamp ||
+    positionC.timestamp === positionB.timestamp
+  ) {
+    console.error("❌ Position was cached");
+  } else {
+    console.log("✅ Position was not cached");
+  }
+}
