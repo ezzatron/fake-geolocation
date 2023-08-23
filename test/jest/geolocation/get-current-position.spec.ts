@@ -13,12 +13,14 @@ import {
 } from "fake-permissions/constants/permission-state";
 import { sleep } from "../../../src/async.js";
 import {
-  GeolocationPositionError,
   MutableLocationServices,
   User,
   createGeolocation,
   createLocationServices,
+  createPermissionDeniedError,
   createPosition,
+  createPositionUnavailableError,
+  createTimeoutError,
   createUser,
 } from "../../../src/index.js";
 import {
@@ -29,6 +31,7 @@ import {
   StdPositionErrorCallback,
   StdPositionOptions,
 } from "../../../src/types/std.js";
+import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
 
 const coordsA: StdGeolocationCoordinates = {
   latitude: 40.71703581534977,
@@ -118,19 +121,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
-            expect(errorCallback).toHaveBeenCalled();
-            expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-            const error = errorCallback.mock
-              .calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
-            expect(error.message).toBe("");
-          });
-
-          it("does not call the success callback", () => {
-            expect(successCallback).not.toHaveBeenCalled();
+            expectGeolocationError(
+              successCallback,
+              errorCallback,
+              createPermissionDeniedError(""),
+            );
           });
         });
       });
@@ -159,15 +154,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
-            expect(errorCallback).toHaveBeenCalled();
-            expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-            const error = errorCallback.mock
-              .calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
-            expect(error.message).toBe("");
+            expectGeolocationError(
+              successCallback,
+              errorCallback,
+              createPermissionDeniedError(""),
+            );
           });
         });
       });
@@ -187,19 +178,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
-            expect(errorCallback).toHaveBeenCalled();
-            expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-            const error = errorCallback.mock
-              .calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
-            expect(error.message).toBe("");
-          });
-
-          it("does not call the success callback", () => {
-            expect(successCallback).not.toHaveBeenCalled();
+            expectGeolocationError(
+              successCallback,
+              errorCallback,
+              createPermissionDeniedError(""),
+            );
           });
         });
       });
@@ -228,15 +211,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
-            expect(errorCallback).toHaveBeenCalled();
-            expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-            const error = errorCallback.mock
-              .calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
-            expect(error.message).toBe("");
+            expectGeolocationError(
+              successCallback,
+              errorCallback,
+              createPermissionDeniedError(""),
+            );
           });
         });
       });
@@ -256,13 +235,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the position", () => {
-            expect(successCallback).toHaveBeenCalledWith(
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
               createPosition(coordsA, startTime, false),
             );
-          });
-
-          it("does not call the error callback", () => {
-            expect(errorCallback).not.toHaveBeenCalled();
           });
         });
       });
@@ -321,21 +298,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
-            expect(errorCallback).toHaveBeenCalled();
-            expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-            const error = errorCallback.mock
-              .calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(
-              GeolocationPositionError.POSITION_UNAVAILABLE,
+            expectGeolocationError(
+              successCallback,
+              errorCallback,
+              createPositionUnavailableError(""),
             );
-            expect(error.message).toBe("");
-          });
-
-          it("does not call the success callback", () => {
-            expect(successCallback).not.toHaveBeenCalled();
           });
         });
       });
@@ -353,19 +320,11 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
-        expect(errorCallback).toHaveBeenCalled();
-        expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-        const error = errorCallback.mock
-          .calls[0][0] as GeolocationPositionError;
-
-        expect(error).toBeInstanceOf(GeolocationPositionError);
-        expect(error.code).toBe(GeolocationPositionError.PERMISSION_DENIED);
-        expect(error.message).toBe("");
-      });
-
-      it("does not call the success callback", () => {
-        expect(successCallback).not.toHaveBeenCalled();
+        expectGeolocationError(
+          successCallback,
+          errorCallback,
+          createPermissionDeniedError(""),
+        );
       });
     });
   });
@@ -388,17 +347,11 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
 
         it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
-          expect(errorCallback).toHaveBeenCalled();
-          expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-          const error = errorCallback.mock
-            .calls[0][0] as GeolocationPositionError;
-
-          expect(error).toBeInstanceOf(GeolocationPositionError);
-          expect(error.code).toBe(
-            GeolocationPositionError.POSITION_UNAVAILABLE,
+          expectGeolocationError(
+            successCallback,
+            errorCallback,
+            createPositionUnavailableError(""),
           );
-          expect(error.message).toBe("");
         });
       });
     });
@@ -414,21 +367,11 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
 
         it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
-          expect(errorCallback).toHaveBeenCalled();
-          expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-          const error = errorCallback.mock
-            .calls[0][0] as GeolocationPositionError;
-
-          expect(error).toBeInstanceOf(GeolocationPositionError);
-          expect(error.code).toBe(
-            GeolocationPositionError.POSITION_UNAVAILABLE,
+          expectGeolocationError(
+            successCallback,
+            errorCallback,
+            createPositionUnavailableError(""),
           );
-          expect(error.message).toBe("");
-        });
-
-        it("does not call the success callback", () => {
-          expect(successCallback).not.toHaveBeenCalled();
         });
       });
     });
@@ -453,13 +396,11 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
 
         it("calls the success callback with the position", () => {
-          expect(successCallback).toHaveBeenCalledWith(
+          expectGeolocationSuccess(
+            successCallback,
+            errorCallback,
             createPosition(coordsA, startTime, false),
           );
-        });
-
-        it("does not call the error callback", () => {
-          expect(errorCallback).not.toHaveBeenCalled();
         });
       });
 
@@ -478,13 +419,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the new position", () => {
-            expect(successCallback).toHaveBeenCalledWith(
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
               createPosition(coordsB, startTime, false),
             );
-          });
-
-          it("does not call the error callback", () => {
-            expect(errorCallback).not.toHaveBeenCalled();
           });
         });
       });
@@ -507,7 +446,9 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the position", () => {
-            expect(successCallback).toHaveBeenCalledWith(
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
               createPosition(coordsA, startTime, false),
             );
           });
@@ -528,17 +469,11 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", async () => {
-            expect(errorCallback).toHaveBeenCalled();
-            expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-            const error = errorCallback.mock
-              .calls[0][0] as GeolocationPositionError;
-
-            expect(error).toBeInstanceOf(GeolocationPositionError);
-            expect(error.code).toBe(
-              GeolocationPositionError.POSITION_UNAVAILABLE,
+            expectGeolocationError(
+              successCallback,
+              errorCallback,
+              createPositionUnavailableError(""),
             );
-            expect(error.message).toBe("");
           });
         });
       });
@@ -558,15 +493,11 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
 
         it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
-          expect(errorCallback).toHaveBeenCalled();
-          expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-          const error = errorCallback.mock
-            .calls[0][0] as GeolocationPositionError;
-
-          expect(error).toBeInstanceOf(GeolocationPositionError);
-          expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
-          expect(error.message).toBe("");
+          expectGeolocationError(
+            successCallback,
+            errorCallback,
+            createTimeoutError(""),
+          );
         });
       });
 
@@ -585,15 +516,11 @@ describe("Geolocation.getCurrentPosition()", () => {
         });
 
         it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
-          expect(errorCallback).toHaveBeenCalled();
-          expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-          const error = errorCallback.mock
-            .calls[0][0] as GeolocationPositionError;
-
-          expect(error).toBeInstanceOf(GeolocationPositionError);
-          expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
-          expect(error.message).toBe("");
+          expectGeolocationError(
+            successCallback,
+            errorCallback,
+            createTimeoutError(""),
+          );
         });
       });
     });
@@ -638,8 +565,12 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the cached position", () => {
-            expect(successCallback).toHaveBeenCalledWith(cachedPosition);
-            expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
+              cachedPosition,
+              true,
+            );
           });
         });
 
@@ -654,8 +585,12 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the cached position", () => {
-            expect(successCallback).toHaveBeenCalledWith(cachedPosition);
-            expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
+              cachedPosition,
+              true,
+            );
           });
         });
 
@@ -671,8 +606,12 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the cached position", () => {
-              expect(successCallback).toHaveBeenCalledWith(cachedPosition);
-              expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+              expectGeolocationSuccess(
+                successCallback,
+                errorCallback,
+                cachedPosition,
+                true,
+              );
             });
           });
 
@@ -687,8 +626,12 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the cached position", () => {
-              expect(successCallback).toHaveBeenCalledWith(cachedPosition);
-              expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+              expectGeolocationSuccess(
+                successCallback,
+                errorCallback,
+                cachedPosition,
+                true,
+              );
             });
           });
         });
@@ -729,7 +672,9 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with a new position", () => {
-            expect(successCallback).toHaveBeenCalledWith(
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
               createPosition(coordsB, startTime + 20, true),
             );
           });
@@ -746,9 +691,12 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("calls the success callback with the cached position", () => {
-            expect(cachedPosition).toMatchObject({ coords: coordsA });
-            expect(successCallback).toHaveBeenCalledWith(cachedPosition);
-            expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
+              cachedPosition,
+              true,
+            );
           });
         });
 
@@ -764,15 +712,11 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
-              expect(errorCallback).toHaveBeenCalled();
-              expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-              const error = errorCallback.mock
-                .calls[0][0] as GeolocationPositionError;
-
-              expect(error).toBeInstanceOf(GeolocationPositionError);
-              expect(error.code).toBe(GeolocationPositionError.TIMEOUT);
-              expect(error.message).toBe("");
+              expectGeolocationError(
+                successCallback,
+                errorCallback,
+                createTimeoutError(""),
+              );
             });
           });
 
@@ -787,9 +731,12 @@ describe("Geolocation.getCurrentPosition()", () => {
             });
 
             it("calls the success callback with the cached position", () => {
-              expect(cachedPosition).toMatchObject({ coords: coordsA });
-              expect(successCallback).toHaveBeenCalledWith(cachedPosition);
-              expect(successCallback.mock.calls[0][0]).toBe(cachedPosition);
+              expectGeolocationSuccess(
+                successCallback,
+                errorCallback,
+                cachedPosition,
+                true,
+              );
             });
           });
         });
@@ -808,17 +755,11 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       it("calls the error callback with a GeolocationPositionError", () => {
-        expect(errorCallback).toHaveBeenCalled();
-        expect(errorCallback.mock.calls[0][0]).toBeDefined();
-
-        const error = errorCallback.mock
-          .calls[0][0] as GeolocationPositionError;
-
-        expect(error).toBeInstanceOf(GeolocationPositionError);
-      });
-
-      it("does not call the success callback", () => {
-        expect(successCallback).not.toHaveBeenCalled();
+        expectGeolocationError(
+          successCallback,
+          errorCallback,
+          createPermissionDeniedError(""),
+        );
       });
     });
 
