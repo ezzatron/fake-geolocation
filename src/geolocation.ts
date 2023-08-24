@@ -337,10 +337,16 @@ export class Geolocation {
          *             options.enableHighAccuracy, set position to
          *             cachedPosition.
          */
-        // we deviate from the spec here because no browser follows the spec
-        // this behavior matches Firefox because it seems the most reasonable
+        //
+        // We deviate from the spec here in how we handle accuracy, because no
+        // browser follows the spec. This behavior matches Firefox because it
+        // seems the most reasonable.
+        //
+        // We also use >= instead of > because it seems to match the definition
+        // of "maximum age" better, but in practice you would never notice the
+        // 1ms difference.
         if (
-          cachedPosition.timestamp > cacheTime &&
+          cachedPosition.timestamp >= cacheTime &&
           (!options.enableHighAccuracy || isHighAccuracy(cachedPosition))
         ) {
           position = cachedPosition;

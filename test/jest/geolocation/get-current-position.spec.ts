@@ -525,7 +525,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
     });
 
-    describe("when reading the position with a maximum age of Infinity", () => {
+    describe("when reading the position with an infinite maximum age", () => {
       beforeEach(async () => {
         locationServices.setCoordinates(coordsA);
       });
@@ -736,6 +736,215 @@ describe("Geolocation.getCurrentPosition()", () => {
                 errorCallback,
                 cachedPosition,
                 true,
+              );
+            });
+          });
+        });
+      });
+    });
+
+    describe("when reading the position with a finite maximum age", () => {
+      beforeEach(async () => {
+        locationServices.setCoordinates(coordsA);
+      });
+
+      describe("when there is a cached position", () => {
+        let cachedPosition: StdGeolocationPosition;
+
+        beforeEach(async () => {
+          await getCurrentPosition(geolocation, (position) => {
+            cachedPosition = position;
+          });
+
+          locationServices.setCoordinates(coordsB);
+          jest.setSystemTime(startTime + 20);
+        });
+
+        it("has cached the position", () => {
+          expect(cachedPosition).toMatchObject(
+            createPosition(coordsA, startTime, false),
+          );
+        });
+
+        describe("when reading the position with a maximum age older than the age of the cached position", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: 21 },
+            );
+          });
+
+          it("calls the success callback with the cached position", () => {
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
+              cachedPosition,
+              true,
+            );
+          });
+        });
+
+        describe("when reading the position with a maximum age equal to the age of the cached position", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: 20 },
+            );
+          });
+
+          it("calls the success callback with the cached position", () => {
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
+              cachedPosition,
+              true,
+            );
+          });
+        });
+
+        describe("when reading the position with a maximum age newer than the age of the cached position", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: 19 },
+            );
+          });
+
+          it("calls the success callback with a new position", () => {
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
+              createPosition(coordsB, startTime + 20, false),
+            );
+          });
+        });
+
+        describe("when reading the position with a timeout of 0", () => {
+          describe("when reading the position with a maximum age older than the age of the cached position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { timeout: 0, maximumAge: 21 },
+              );
+            });
+
+            it("calls the success callback with the cached position", () => {
+              expectGeolocationSuccess(
+                successCallback,
+                errorCallback,
+                cachedPosition,
+                true,
+              );
+            });
+          });
+
+          describe("when reading the position with a maximum age equal to the age of the cached position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { timeout: 0, maximumAge: 20 },
+              );
+            });
+
+            it("calls the success callback with the cached position", () => {
+              expectGeolocationSuccess(
+                successCallback,
+                errorCallback,
+                cachedPosition,
+                true,
+              );
+            });
+          });
+
+          describe("when reading the position with a maximum age newer than the age of the cached position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { timeout: 0, maximumAge: 19 },
+              );
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
+              expectGeolocationError(
+                successCallback,
+                errorCallback,
+                createTimeoutError(""),
+              );
+            });
+          });
+        });
+      });
+    });
+
+    describe("when reading the position with a maximum age of 0", () => {
+      beforeEach(async () => {
+        locationServices.setCoordinates(coordsA);
+      });
+
+      describe("when there is a cached position", () => {
+        let cachedPosition: StdGeolocationPosition;
+
+        beforeEach(async () => {
+          await getCurrentPosition(geolocation, (position) => {
+            cachedPosition = position;
+          });
+
+          locationServices.setCoordinates(coordsB);
+        });
+
+        it("has cached the position", () => {
+          expect(cachedPosition).toMatchObject(
+            createPosition(coordsA, startTime, false),
+          );
+        });
+
+        describe("when reading the position", () => {
+          beforeEach(async () => {
+            await getCurrentPosition(
+              geolocation,
+              successCallback,
+              errorCallback,
+              { maximumAge: 0 },
+            );
+          });
+
+          it("calls the success callback with a new position", () => {
+            expectGeolocationSuccess(
+              successCallback,
+              errorCallback,
+              createPosition(coordsB, startTime + 20, false),
+            );
+          });
+        });
+
+        describe("when reading the position with a timeout of 0", () => {
+          describe("when reading the position", () => {
+            beforeEach(async () => {
+              await getCurrentPosition(
+                geolocation,
+                successCallback,
+                errorCallback,
+                { maximumAge: 0, timeout: 0 },
+              );
+            });
+
+            it("calls the error callback with a GeolocationPositionError with a code of TIMEOUT and an empty message", () => {
+              expectGeolocationError(
+                successCallback,
+                errorCallback,
+                createTimeoutError(""),
               );
             });
           });
