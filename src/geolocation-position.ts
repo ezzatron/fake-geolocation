@@ -44,6 +44,8 @@ GeolocationPosition satisfies new (...args: never[]) => StdGeolocationPosition;
 
 export function isHighAccuracy(position: StdGeolocationPosition) {
   const slots = internal.get(position);
+
+  /* istanbul ignore next */
   if (!slots) throw new TypeError("Unknown position instance");
 
   return slots.isHighAccuracy;
