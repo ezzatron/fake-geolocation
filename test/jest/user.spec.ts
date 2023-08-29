@@ -1,4 +1,4 @@
-import { createPermissionStore } from "fake-permissions";
+import { PermissionStore, createPermissionStore } from "fake-permissions";
 import { GEOLOCATION } from "fake-permissions/constants/permission-name";
 import { PROMPT } from "fake-permissions/constants/permission-state";
 import {
@@ -21,12 +21,12 @@ const coordinatesA: StdGeolocationCoordinates = {
 
 describe("User", () => {
   let locationServices: MutableLocationServices;
+  let permissionStore: PermissionStore<typeof GEOLOCATION>;
   let user: User;
 
   beforeEach(() => {
     locationServices = createLocationServices();
-
-    const permissionStore = createPermissionStore({
+    permissionStore = createPermissionStore({
       initialStates: new Map([[{ name: GEOLOCATION }, PROMPT]]),
     });
 
@@ -85,22 +85,67 @@ describe("User", () => {
     });
   });
 
-  describe("when no low-accuracy coordinate synthesis is configured", () => {
+  describe("when no low-accuracy transform is configured", () => {
+    beforeEach(() => {
+      user = createUser({ locationServices, permissionStore });
+    });
+
     describe("when jumping to coordinates", () => {
       beforeEach(() => {
         user.jumpToCoordinates(coordinatesA);
       });
 
-      it("updates the high-accuracy coordinates", async () => {
+      it("updates the high-accuracy coordinates to match the supplied coordinates", async () => {
         expect(await locationServices.acquireCoordinates(true)).toEqual(
           coordinatesA,
         );
       });
 
-      it("updates the low-accuracy coordinates", async () => {
+      it("updates the low-accuracy coordinates to match the supplied coordinates", async () => {
         expect(await locationServices.acquireCoordinates(false)).toEqual(
           coordinatesA,
         );
+      });
+    });
+  });
+
+  describe("when a low-accuracy transform is configured", () => {
+    beforeEach(() => {
+      user = createUser({
+        locationServices,
+        permissionStore,
+
+        lowAccuracyTransform(coords) {
+          return {
+            ...coords,
+            accuracy: 111111,
+            altitudeAccuracy: 222222,
+          };
+        },
+      });
+    });
+
+    describe("when jumping to coordinates", () => {
+      beforeEach(() => {
+        user.jumpToCoordinates(coordinatesA);
+      });
+
+      it("updates the high-accuracy coordinates to match the supplied coordinates", async () => {
+        expect(await locationServices.acquireCoordinates(true)).toEqual(
+          coordinatesA,
+        );
+      });
+
+      it("updates the low-accuracy coordinates to match the transformed coordinates", async () => {
+        expect(await locationServices.acquireCoordinates(false)).toEqual({
+          latitude: 40.71703581534977,
+          longitude: -74.03457283319447,
+          accuracy: 111111,
+          altitude: 22.27227783203125,
+          altitudeAccuracy: 222222,
+          heading: null,
+          speed: null,
+        });
       });
     });
   });

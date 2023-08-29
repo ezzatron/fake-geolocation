@@ -17,10 +17,14 @@ export interface User extends PermissionsUser<typeof GEOLOCATION> {
 export function createUser({
   handlePermissionRequest,
   locationServices,
+  lowAccuracyTransform = (coords) => coords,
   permissionStore,
 }: {
   handlePermissionRequest?: HandlePermissionRequest<typeof GEOLOCATION>;
   locationServices: MutableLocationServices;
+  lowAccuracyTransform?: (
+    coords: StdGeolocationCoordinates,
+  ) => StdGeolocationCoordinates;
   permissionStore: PermissionStore<typeof GEOLOCATION>;
 }): User {
   return {
@@ -36,7 +40,7 @@ export function createUser({
 
     jumpToCoordinates(coords: StdGeolocationCoordinates) {
       locationServices.setHighAccuracyCoordinates(coords);
-      locationServices.setLowAccuracyCoordinates(coords);
+      locationServices.setLowAccuracyCoordinates(lowAccuracyTransform(coords));
     },
   };
 }
