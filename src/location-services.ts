@@ -9,24 +9,38 @@ export interface LocationServices {
 }
 
 export interface MutableLocationServices extends LocationServices {
-  setCoordinates(coords: StdGeolocationCoordinates | undefined): void;
+  setHighAccuracyCoordinates(
+    coords: StdGeolocationCoordinates | undefined,
+  ): void;
+  setLowAccuracyCoordinates(
+    coords: StdGeolocationCoordinates | undefined,
+  ): void;
 }
 
 export function createLocationServices({
   acquireDelay = 0,
 }: { acquireDelay?: number } = {}): MutableLocationServices {
-  let coords: StdGeolocationCoordinates | undefined;
+  let highAccuracyCoords: StdGeolocationCoordinates | undefined;
+  let lowAccuracyCoords: StdGeolocationCoordinates | undefined;
 
   return {
-    async acquireCoordinates() {
+    async acquireCoordinates(enableHighAccuracy) {
       await sleep(acquireDelay);
+
+      const coords = enableHighAccuracy
+        ? highAccuracyCoords
+        : lowAccuracyCoords;
 
       if (coords) return createCoordinates(coords);
       throw new Error("Unable to acquire coordinates");
     },
 
-    setCoordinates(nextCoords) {
-      coords = nextCoords && createCoordinates(nextCoords);
+    setHighAccuracyCoordinates(coords) {
+      highAccuracyCoords = coords && createCoordinates(coords);
+    },
+
+    setLowAccuracyCoordinates(coords) {
+      lowAccuracyCoords = coords && createCoordinates(coords);
     },
   };
 }

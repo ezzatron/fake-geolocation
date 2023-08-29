@@ -25,7 +25,7 @@ export function createUser({
     ...createPermissionsUser({ permissionStore, handlePermissionRequest }),
 
     jumpToCoordinates(coords: StdGeolocationCoordinates) {
-      locationServices.setCoordinates(coords);
+      locationServices.setHighAccuracyCoordinates(coords);
     },
   };
 }

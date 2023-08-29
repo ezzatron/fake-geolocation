@@ -103,7 +103,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when coords can be acquired", () => {
       beforeEach(() => {
-        locationServices.setCoordinates(coordsA);
+        locationServices.setHighAccuracyCoordinates(coordsA);
+        locationServices.setLowAccuracyCoordinates(coordsA);
       });
 
       describe("when the user closes the permission dialog immediately", () => {
@@ -280,7 +281,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when coords cannot be acquired", () => {
       beforeEach(() => {
-        locationServices.setCoordinates(undefined);
+        locationServices.setHighAccuracyCoordinates(undefined);
+        locationServices.setLowAccuracyCoordinates(undefined);
       });
 
       describe("when the user grants the permission", () => {
@@ -358,7 +360,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when coords cannot be acquired", () => {
       beforeEach(() => {
-        locationServices.setCoordinates(undefined);
+        locationServices.setHighAccuracyCoordinates(undefined);
+        locationServices.setLowAccuracyCoordinates(undefined);
       });
 
       describe("when reading the position", () => {
@@ -378,7 +381,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when coords can be acquired", () => {
       beforeEach(() => {
-        locationServices.setCoordinates(coordsA);
+        locationServices.setHighAccuracyCoordinates(coordsA);
+        locationServices.setLowAccuracyCoordinates(coordsA);
       });
 
       it("cannot be read synchronously", () => {
@@ -406,7 +410,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when the coords change", () => {
         beforeEach(() => {
-          locationServices.setCoordinates(coordsB);
+          locationServices.setHighAccuracyCoordinates(coordsB);
+          locationServices.setLowAccuracyCoordinates(coordsB);
         });
 
         describe("when reading the position", () => {
@@ -433,7 +438,8 @@ describe("Geolocation.getCurrentPosition()", () => {
       describe("when the timeout is not exceeded", () => {
         describe("when coords can be acquired", () => {
           beforeEach(async () => {
-            locationServices.setCoordinates(coordsA);
+            locationServices.setHighAccuracyCoordinates(coordsA);
+            locationServices.setLowAccuracyCoordinates(coordsA);
 
             await getCurrentPosition(
               geolocation,
@@ -456,7 +462,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
         describe("when coords cannot be acquired", () => {
           beforeEach(async () => {
-            locationServices.setCoordinates(undefined);
+            locationServices.setHighAccuracyCoordinates(undefined);
+            locationServices.setLowAccuracyCoordinates(undefined);
 
             await getCurrentPosition(
               geolocation,
@@ -480,7 +487,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when the timeout is exceeded", () => {
         beforeEach(async () => {
-          locationServices.setCoordinates(coordsA);
+          locationServices.setHighAccuracyCoordinates(coordsA);
+          locationServices.setLowAccuracyCoordinates(coordsA);
 
           await getCurrentPosition(
             geolocation,
@@ -503,7 +511,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when the timeout is negative", () => {
         beforeEach(async () => {
-          locationServices.setCoordinates(coordsA);
+          locationServices.setHighAccuracyCoordinates(coordsA);
+          locationServices.setLowAccuracyCoordinates(coordsA);
 
           await getCurrentPosition(
             geolocation,
@@ -527,7 +536,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when reading the position with an infinite maximum age", () => {
       beforeEach(async () => {
-        locationServices.setCoordinates(coordsA);
+        locationServices.setHighAccuracyCoordinates(coordsA);
+        locationServices.setLowAccuracyCoordinates(coordsA);
       });
 
       describe("when there is a cached high accuracy position", () => {
@@ -545,7 +555,8 @@ describe("Geolocation.getCurrentPosition()", () => {
             },
           );
 
-          locationServices.setCoordinates(coordsB);
+          locationServices.setHighAccuracyCoordinates(coordsB);
+          locationServices.setLowAccuracyCoordinates(coordsB);
         });
 
         it("has cached the position", () => {
@@ -652,7 +663,8 @@ describe("Geolocation.getCurrentPosition()", () => {
             },
           );
 
-          locationServices.setCoordinates(coordsB);
+          locationServices.setHighAccuracyCoordinates(coordsB);
+          locationServices.setLowAccuracyCoordinates(coordsB);
         });
 
         it("has cached the position", () => {
@@ -745,7 +757,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when reading the position with a finite maximum age", () => {
       beforeEach(async () => {
-        locationServices.setCoordinates(coordsA);
+        locationServices.setHighAccuracyCoordinates(coordsA);
+        locationServices.setLowAccuracyCoordinates(coordsA);
       });
 
       describe("when there is a cached position", () => {
@@ -756,7 +769,8 @@ describe("Geolocation.getCurrentPosition()", () => {
             cachedPosition = position;
           });
 
-          locationServices.setCoordinates(coordsB);
+          locationServices.setHighAccuracyCoordinates(coordsB);
+          locationServices.setLowAccuracyCoordinates(coordsB);
           jest.setSystemTime(startTime + 20);
         });
 
@@ -890,7 +904,8 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when reading the position with a maximum age of 0", () => {
       beforeEach(async () => {
-        locationServices.setCoordinates(coordsA);
+        locationServices.setHighAccuracyCoordinates(coordsA);
+        locationServices.setLowAccuracyCoordinates(coordsA);
       });
 
       describe("when there is a cached position", () => {
@@ -901,7 +916,8 @@ describe("Geolocation.getCurrentPosition()", () => {
             cachedPosition = position;
           });
 
-          locationServices.setCoordinates(coordsB);
+          locationServices.setHighAccuracyCoordinates(coordsB);
+          locationServices.setLowAccuracyCoordinates(coordsB);
         });
 
         it("has cached the position", () => {
