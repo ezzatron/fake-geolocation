@@ -3,12 +3,15 @@ import { createCoordinates } from "./geolocation-coordinates.js";
 import { StdGeolocationCoordinates } from "./types/std.js";
 
 export interface LocationServices {
+  readonly isEnabled: boolean;
   acquireCoordinates(
     enableHighAccuracy: boolean,
   ): Promise<StdGeolocationCoordinates>;
 }
 
 export interface MutableLocationServices extends LocationServices {
+  enable(): void;
+  disable(): void;
   setHighAccuracyCoordinates(
     coords: StdGeolocationCoordinates | undefined,
   ): void;
@@ -20,18 +23,34 @@ export interface MutableLocationServices extends LocationServices {
 export function createLocationServices({
   acquireDelay = 0,
 }: { acquireDelay?: number } = {}): MutableLocationServices {
+  let isEnabled = true;
   let highAccuracyCoords: StdGeolocationCoordinates | undefined;
   let lowAccuracyCoords: StdGeolocationCoordinates | undefined;
 
   return {
+    get isEnabled() {
+      return isEnabled;
+    },
+
+    enable() {
+      isEnabled = true;
+    },
+
+    disable() {
+      isEnabled = false;
+    },
+
     async acquireCoordinates(enableHighAccuracy) {
-      await sleep(acquireDelay);
+      if (isEnabled) {
+        await sleep(acquireDelay);
 
-      const coords = enableHighAccuracy
-        ? highAccuracyCoords
-        : lowAccuracyCoords;
+        const coords = enableHighAccuracy
+          ? highAccuracyCoords
+          : lowAccuracyCoords;
 
-      if (coords) return createCoordinates(coords);
+        if (coords) return createCoordinates(coords);
+      }
+
       throw new Error("Unable to acquire coordinates");
     },
 

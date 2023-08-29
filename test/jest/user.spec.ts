@@ -33,15 +33,75 @@ describe("User", () => {
     user = createUser({ locationServices, permissionStore });
   });
 
-  describe("when jumping to coords", () => {
+  describe("when location services is enabled", () => {
     beforeEach(() => {
-      user.jumpToCoordinates(coordinatesA);
+      locationServices.enable();
     });
 
-    it("updates the coords", async () => {
-      expect(await locationServices.acquireCoordinates(true)).toEqual(
-        coordinatesA,
-      );
+    describe("when disabling location services", () => {
+      beforeEach(() => {
+        user.disableLocationServices();
+      });
+
+      it("disables location services", () => {
+        expect(locationServices.isEnabled).toBe(false);
+      });
+    });
+
+    describe("when enabling location services", () => {
+      beforeEach(() => {
+        user.enableLocationServices();
+      });
+
+      it("leaves location services enabled", () => {
+        expect(locationServices.isEnabled).toBe(true);
+      });
+    });
+  });
+
+  describe("when location services is disabled", () => {
+    beforeEach(() => {
+      locationServices.disable();
+    });
+
+    describe("when enabling location services", () => {
+      beforeEach(() => {
+        user.enableLocationServices();
+      });
+
+      it("enables location services", () => {
+        expect(locationServices.isEnabled).toBe(true);
+      });
+    });
+
+    describe("when disabling location services", () => {
+      beforeEach(() => {
+        user.disableLocationServices();
+      });
+
+      it("leaves location services diabled", () => {
+        expect(locationServices.isEnabled).toBe(false);
+      });
+    });
+  });
+
+  describe("when no low-accuracy coordinate synthesis is configured", () => {
+    describe("when jumping to coordinates", () => {
+      beforeEach(() => {
+        user.jumpToCoordinates(coordinatesA);
+      });
+
+      it("updates the high-accuracy coordinates", async () => {
+        expect(await locationServices.acquireCoordinates(true)).toEqual(
+          coordinatesA,
+        );
+      });
+
+      it("updates the low-accuracy coordinates", async () => {
+        expect(await locationServices.acquireCoordinates(false)).toEqual(
+          coordinatesA,
+        );
+      });
     });
   });
 });

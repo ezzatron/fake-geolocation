@@ -9,6 +9,8 @@ import { MutableLocationServices } from "./location-services.js";
 import { StdGeolocationCoordinates } from "./types/std.js";
 
 export interface User extends PermissionsUser<typeof GEOLOCATION> {
+  enableLocationServices(): void;
+  disableLocationServices(): void;
   jumpToCoordinates(coords: StdGeolocationCoordinates): void;
 }
 
@@ -24,8 +26,17 @@ export function createUser({
   return {
     ...createPermissionsUser({ permissionStore, handlePermissionRequest }),
 
+    enableLocationServices() {
+      locationServices.enable();
+    },
+
+    disableLocationServices() {
+      locationServices.disable();
+    },
+
     jumpToCoordinates(coords: StdGeolocationCoordinates) {
       locationServices.setHighAccuracyCoordinates(coords);
+      locationServices.setLowAccuracyCoordinates(coords);
     },
   };
 }
