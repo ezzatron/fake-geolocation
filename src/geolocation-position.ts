@@ -4,7 +4,11 @@ import {
   StdGeolocationPosition,
 } from "./types/std.js";
 
-const IS_HIGH_ACCURACY = Symbol("isHighAccuracy");
+const internal = new WeakMap<
+  GeolocationPosition,
+  { isHighAccuracy: boolean }
+>();
+
 let canConstruct = false;
 
 export function createPosition(
@@ -14,34 +18,33 @@ export function createPosition(
 ): StdGeolocationPosition {
   canConstruct = true;
 
-  return new GeolocationPosition(
+  const position = new GeolocationPosition(
     createCoordinates(coords),
     timestamp,
-    isHighAccuracy,
   );
+  internal.set(position, { isHighAccuracy });
+
+  return position;
 }
 
 export class GeolocationPosition {
   readonly coords: StdGeolocationCoordinates;
   readonly timestamp: number;
-  readonly [IS_HIGH_ACCURACY]: boolean;
 
-  constructor(
-    coords: StdGeolocationCoordinates,
-    timestamp: number,
-    isHighAccuracy: boolean,
-  ) {
+  constructor(coords: StdGeolocationCoordinates, timestamp: number) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
     this.coords = coords;
     this.timestamp = timestamp;
-    this[IS_HIGH_ACCURACY] = isHighAccuracy;
   }
 }
 
 GeolocationPosition satisfies new (...args: never[]) => StdGeolocationPosition;
 
 export function isHighAccuracy(position: StdGeolocationPosition) {
-  return IS_HIGH_ACCURACY in position && position[IS_HIGH_ACCURACY];
+  const slots = internal.get(position);
+  if (!slots) throw new TypeError("Unknown position instance");
+
+  return slots.isHighAccuracy;
 }
