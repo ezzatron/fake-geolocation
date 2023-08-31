@@ -1,9 +1,24 @@
 /**
- * Retreive a position, and log the JSON representation.
+ * Log a position.
  */
-async function logPosition(options = {}) {
-  navigator.geolocation.getCurrentPosition(
-    ({
+function logPosition(
+  {
+    coords: {
+      latitude,
+      longitude,
+      accuracy,
+      altitude,
+      altitudeAccuracy,
+      heading,
+      speed,
+    },
+    timestamp,
+  },
+  label = "logPosition",
+) {
+  console.log(
+    label,
+    JSON.stringify({
       coords: {
         latitude,
         longitude,
@@ -14,28 +29,38 @@ async function logPosition(options = {}) {
         speed,
       },
       timestamp,
-    }) => {
-      console.log(
-        JSON.stringify({
-          coords: {
-            latitude,
-            longitude,
-            accuracy,
-            altitude,
-            altitudeAccuracy,
-            heading,
-            speed,
-          },
-          timestamp,
-        }),
-      );
-    },
-    (e) => {
-      console.error(e);
-    },
-    options,
+    }),
   );
 }
+
+/**
+ * Retreive a position, and log the JSON representation.
+ */
+navigator.geolocation.getCurrentPosition(
+  (p) => {
+    logPosition(p, "getCurrentPosition");
+  },
+  (e) => {
+    console.error(e);
+  },
+);
+
+/**
+ * Watch a position, and log the JSON representation.
+ */
+let watchId = navigator.geolocation.watchPosition(
+  (p) => {
+    logPosition(p, "watchPosition");
+  },
+  (e) => {
+    console.error(e);
+  },
+);
+
+/**
+ * Clear the watch.
+ */
+navigator.geolocation.clearWatch(watchId);
 
 /**
  * Output the average accuracy of positions over time, until cancelled.
