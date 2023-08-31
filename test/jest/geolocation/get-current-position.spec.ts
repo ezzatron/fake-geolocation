@@ -27,10 +27,8 @@ import {
   StdGeolocation,
   StdGeolocationCoordinates,
   StdGeolocationPosition,
-  StdPositionCallback,
-  StdPositionErrorCallback,
-  StdPositionOptions,
 } from "../../../src/types/std.js";
+import { getCurrentPosition } from "../../get-current-position.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
 
 const coordsA: StdGeolocationCoordinates = {
@@ -468,7 +466,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             );
           });
 
-          it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", async () => {
+          it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", () => {
             expectGeolocationError(
               successCallback,
               errorCallback,
@@ -526,7 +524,7 @@ describe("Geolocation.getCurrentPosition()", () => {
     });
 
     describe("when reading the position with an infinite maximum age", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         user.jumpToCoordinates(coordsA);
       });
 
@@ -744,7 +742,7 @@ describe("Geolocation.getCurrentPosition()", () => {
     });
 
     describe("when reading the position with a finite maximum age", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         user.jumpToCoordinates(coordsA);
       });
 
@@ -889,7 +887,7 @@ describe("Geolocation.getCurrentPosition()", () => {
     });
 
     describe("when reading the position with a maximum age of 0", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         user.jumpToCoordinates(coordsA);
       });
 
@@ -989,41 +987,3 @@ describe("Geolocation.getCurrentPosition()", () => {
     });
   });
 });
-
-async function getCurrentPosition(
-  geolocation: StdGeolocation,
-  successCallback: StdPositionCallback,
-  errorCallback?: StdPositionErrorCallback,
-  options?: StdPositionOptions,
-  signal?: AbortSignal,
-): Promise<void> {
-  return new Promise((resolve) => {
-    if (signal) {
-      if (signal.aborted) {
-        resolve();
-        return;
-      }
-
-      signal.addEventListener(
-        "abort",
-        () => {
-          resolve();
-        },
-        { once: true },
-      );
-    }
-
-    geolocation.getCurrentPosition(
-      (position) => {
-        successCallback(position);
-        resolve();
-      },
-      errorCallback &&
-        ((error) => {
-          errorCallback(error);
-          resolve();
-        }),
-      options,
-    );
-  });
-}

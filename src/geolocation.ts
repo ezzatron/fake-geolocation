@@ -12,7 +12,7 @@ import {
   createTimeoutError,
 } from "./geolocation-position-error.js";
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
-import { LocationServices } from "./location-services.js";
+import { LocationServices, Unsubscribe } from "./location-services.js";
 import {
   StdGeolocation,
   StdGeolocationCoordinates,
@@ -52,6 +52,8 @@ export class Geolocation {
     this.#requestPermission = requestPermission;
     this.#cachedPosition = null;
     this.#watchIds = [];
+    this.#watchUnsubscribers = {};
+    this.#watchId = 1;
   }
 
   /**
@@ -98,21 +100,60 @@ export class Geolocation {
   /**
    * § 6.3 watchPosition() method
    */
-  watchPosition(): number {
+  watchPosition(
+    successCallback: StdPositionCallback,
+    errorCallback?: StdPositionErrorCallback | null,
+    options?: StdPositionOptions | null,
+  ): number {
+    const {
+      enableHighAccuracy = false,
+      maximumAge = 0,
+      timeout = Infinity,
+    } = options ?? {};
+    const normalizedOptions: Required<StdPositionOptions> = {
+      enableHighAccuracy,
+      maximumAge,
+      timeout,
+    };
+
     /*
      * 1. If the current settings object's relevant global object's associated
      *    Document is not fully active:
      *    1. Call back with error passing errorCallback and
      *       POSITION_UNAVAILABLE.
      *    2. Return 0.
+     */
+    // step 1 is ignored since there is no "document"
+
+    /*
      * 2. Let watchId be an implementation-defined unsigned long that is greater
      *    than zero.
+     */
+    const watchId = this.#watchId++;
+
+    /*
      * 3. Append watchId to this's [[watchIDs]].
+     */
+    this.#watchIds.push(watchId);
+
+    /*
      * 4. In parallel, request a position passing successCallback,
      *    errorCallback, options, and watchId.
+     */
+    this.#requestPosition(
+      successCallback,
+      errorCallback ?? undefined,
+      normalizedOptions,
+      watchId,
+    ).catch(
+      /* istanbul ignore next: promise failsafe, can't occur normally */
+      () => {},
+    );
+
+    /*
      * 5. Return watchId.
      */
-    throw new Error("Not implemented");
+    return watchId;
   }
 
   /**
@@ -220,7 +261,21 @@ export class Geolocation {
      *     3. Wait to acquire a position passing successCallback, errorCallback,
      *        options, and watchId.
      */
-    // TODO: implement watchPosition()
+    this.#watchUnsubscribers[watchId] = this.#locationServices.subscribe(
+      (isHighAccuracy) => {
+        if (isHighAccuracy !== options.enableHighAccuracy) return;
+
+        this.#acquirePosition(
+          successCallback,
+          errorCallback,
+          options,
+          watchId,
+        ).catch(
+          /* istanbul ignore next: promise failsafe, can't occur normally */
+          () => {},
+        );
+      },
+    );
   }
 
   /**
@@ -240,6 +295,7 @@ export class Geolocation {
      * 1. If watchId was passed and this's [[watchIDs]] does not contain
      *    watchId, terminate this algorithm.
      */
+    /* istanbul ignore next: hard to reproduce this race condition */
     if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
       return;
     }
@@ -463,7 +519,14 @@ export class Geolocation {
 
   #removeWatchId(watchIds: number[], watchId: number): void {
     const watchIdIndex = watchIds.indexOf(watchId);
-    if (watchIdIndex !== -1) watchIds.splice(watchIdIndex, 1);
+
+    /* istanbul ignore next: hard to reproduce this race condition */
+    if (watchIdIndex === -1) return;
+
+    watchIds.splice(watchIdIndex, 1);
+
+    this.#watchUnsubscribers[watchId]?.();
+    delete this.#watchUnsubscribers[watchId];
   }
 
   #locationServices: LocationServices;
@@ -471,6 +534,8 @@ export class Geolocation {
   #requestPermission: HandlePermissionRequest<typeof GEOLOCATION>;
   #cachedPosition: GeolocationPosition | null;
   #watchIds: number[];
+  #watchUnsubscribers: Record<number, Unsubscribe>;
+  #watchId: number;
 }
 
 Geolocation satisfies new (...args: never[]) => StdGeolocation;
