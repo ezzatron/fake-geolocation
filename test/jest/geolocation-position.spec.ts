@@ -31,7 +31,7 @@ describe("GeolocationPosition", () => {
     expect(call).toThrow("Illegal constructor");
   });
 
-  it("copies the coordinates", () => {
+  it("copies the coords", () => {
     expect(position.coords).not.toBe(coords);
   });
 
