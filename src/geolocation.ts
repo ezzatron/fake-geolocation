@@ -90,7 +90,7 @@ export class Geolocation {
       errorCallback ?? undefined,
       normalizedOptions,
     ).catch(
-      /* istanbul ignore next */
+      /* istanbul ignore next: promise failsafe, can't occur normally */
       () => {},
     );
   }
