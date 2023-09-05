@@ -17,7 +17,7 @@ import { StdGeolocation } from "../../../src/types/std.js";
 describe("Geolocation", () => {
   let locationServices: MutableLocationServices;
   let permissions: Permissions<typeof GEOLOCATION>;
-  let user: User;
+  let user: User<typeof GEOLOCATION>;
   let geolocation: StdGeolocation;
 
   beforeEach(() => {

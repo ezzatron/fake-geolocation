@@ -67,7 +67,7 @@ describe("Geolocation.watchPosition()", () => {
   let handlePermissionRequest: jest.Mock<
     HandlePermissionRequest<typeof GEOLOCATION>
   >;
-  let user: User;
+  let user: User<typeof GEOLOCATION>;
   let geolocation: StdGeolocation;
 
   let successCallback: jest.Mock;
