@@ -22,7 +22,7 @@ const coordinatesA: StdGeolocationCoordinates = {
 describe("User", () => {
   let locationServices: MutableLocationServices;
   let permissionStore: PermissionStore<typeof GEOLOCATION>;
-  let user: User;
+  let user: User<typeof GEOLOCATION>;
 
   beforeEach(() => {
     locationServices = createLocationServices();
