@@ -1,10 +1,5 @@
 import { jest } from "@jest/globals";
-import {
-  HandlePermissionRequest,
-  Permissions,
-  createPermissionStore,
-  createPermissions,
-} from "fake-permissions";
+import { HandlePermissionRequest } from "fake-permissions";
 import { GEOLOCATION } from "fake-permissions/constants/permission-name";
 import {
   DENIED,
@@ -15,13 +10,11 @@ import { sleep } from "../../../src/async.js";
 import {
   MutableLocationServices,
   User,
-  createGeolocation,
-  createLocationServices,
   createPermissionDeniedError,
   createPosition,
   createPositionUnavailableError,
+  createStandardServices,
   createTimeoutError,
-  createUser,
 } from "../../../src/index.js";
 import {
   StdGeolocation,
@@ -63,7 +56,6 @@ const coordsC: StdGeolocationCoordinates = {
 describe("Geolocation.watchPosition()", () => {
   const startTime = 100;
   let locationServices: MutableLocationServices;
-  let permissions: Permissions<typeof GEOLOCATION>;
   let handlePermissionRequest: jest.Mock<
     HandlePermissionRequest<typeof GEOLOCATION>
   >;
@@ -78,29 +70,12 @@ describe("Geolocation.watchPosition()", () => {
   beforeEach(() => {
     jest.setSystemTime(startTime);
 
-    locationServices = createLocationServices();
-
-    const permissionStore = createPermissionStore({
-      initialStates: new Map([[{ name: GEOLOCATION }, PROMPT]]),
-    });
-    permissions = createPermissions({ permissionStore });
-
     handlePermissionRequest =
       jest.fn<HandlePermissionRequest<typeof GEOLOCATION>>();
-    user = createUser({
-      locationServices,
-      permissionStore,
+
+    ({ geolocation, locationServices, user } = createStandardServices({
       handlePermissionRequest,
-    });
-
-    geolocation = createGeolocation({
-      locationServices,
-      permissions,
-
-      async requestPermission(descriptor) {
-        return user.requestPermission(descriptor);
-      },
-    });
+    }));
 
     successCallback = jest.fn();
     errorCallback = jest.fn();
