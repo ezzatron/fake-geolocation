@@ -31,12 +31,12 @@ describe("Geolocation", () => {
     user = createUser({ locationServices, permissionStore });
 
     geolocation = createGeolocation({
+      locationServices,
+      permissions,
+
       async requestPermission(descriptor) {
         return user.requestPermission(descriptor);
       },
-
-      locationServices,
-      permissions,
     });
   });
 
