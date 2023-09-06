@@ -1,6 +1,6 @@
+export * from "./create-standard-services.js";
 export { createDelegatedGeolocation } from "./delegated-geolocation.js";
 export type { SelectDelegate } from "./delegated-geolocation.js";
-export * from "./factory.js";
 export {
   GeolocationCoordinates,
   createCoordinates,
