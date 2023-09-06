@@ -462,7 +462,7 @@ describe("Geolocation.watchPosition()", () => {
             geolocation.clearWatch(watchId);
           });
 
-          describe("when the coords change after a delay", () => {
+          describe("when the coords change", () => {
             const delay = 20;
 
             beforeEach(async () => {
@@ -603,7 +603,7 @@ describe("Geolocation.watchPosition()", () => {
           });
         });
 
-        describe("when the coords change after a delay", () => {
+        describe("when the coords change", () => {
           const delay = 20;
 
           beforeEach(async () => {

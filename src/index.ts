@@ -1,3 +1,5 @@
+export { createDelegatedGeolocation } from "./delegated-geolocation.js";
+export type { SelectDelegate } from "./delegated-geolocation.js";
 export {
   GeolocationCoordinates,
   createCoordinates,
