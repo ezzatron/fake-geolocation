@@ -416,8 +416,8 @@ describe("Geolocation.watchPosition()", () => {
         let watchId: number;
 
         beforeEach(() => {
-          (watchId = geolocation.watchPosition(successCallback, errorCallback)),
-            watchIds.push(watchId);
+          watchId = geolocation.watchPosition(successCallback, errorCallback);
+          watchIds.push(watchId);
         });
 
         it("calls the success callback with the position", async () => {
