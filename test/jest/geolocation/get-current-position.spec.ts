@@ -18,30 +18,11 @@ import {
 } from "../../../src/index.js";
 import {
   StdGeolocation,
-  StdGeolocationCoordinates,
   StdGeolocationPosition,
 } from "../../../src/types/std.js";
+import { coordsA, coordsB } from "../../fixture/coords.js";
 import { getCurrentPosition } from "../../get-current-position.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
-
-const coordsA: StdGeolocationCoordinates = {
-  latitude: 40.71703581534977,
-  longitude: -74.03457283319447,
-  accuracy: 25.019,
-  altitude: 22.27227783203125,
-  altitudeAccuracy: 9.838127136230469,
-  heading: null,
-  speed: null,
-};
-const coordsB: StdGeolocationCoordinates = {
-  latitude: 12,
-  longitude: 34,
-  accuracy: 56,
-  altitude: 78,
-  altitudeAccuracy: 9,
-  heading: null,
-  speed: null,
-};
 
 describe("Geolocation.getCurrentPosition()", () => {
   const startTime = 100;
