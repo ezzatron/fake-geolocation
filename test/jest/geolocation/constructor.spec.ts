@@ -1,11 +1,11 @@
-import { createStandardServices } from "../../../src/index.js";
+import { createStandardAPIs } from "../../../src/index.js";
 import { StdGeolocation } from "../../../src/types/std.js";
 
 describe("Geolocation", () => {
   let geolocation: StdGeolocation;
 
   beforeEach(() => {
-    ({ geolocation } = createStandardServices());
+    ({ geolocation } = createStandardAPIs());
   });
 
   it("cannot be instantiated directly", () => {

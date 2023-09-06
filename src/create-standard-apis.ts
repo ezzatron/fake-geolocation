@@ -1,5 +1,7 @@
 import {
   HandlePermissionRequest,
+  PermissionStore,
+  Permissions,
   createPermissionStore,
   createPermissions,
 } from "fake-permissions";
@@ -13,7 +15,7 @@ import {
 import { StdGeolocation, StdGeolocationCoordinates } from "./types/std.js";
 import { User, createUser } from "./user.js";
 
-export function createStandardServices({
+export function createStandardAPIs({
   handlePermissionRequest,
   lowAccuracyTransform = (coords) => coords,
 }: {
@@ -24,6 +26,8 @@ export function createStandardServices({
 } = {}): {
   geolocation: StdGeolocation;
   locationServices: MutableLocationServices;
+  permissions: Permissions<typeof GEOLOCATION>;
+  permissionStore: PermissionStore<typeof GEOLOCATION>;
   user: User<typeof GEOLOCATION>;
 } {
   const locationServices = createLocationServices();
@@ -52,5 +56,11 @@ export function createStandardServices({
     },
   });
 
-  return { geolocation, locationServices, user };
+  return {
+    geolocation,
+    locationServices,
+    permissions,
+    permissionStore,
+    user,
+  };
 }

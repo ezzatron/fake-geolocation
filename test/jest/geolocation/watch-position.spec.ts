@@ -13,7 +13,7 @@ import {
   createPermissionDeniedError,
   createPosition,
   createPositionUnavailableError,
-  createStandardServices,
+  createStandardAPIs,
   createTimeoutError,
 } from "../../../src/index.js";
 import {
@@ -45,7 +45,7 @@ describe("Geolocation.watchPosition()", () => {
     handlePermissionRequest =
       jest.fn<HandlePermissionRequest<typeof GEOLOCATION>>();
 
-    ({ geolocation, locationServices, user } = createStandardServices({
+    ({ geolocation, locationServices, user } = createStandardAPIs({
       handlePermissionRequest,
     }));
 
