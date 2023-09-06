@@ -62,14 +62,13 @@ export class Geolocation {
   getCurrentPosition(
     successCallback: StdPositionCallback,
     errorCallback?: StdPositionErrorCallback | null,
-    options?: StdPositionOptions | null,
-  ): void {
-    const {
+    {
       enableHighAccuracy = false,
       maximumAge = 0,
       timeout = Infinity,
-    } = options ?? {};
-    const normalizedOptions: Required<StdPositionOptions> = {
+    }: StdPositionOptions = {},
+  ): void {
+    const options: Required<StdPositionOptions> = {
       enableHighAccuracy,
       maximumAge,
       timeout,
@@ -90,7 +89,7 @@ export class Geolocation {
     this.#requestPosition(
       successCallback,
       errorCallback ?? undefined,
-      normalizedOptions,
+      options,
     ).catch(
       /* istanbul ignore next: promise failsafe, can't occur normally */
       () => {},
@@ -103,14 +102,13 @@ export class Geolocation {
   watchPosition(
     successCallback: StdPositionCallback,
     errorCallback?: StdPositionErrorCallback | null,
-    options?: StdPositionOptions | null,
-  ): number {
-    const {
+    {
       enableHighAccuracy = false,
       maximumAge = 0,
       timeout = Infinity,
-    } = options ?? {};
-    const normalizedOptions: Required<StdPositionOptions> = {
+    }: StdPositionOptions = {},
+  ): number {
+    const options: Required<StdPositionOptions> = {
       enableHighAccuracy,
       maximumAge,
       timeout,
@@ -143,7 +141,7 @@ export class Geolocation {
     this.#requestPosition(
       successCallback,
       errorCallback ?? undefined,
-      normalizedOptions,
+      options,
       watchId,
     ).catch(
       /* istanbul ignore next: promise failsafe, can't occur normally */
