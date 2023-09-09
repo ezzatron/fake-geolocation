@@ -1,8 +1,8 @@
 import {
   HandlePermissionRequest,
   PermissionStore,
-  createPermissionStore,
   createPermissions,
+  createStandardPermissionStore,
 } from "fake-permissions";
 import { createGeolocation } from "./geolocation.js";
 import {
@@ -28,10 +28,7 @@ export function createStandardAPIs({
   user: User;
 } {
   const locationServices = createLocationServices();
-
-  const permissionStore = createPermissionStore({
-    initialStates: new Map([[{ name: "geolocation" }, "prompt"]]),
-  });
+  const permissionStore = createStandardPermissionStore();
 
   const permissions = createPermissions({
     permissionStore,
