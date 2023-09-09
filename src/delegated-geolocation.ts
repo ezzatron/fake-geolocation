@@ -56,7 +56,7 @@ type GeolocationParameters = {
 
 export class Geolocation {
   /**
-   * @deprecated Use the `createDelegatedPermissions()` function instead.
+   * @deprecated Use the `createDelegatedGeolocation()` function instead.
    */
   constructor({ delegate, subscribe, unsubscribe }: GeolocationParameters) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
