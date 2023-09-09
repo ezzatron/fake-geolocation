@@ -15,11 +15,13 @@ import { User, createUser } from "./user.js";
 export function createStandardAPIs({
   handlePermissionRequest,
   lowAccuracyTransform = (coords) => coords,
+  permissionStore = createStandardPermissionStore(),
 }: {
   handlePermissionRequest?: HandlePermissionRequest;
   lowAccuracyTransform?: (
     coords: StdGeolocationCoordinates,
   ) => StdGeolocationCoordinates;
+  permissionStore?: PermissionStore;
 } = {}): {
   geolocation: StdGeolocation;
   locationServices: MutableLocationServices;
@@ -28,7 +30,6 @@ export function createStandardAPIs({
   user: User;
 } {
   const locationServices = createLocationServices();
-  const permissionStore = createStandardPermissionStore();
 
   const permissions = createPermissions({
     permissionStore,

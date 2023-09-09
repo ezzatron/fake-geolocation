@@ -14,6 +14,7 @@ export function createWrappedAPIs({
   handlePermissionRequest,
   lowAccuracyTransform,
   permissions: suppliedPermissions,
+  permissionStore: suppliedPermissionStore,
 }: {
   geolocation: StdGeolocation;
   handlePermissionRequest?: HandlePermissionRequest;
@@ -21,6 +22,7 @@ export function createWrappedAPIs({
     coords: StdGeolocationCoordinates,
   ) => StdGeolocationCoordinates;
   permissions: Permissions;
+  permissionStore?: PermissionStore;
 }): {
   geolocation: StdGeolocation;
   locationServices: MutableLocationServices;
@@ -38,6 +40,7 @@ export function createWrappedAPIs({
   } = createStandardAPIs({
     handlePermissionRequest,
     lowAccuracyTransform,
+    permissionStore: suppliedPermissionStore,
   });
 
   const { geolocation, selectDelegate: selectGeolocationDelegate } =
