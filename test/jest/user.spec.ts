@@ -5,16 +5,7 @@ import {
   createLocationServices,
   createUser,
 } from "../../src/index.js";
-
-const coordinatesA: GeolocationCoordinates = {
-  latitude: 40.71703581534977,
-  longitude: -74.03457283319447,
-  accuracy: 25.019,
-  altitude: 22.27227783203125,
-  altitudeAccuracy: 9.838127136230469,
-  heading: null,
-  speed: null,
-};
+import { coordsA } from "../fixture/coords.js";
 
 describe("User", () => {
   let locationServices: MutableLocationServices;
@@ -89,18 +80,18 @@ describe("User", () => {
 
     describe("when jumping to coordinates", () => {
       beforeEach(() => {
-        user.jumpToCoordinates(coordinatesA);
+        user.jumpToCoordinates(coordsA);
       });
 
       it("updates the high-accuracy coordinates to match the supplied coordinates", async () => {
         expect(await locationServices.acquireCoordinates(true)).toEqual(
-          coordinatesA,
+          coordsA,
         );
       });
 
       it("updates the low-accuracy coordinates to match the supplied coordinates", async () => {
         expect(await locationServices.acquireCoordinates(false)).toEqual(
-          coordinatesA,
+          coordsA,
         );
       });
     });
@@ -124,12 +115,12 @@ describe("User", () => {
 
     describe("when jumping to coordinates", () => {
       beforeEach(() => {
-        user.jumpToCoordinates(coordinatesA);
+        user.jumpToCoordinates(coordsA);
       });
 
       it("updates the high-accuracy coordinates to match the supplied coordinates", async () => {
         expect(await locationServices.acquireCoordinates(true)).toEqual(
-          coordinatesA,
+          coordsA,
         );
       });
 
@@ -143,6 +134,24 @@ describe("User", () => {
           heading: null,
           speed: null,
         });
+      });
+    });
+  });
+
+  describe("when providing partial coordinates", () => {
+    beforeEach(() => {
+      user.jumpToCoordinates({});
+    });
+
+    it("fills in the missing data", async () => {
+      expect(await locationServices.acquireCoordinates(true)).toEqual({
+        latitude: 0,
+        longitude: 0,
+        accuracy: 10,
+        altitude: null,
+        altitudeAccuracy: null,
+        heading: null,
+        speed: null,
       });
     });
   });

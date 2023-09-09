@@ -9,19 +9,39 @@ import { MutableLocationServices } from "./location-services.js";
 export interface User extends PermissionsUser {
   enableLocationServices(): void;
   disableLocationServices(): void;
-  jumpToCoordinates(coords: GeolocationCoordinates): void;
+  jumpToCoordinates(coords: Partial<GeolocationCoordinates>): void;
 }
 
 export function createUser({
   handlePermissionRequest,
   locationServices,
   lowAccuracyTransform = (coords) => coords,
+  normalizeCoordinates = ({
+    latitude = 0,
+    longitude = 0,
+    accuracy = 10,
+    altitude = null,
+    altitudeAccuracy = null,
+    heading = null,
+    speed = null,
+  }) => ({
+    latitude,
+    longitude,
+    accuracy,
+    altitude,
+    altitudeAccuracy,
+    heading,
+    speed,
+  }),
   permissionStore,
 }: {
   handlePermissionRequest?: HandlePermissionRequest;
   locationServices: MutableLocationServices;
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
+  ) => GeolocationCoordinates;
+  normalizeCoordinates?: (
+    coords: Partial<GeolocationCoordinates>,
   ) => GeolocationCoordinates;
   permissionStore: PermissionStore;
 }): User {
@@ -36,9 +56,13 @@ export function createUser({
       locationServices.disable();
     },
 
-    jumpToCoordinates(coords: GeolocationCoordinates) {
-      locationServices.setHighAccuracyCoordinates(coords);
-      locationServices.setLowAccuracyCoordinates(lowAccuracyTransform(coords));
+    jumpToCoordinates(coords) {
+      const normalized = normalizeCoordinates(coords);
+
+      locationServices.setHighAccuracyCoordinates(normalized);
+      locationServices.setLowAccuracyCoordinates(
+        lowAccuracyTransform(normalized),
+      );
     },
   };
 }
