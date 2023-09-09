@@ -1,8 +1,8 @@
 import {
   HandlePermissionRequest,
   PermissionStore,
+  createPermissionStore,
   createPermissions,
-  createStandardPermissionStore,
 } from "fake-permissions";
 import { createGeolocation } from "./geolocation.js";
 import {
@@ -15,7 +15,7 @@ import { User, createUser } from "./user.js";
 export function createStandardAPIs({
   handlePermissionRequest,
   lowAccuracyTransform = (coords) => coords,
-  permissionStore = createStandardPermissionStore(),
+  permissionStore = createPermissionStore(),
 }: {
   handlePermissionRequest?: HandlePermissionRequest;
   lowAccuracyTransform?: (

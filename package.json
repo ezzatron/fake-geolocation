@@ -41,7 +41,7 @@
     "prepublishOnly": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "fake-permissions": "^0.4.0"
+    "fake-permissions": "^0.5.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.6.1",
