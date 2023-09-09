@@ -1,10 +1,4 @@
-import {
-  HandlePermissionRequest,
-  PermissionDescriptor,
-  Permissions,
-} from "fake-permissions";
-import { GEOLOCATION } from "fake-permissions/constants/permission-name";
-import { DENIED, GRANTED } from "fake-permissions/constants/permission-state";
+import { HandlePermissionRequest } from "fake-permissions";
 import {
   GeolocationPositionError,
   createPermissionDeniedError,
@@ -24,8 +18,8 @@ import {
 
 type GeolocationParameters = {
   locationServices: LocationServices;
-  permissions: Permissions<typeof GEOLOCATION>;
-  requestPermission: HandlePermissionRequest<typeof GEOLOCATION>;
+  permissions: Permissions;
+  requestPermission: HandlePermissionRequest;
 };
 
 let canConstruct = false;
@@ -200,8 +194,8 @@ export class Geolocation {
      * 5. Let descriptor be a new PermissionDescriptor whose name is
      *    "geolocation".
      */
-    const descriptor: PermissionDescriptor<typeof GEOLOCATION> = {
-      name: GEOLOCATION,
+    const descriptor: PermissionDescriptor = {
+      name: "geolocation",
     };
 
     /*
@@ -213,7 +207,7 @@ export class Geolocation {
     /*
      * 7. If permission is "denied", then:
      */
-    if (permission.state === DENIED) {
+    if (permission.state === "denied") {
       /*
        * 7. (cont.)
        *    1. If watchId was passed, remove watchId from watchIDs.
@@ -337,13 +331,13 @@ export class Geolocation {
        *    1. Let permission be get the current permission state of
        *       "geolocation".
        */
-      const permission = await this.#permissions.query({ name: GEOLOCATION });
+      const permission = await this.#permissions.query({ name: "geolocation" });
 
       /*
        * 5. (cont.)
        *    2. If permission is "denied":
        */
-      if (permission.state !== GRANTED) {
+      if (permission.state !== "granted") {
         /*
          * 5. (cont.)
          *    2. (cont.)
@@ -528,8 +522,8 @@ export class Geolocation {
   }
 
   #locationServices: LocationServices;
-  #permissions: Permissions<typeof GEOLOCATION>;
-  #requestPermission: HandlePermissionRequest<typeof GEOLOCATION>;
+  #permissions: Permissions;
+  #requestPermission: HandlePermissionRequest;
   #cachedPosition: GeolocationPosition | null;
   #watchIds: number[];
   #watchUnsubscribers: Record<number, Unsubscribe>;

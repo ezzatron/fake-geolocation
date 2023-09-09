@@ -1,12 +1,9 @@
 import {
   HandlePermissionRequest,
   PermissionStore,
-  Permissions,
   createPermissionStore,
   createPermissions,
 } from "fake-permissions";
-import { GEOLOCATION } from "fake-permissions/constants/permission-name";
-import { PROMPT } from "fake-permissions/constants/permission-state";
 import { createGeolocation } from "./geolocation.js";
 import {
   MutableLocationServices,
@@ -19,21 +16,21 @@ export function createStandardAPIs({
   handlePermissionRequest,
   lowAccuracyTransform = (coords) => coords,
 }: {
-  handlePermissionRequest?: HandlePermissionRequest<typeof GEOLOCATION>;
+  handlePermissionRequest?: HandlePermissionRequest;
   lowAccuracyTransform?: (
     coords: StdGeolocationCoordinates,
   ) => StdGeolocationCoordinates;
 } = {}): {
   geolocation: StdGeolocation;
   locationServices: MutableLocationServices;
-  permissions: Permissions<typeof GEOLOCATION>;
-  permissionStore: PermissionStore<typeof GEOLOCATION>;
-  user: User<typeof GEOLOCATION>;
+  permissions: Permissions;
+  permissionStore: PermissionStore;
+  user: User;
 } {
   const locationServices = createLocationServices();
 
   const permissionStore = createPermissionStore({
-    initialStates: new Map([[{ name: GEOLOCATION }, PROMPT]]),
+    initialStates: new Map([[{ name: "geolocation" }, "prompt"]]),
   });
 
   const permissions = createPermissions({

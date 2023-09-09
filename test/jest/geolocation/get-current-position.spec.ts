@@ -1,11 +1,5 @@
 import { jest } from "@jest/globals";
 import { HandlePermissionRequest } from "fake-permissions";
-import { GEOLOCATION } from "fake-permissions/constants/permission-name";
-import {
-  DENIED,
-  GRANTED,
-  PROMPT,
-} from "fake-permissions/constants/permission-state";
 import { sleep } from "../../../src/async.js";
 import {
   MutableLocationServices,
@@ -27,10 +21,8 @@ import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
 describe("Geolocation.getCurrentPosition()", () => {
   const startTime = 100;
   let locationServices: MutableLocationServices;
-  let handlePermissionRequest: jest.Mock<
-    HandlePermissionRequest<typeof GEOLOCATION>
-  >;
-  let user: User<typeof GEOLOCATION>;
+  let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+  let user: User;
   let geolocation: StdGeolocation;
 
   let successCallback: jest.Mock;
@@ -39,8 +31,7 @@ describe("Geolocation.getCurrentPosition()", () => {
   beforeEach(() => {
     jest.setSystemTime(startTime);
 
-    handlePermissionRequest =
-      jest.fn<HandlePermissionRequest<typeof GEOLOCATION>>();
+    handlePermissionRequest = jest.fn<HandlePermissionRequest>();
 
     ({ geolocation, locationServices, user } = createStandardAPIs({
       handlePermissionRequest,
@@ -52,7 +43,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
   describe("when permission has not been requested", () => {
     beforeEach(() => {
-      user.resetPermission({ name: GEOLOCATION });
+      user.resetPermission({ name: "geolocation" });
     });
 
     describe("when coords can be acquired", () => {
@@ -62,7 +53,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when the user closes the permission dialog immediately", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue(PROMPT);
+          handlePermissionRequest.mockReturnValue("prompt");
         });
 
         describe("when reading the position", () => {
@@ -90,7 +81,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             async (): Promise<PermissionState> => {
               await sleep(60);
 
-              return PROMPT;
+              return "prompt";
             },
           );
         });
@@ -119,7 +110,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when the user denies the permission immediately", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue(DENIED);
+          handlePermissionRequest.mockReturnValue("denied");
         });
 
         describe("when reading the position", () => {
@@ -147,7 +138,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             async (): Promise<PermissionState> => {
               await sleep(60);
 
-              return DENIED;
+              return "denied";
             },
           );
         });
@@ -176,7 +167,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when the user grants the permission immediately", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue(GRANTED);
+          handlePermissionRequest.mockReturnValue("granted");
         });
 
         describe("when reading the position", () => {
@@ -206,7 +197,7 @@ describe("Geolocation.getCurrentPosition()", () => {
             async (): Promise<PermissionState> => {
               await sleep(60);
 
-              return GRANTED;
+              return "granted";
             },
           );
         });
@@ -239,7 +230,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
       describe("when the user grants the permission", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue(GRANTED);
+          handlePermissionRequest.mockReturnValue("granted");
         });
 
         describe("when reading the position", () => {
@@ -265,7 +256,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
   describe("when permission is denied", () => {
     beforeEach(() => {
-      user.denyPermission({ name: GEOLOCATION });
+      user.denyPermission({ name: "geolocation" });
     });
 
     describe("when reading the position", () => {
@@ -285,7 +276,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
   describe("when permission is granted", () => {
     beforeEach(() => {
-      user.grantPermission({ name: GEOLOCATION });
+      user.grantPermission({ name: "geolocation" });
     });
 
     describe("when acquiring coords throws an error", () => {
@@ -909,7 +900,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
   describe("when reading the position will result in an error", () => {
     beforeEach(() => {
-      handlePermissionRequest.mockReturnValue(DENIED);
+      handlePermissionRequest.mockReturnValue("denied");
     });
 
     describe("when reading the position with an error callback", () => {

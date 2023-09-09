@@ -1,6 +1,4 @@
 import { PermissionStore, createPermissionStore } from "fake-permissions";
-import { GEOLOCATION } from "fake-permissions/constants/permission-name";
-import { PROMPT } from "fake-permissions/constants/permission-state";
 import {
   MutableLocationServices,
   User,
@@ -21,13 +19,13 @@ const coordinatesA: StdGeolocationCoordinates = {
 
 describe("User", () => {
   let locationServices: MutableLocationServices;
-  let permissionStore: PermissionStore<typeof GEOLOCATION>;
-  let user: User<typeof GEOLOCATION>;
+  let permissionStore: PermissionStore;
+  let user: User;
 
   beforeEach(() => {
     locationServices = createLocationServices();
     permissionStore = createPermissionStore({
-      initialStates: new Map([[{ name: GEOLOCATION }, PROMPT]]),
+      initialStates: new Map([[{ name: "geolocation" }, "prompt"]]),
     });
 
     user = createUser({ locationServices, permissionStore });

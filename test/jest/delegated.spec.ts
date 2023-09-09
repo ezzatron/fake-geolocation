@@ -1,11 +1,5 @@
 import { jest } from "@jest/globals";
-import {
-  Permissions,
-  createPermissionStore,
-  createPermissions,
-} from "fake-permissions";
-import { GEOLOCATION } from "fake-permissions/constants/permission-name";
-import { GRANTED } from "fake-permissions/constants/permission-state";
+import { createPermissionStore, createPermissions } from "fake-permissions";
 import { sleep } from "../../src/async.js";
 import {
   MutableLocationServices,
@@ -28,10 +22,10 @@ describe("Delegated geolocation", () => {
   const startTime = 100;
   let locationServicesA: MutableLocationServices;
   let locationServicesB: MutableLocationServices;
-  let permissionsA: Permissions<typeof GEOLOCATION>;
-  let permissionsB: Permissions<typeof GEOLOCATION>;
-  let userA: User<typeof GEOLOCATION>;
-  let userB: User<typeof GEOLOCATION>;
+  let permissionsA: Permissions;
+  let permissionsB: Permissions;
+  let userA: User;
+  let userB: User;
   let delegateA: StdGeolocation;
   let delegateB: StdGeolocation;
   let geolocation: StdGeolocation;
@@ -49,10 +43,10 @@ describe("Delegated geolocation", () => {
     locationServicesB = createLocationServices();
 
     const permissionStoreA = createPermissionStore({
-      initialStates: new Map([[{ name: GEOLOCATION }, GRANTED]]),
+      initialStates: new Map([[{ name: "geolocation" }, "granted"]]),
     });
     const permissionStoreB = createPermissionStore({
-      initialStates: new Map([[{ name: GEOLOCATION }, GRANTED]]),
+      initialStates: new Map([[{ name: "geolocation" }, "granted"]]),
     });
 
     permissionsA = createPermissions({ permissionStore: permissionStoreA });
@@ -316,7 +310,7 @@ describe("Delegated geolocation", () => {
 
     describe("when the first delegate's permission becomes denied", () => {
       beforeEach(() => {
-        userA.denyPermission({ name: GEOLOCATION });
+        userA.denyPermission({ name: "geolocation" });
       });
 
       describe("when reading the position", () => {
@@ -530,7 +524,7 @@ describe("Delegated geolocation", () => {
 
     describe("when the selected delegate's permission becomes denied", () => {
       beforeEach(() => {
-        userB.denyPermission({ name: GEOLOCATION });
+        userB.denyPermission({ name: "geolocation" });
       });
 
       describe("when reading the position", () => {
