@@ -1,15 +1,9 @@
 import { jest } from "@jest/globals";
-import {
-  HandlePermissionRequest,
-  createPermissionStore,
-  createPermissions,
-} from "fake-permissions";
+import { HandlePermissionRequest } from "fake-permissions";
 import {
   User,
-  createGeolocation,
-  createLocationServices,
+  createAPIs,
   createPosition,
-  createUser,
   createWrappedAPIs,
 } from "../../src/index.js";
 import { StdGeolocation } from "../../src/types/std.js";
@@ -20,16 +14,13 @@ import { expectGeolocationSuccess } from "./expect.js";
 describe("createWrappedAPIs()", () => {
   const startTime = 100;
 
-  let handleSuppliedPermissionRequest: jest.Mock<HandlePermissionRequest>;
+  let suppliedHandlePermissionRequest: jest.Mock<HandlePermissionRequest>;
   let suppliedUser: User;
-  let suppliedGeolocation: StdGeolocation;
-  let suppliedPermissions: Permissions;
 
-  let handleFakePermissionRequest: jest.Mock<HandlePermissionRequest>;
-  let wrappedUser: User;
-  let wrappedGeolocation: StdGeolocation;
-  let wrappedPermissions: Permissions;
-
+  let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+  let geolocation: StdGeolocation;
+  let permissions: Permissions;
+  let user: User;
   let selectAPIs: (useSuppliedAPIs: boolean) => void;
 
   let successCallback: jest.Mock;
@@ -38,53 +29,28 @@ describe("createWrappedAPIs()", () => {
   beforeEach(() => {
     jest.setSystemTime(startTime);
 
-    handleSuppliedPermissionRequest = jest.fn<HandlePermissionRequest>();
-
-    const suppliedLocationServices = createLocationServices();
-    const suppliedPermissionStore = createPermissionStore({
-      initialStates: new Map([
-        [{ name: "geolocation" }, "granted"],
-        [{ name: "notifications" }, "granted"],
-        [{ name: "push" }, "granted"],
-      ]),
+    suppliedHandlePermissionRequest = jest.fn<HandlePermissionRequest>(
+      () => "denied",
+    );
+    const supplied = createAPIs({
+      handlePermissionRequest: suppliedHandlePermissionRequest,
     });
-
-    suppliedPermissions = createPermissions({
-      permissionStore: suppliedPermissionStore,
-    });
-
-    suppliedUser = createUser({
-      handlePermissionRequest: handleSuppliedPermissionRequest,
-      locationServices: suppliedLocationServices,
-      permissionStore: suppliedPermissionStore,
-    });
-
-    suppliedGeolocation = createGeolocation({
-      locationServices: suppliedLocationServices,
-      permissions: suppliedPermissions,
-
-      async requestPermission(descriptor) {
-        return suppliedUser.requestPermission(descriptor);
-      },
-    });
-
+    suppliedUser = supplied.user;
     suppliedUser.jumpToCoordinates(coordsA);
+    suppliedUser.grantPermission({ name: "geolocation" });
 
-    handleFakePermissionRequest = jest.fn<HandlePermissionRequest>();
-
-    ({
-      geolocation: wrappedGeolocation,
-      permissions: wrappedPermissions,
-      selectAPIs,
-      user: wrappedUser,
-    } = createWrappedAPIs({
-      geolocation: suppliedGeolocation,
-      permissions: suppliedPermissions,
-      handlePermissionRequest: handleFakePermissionRequest,
-    }));
-
-    wrappedUser.grantPermission({ name: "geolocation" });
-    wrappedUser.jumpToCoordinates(coordsB);
+    handlePermissionRequest = jest.fn<HandlePermissionRequest>(() => "granted");
+    const wrapped = createWrappedAPIs({
+      geolocation: supplied.geolocation,
+      permissions: supplied.permissions,
+      handlePermissionRequest,
+    });
+    geolocation = wrapped.geolocation;
+    permissions = wrapped.permissions;
+    user = wrapped.user;
+    selectAPIs = wrapped.selectAPIs;
+    user.jumpToCoordinates(coordsB);
+    user.grantPermission({ name: "geolocation" });
 
     successCallback = jest.fn();
     errorCallback = jest.fn();
@@ -92,11 +58,7 @@ describe("createWrappedAPIs()", () => {
 
   describe("before selecting APIs", () => {
     it("delegates to the fake Geolocation API", async () => {
-      await getCurrentPosition(
-        wrappedGeolocation,
-        successCallback,
-        errorCallback,
-      );
+      await getCurrentPosition(geolocation, successCallback, errorCallback);
 
       expectGeolocationSuccess(
         successCallback,
@@ -106,9 +68,9 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Permissions API", async () => {
-      expect(
-        (await wrappedPermissions.query({ name: "geolocation" })).state,
-      ).toBe("granted");
+      await user.requestPermission({ name: "push" });
+
+      expect((await permissions.query({ name: "push" })).state).toBe("granted");
     });
   });
 
@@ -118,11 +80,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the supplied Geolocation API", async () => {
-      await getCurrentPosition(
-        wrappedGeolocation,
-        successCallback,
-        errorCallback,
-      );
+      await getCurrentPosition(geolocation, successCallback, errorCallback);
 
       expectGeolocationSuccess(
         successCallback,
@@ -132,11 +90,9 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the supplied Permissions API", async () => {
-      suppliedUser.denyPermission({ name: "geolocation" });
+      await suppliedUser.requestPermission({ name: "push" });
 
-      expect(
-        (await wrappedPermissions.query({ name: "geolocation" })).state,
-      ).toBe("denied");
+      expect((await permissions.query({ name: "push" })).state).toBe("denied");
     });
 
     describe("after selecting the fake APIs", () => {
@@ -145,11 +101,7 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the fake Geolocation API", async () => {
-        await getCurrentPosition(
-          wrappedGeolocation,
-          successCallback,
-          errorCallback,
-        );
+        await getCurrentPosition(geolocation, successCallback, errorCallback);
 
         expectGeolocationSuccess(
           successCallback,
@@ -159,9 +111,11 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the fake Permissions API", async () => {
-        expect(
-          (await wrappedPermissions.query({ name: "geolocation" })).state,
-        ).toBe("granted");
+        await user.requestPermission({ name: "push" });
+
+        expect((await permissions.query({ name: "push" })).state).toBe(
+          "granted",
+        );
       });
     });
   });
@@ -172,11 +126,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Geolocation API", async () => {
-      await getCurrentPosition(
-        wrappedGeolocation,
-        successCallback,
-        errorCallback,
-      );
+      await getCurrentPosition(geolocation, successCallback, errorCallback);
 
       expectGeolocationSuccess(
         successCallback,
@@ -186,9 +136,9 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Permissions API", async () => {
-      expect(
-        (await wrappedPermissions.query({ name: "geolocation" })).state,
-      ).toBe("granted");
+      await user.requestPermission({ name: "push" });
+
+      expect((await permissions.query({ name: "push" })).state).toBe("granted");
     });
 
     describe("after selecting the supplied APIs", () => {
@@ -197,11 +147,7 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the supplied Geolocation API", async () => {
-        await getCurrentPosition(
-          wrappedGeolocation,
-          successCallback,
-          errorCallback,
-        );
+        await getCurrentPosition(geolocation, successCallback, errorCallback);
 
         expectGeolocationSuccess(
           successCallback,
@@ -211,11 +157,11 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the supplied Permissions API", async () => {
-        suppliedUser.denyPermission({ name: "geolocation" });
+        await suppliedUser.requestPermission({ name: "push" });
 
-        expect(
-          (await wrappedPermissions.query({ name: "geolocation" })).state,
-        ).toBe("denied");
+        expect((await permissions.query({ name: "push" })).state).toBe(
+          "denied",
+        );
       });
     });
   });
