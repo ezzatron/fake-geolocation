@@ -6,7 +6,6 @@ import {
 import { createAPIs } from "./create-apis.js";
 import { createDelegatedGeolocation } from "./delegated-geolocation.js";
 import { MutableLocationServices } from "./location-services.js";
-import { StdGeolocation, StdGeolocationCoordinates } from "./types/std.js";
 import { User } from "./user.js";
 
 export function createWrappedAPIs({
@@ -16,15 +15,15 @@ export function createWrappedAPIs({
   permissions: suppliedPermissions,
   permissionStore: suppliedPermissionStore,
 }: {
-  geolocation: StdGeolocation;
+  geolocation: Geolocation;
   handlePermissionRequest?: HandlePermissionRequest;
   lowAccuracyTransform?: (
-    coords: StdGeolocationCoordinates,
-  ) => StdGeolocationCoordinates;
+    coords: GeolocationCoordinates,
+  ) => GeolocationCoordinates;
   permissions: Permissions;
   permissionStore?: PermissionStore;
 }): {
-  geolocation: StdGeolocation;
+  geolocation: Geolocation;
   locationServices: MutableLocationServices;
   permissions: Permissions;
   permissionStore: PermissionStore;

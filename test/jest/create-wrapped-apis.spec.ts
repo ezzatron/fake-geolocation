@@ -6,7 +6,6 @@ import {
   createPosition,
   createWrappedAPIs,
 } from "../../src/index.js";
-import { StdGeolocation } from "../../src/types/std.js";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
 import { expectGeolocationSuccess } from "./expect.js";
@@ -18,7 +17,7 @@ describe("createWrappedAPIs()", () => {
   let suppliedUser: User;
 
   let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
-  let geolocation: StdGeolocation;
+  let geolocation: Geolocation;
   let permissions: Permissions;
   let user: User;
   let selectAPIs: (useSuppliedAPIs: boolean) => void;

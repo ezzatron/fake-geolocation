@@ -7,14 +7,6 @@ import {
 } from "./geolocation-position-error.js";
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
 import { LocationServices, Unsubscribe } from "./location-services.js";
-import {
-  StdGeolocation,
-  StdGeolocationCoordinates,
-  StdGeolocationPosition,
-  StdPositionCallback,
-  StdPositionErrorCallback,
-  StdPositionOptions,
-} from "./types/std.js";
 
 type GeolocationParameters = {
   locationServices: LocationServices;
@@ -26,7 +18,7 @@ let canConstruct = false;
 
 export function createGeolocation(
   parameters: GeolocationParameters,
-): StdGeolocation {
+): globalThis.Geolocation {
   canConstruct = true;
 
   return new Geolocation(parameters);
@@ -54,15 +46,15 @@ export class Geolocation {
    * § 6.2 getCurrentPosition() method
    */
   getCurrentPosition(
-    successCallback: StdPositionCallback,
-    errorCallback?: StdPositionErrorCallback | null,
+    successCallback: PositionCallback,
+    errorCallback?: PositionErrorCallback | null,
     {
       enableHighAccuracy = false,
       maximumAge = 0,
       timeout = Infinity,
-    }: StdPositionOptions = {},
+    }: PositionOptions = {},
   ): void {
-    const options: Required<StdPositionOptions> = {
+    const options: Required<PositionOptions> = {
       enableHighAccuracy,
       maximumAge,
       timeout,
@@ -94,15 +86,15 @@ export class Geolocation {
    * § 6.3 watchPosition() method
    */
   watchPosition(
-    successCallback: StdPositionCallback,
-    errorCallback?: StdPositionErrorCallback | null,
+    successCallback: PositionCallback,
+    errorCallback?: PositionErrorCallback | null,
     {
       enableHighAccuracy = false,
       maximumAge = 0,
       timeout = Infinity,
-    }: StdPositionOptions = {},
+    }: PositionOptions = {},
   ): number {
-    const options: Required<StdPositionOptions> = {
+    const options: Required<PositionOptions> = {
       enableHighAccuracy,
       maximumAge,
       timeout,
@@ -166,9 +158,9 @@ export class Geolocation {
    * optional watchId:
    */
   async #requestPosition(
-    successCallback: StdPositionCallback,
-    errorCallback: StdPositionErrorCallback | undefined,
-    options: Required<StdPositionOptions>,
+    successCallback: PositionCallback,
+    errorCallback: PositionErrorCallback | undefined,
+    options: Required<PositionOptions>,
     watchId?: number,
   ): Promise<void> {
     /*
@@ -278,9 +270,9 @@ export class Geolocation {
    * optional watchId.
    */
   async #acquirePosition(
-    successCallback: StdPositionCallback,
-    errorCallback: StdPositionErrorCallback | undefined,
-    options: Required<StdPositionOptions>,
+    successCallback: PositionCallback,
+    errorCallback: PositionErrorCallback | undefined,
+    options: Required<PositionOptions>,
     watchId?: number,
   ): Promise<void> {
     /*
@@ -325,7 +317,7 @@ export class Geolocation {
       });
     }
 
-    const workTask: Promise<StdGeolocationPosition> = (async () => {
+    const workTask: Promise<GeolocationPosition> = (async () => {
       /*
        * 5. (cont.)
        *    1. Let permission be get the current permission state of
@@ -358,7 +350,7 @@ export class Geolocation {
        *    3. If permission is "granted":
        *       1. Let position be null.
        */
-      let position: StdGeolocationPosition | null = null;
+      let position: GeolocationPosition | null = null;
 
       /*
        * 5. (cont.)
@@ -410,7 +402,7 @@ export class Geolocation {
        *          during acquisition.
        */
       if (!position) {
-        let coords: StdGeolocationCoordinates;
+        let coords: GeolocationCoordinates;
 
         try {
           coords = await this.#locationServices.acquireCoordinates(
@@ -529,5 +521,3 @@ export class Geolocation {
   #watchUnsubscribers: Record<number, Unsubscribe>;
   #watchId: number;
 }
-
-Geolocation satisfies new (...args: never[]) => StdGeolocation;

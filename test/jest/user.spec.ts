@@ -5,9 +5,8 @@ import {
   createLocationServices,
   createUser,
 } from "../../src/index.js";
-import { StdGeolocationCoordinates } from "../../src/types/std.js";
 
-const coordinatesA: StdGeolocationCoordinates = {
+const coordinatesA: GeolocationCoordinates = {
   latitude: 40.71703581534977,
   longitude: -74.03457283319447,
   accuracy: 25.019,

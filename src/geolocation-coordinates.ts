@@ -1,10 +1,8 @@
-import { StdGeolocationCoordinates } from "./types/std.js";
-
 let canConstruct = false;
 
 export function createCoordinates(
-  coords: StdGeolocationCoordinates,
-): StdGeolocationCoordinates {
+  coords: globalThis.GeolocationCoordinates,
+): globalThis.GeolocationCoordinates {
   canConstruct = true;
 
   return new GeolocationCoordinates(coords);
@@ -19,7 +17,7 @@ export class GeolocationCoordinates {
   readonly heading: number | null;
   readonly speed: number | null;
 
-  constructor(coords: StdGeolocationCoordinates) {
+  constructor(coords: globalThis.GeolocationCoordinates) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
@@ -32,7 +30,3 @@ export class GeolocationCoordinates {
     this.speed = coords.speed;
   }
 }
-
-GeolocationCoordinates satisfies new (
-  ...args: never[]
-) => StdGeolocationCoordinates;

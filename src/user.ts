@@ -5,12 +5,11 @@ import {
   createUser as createPermissionsUser,
 } from "fake-permissions";
 import { MutableLocationServices } from "./location-services.js";
-import { StdGeolocationCoordinates } from "./types/std.js";
 
 export interface User extends PermissionsUser {
   enableLocationServices(): void;
   disableLocationServices(): void;
-  jumpToCoordinates(coords: StdGeolocationCoordinates): void;
+  jumpToCoordinates(coords: GeolocationCoordinates): void;
 }
 
 export function createUser({
@@ -22,8 +21,8 @@ export function createUser({
   handlePermissionRequest?: HandlePermissionRequest;
   locationServices: MutableLocationServices;
   lowAccuracyTransform?: (
-    coords: StdGeolocationCoordinates,
-  ) => StdGeolocationCoordinates;
+    coords: GeolocationCoordinates,
+  ) => GeolocationCoordinates;
   permissionStore: PermissionStore;
 }): User {
   return {
@@ -37,7 +36,7 @@ export function createUser({
       locationServices.disable();
     },
 
-    jumpToCoordinates(coords: StdGeolocationCoordinates) {
+    jumpToCoordinates(coords: GeolocationCoordinates) {
       locationServices.setHighAccuracyCoordinates(coords);
       locationServices.setLowAccuracyCoordinates(lowAccuracyTransform(coords));
     },

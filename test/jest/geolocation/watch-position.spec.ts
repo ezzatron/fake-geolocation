@@ -10,10 +10,6 @@ import {
   createPositionUnavailableError,
   createTimeoutError,
 } from "../../../src/index.js";
-import {
-  StdGeolocation,
-  StdGeolocationPosition,
-} from "../../../src/types/std.js";
 import { coordsA, coordsB, coordsC } from "../../fixture/coords.js";
 import { getCurrentPosition } from "../../get-current-position.js";
 import { waitFor } from "../../wait-for.js";
@@ -24,7 +20,7 @@ describe("Geolocation.watchPosition()", () => {
   let locationServices: MutableLocationServices;
   let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
   let user: User;
-  let geolocation: StdGeolocation;
+  let geolocation: Geolocation;
 
   let successCallback: jest.Mock;
   let errorCallback: jest.Mock;
@@ -593,7 +589,7 @@ describe("Geolocation.watchPosition()", () => {
       });
 
       describe("when there is a cached high accuracy position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(
@@ -710,7 +706,7 @@ describe("Geolocation.watchPosition()", () => {
       });
 
       describe("when there is a cached low accuracy position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(
@@ -831,7 +827,7 @@ describe("Geolocation.watchPosition()", () => {
       });
 
       describe("when there is a cached position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(geolocation, (position) => {
@@ -985,7 +981,7 @@ describe("Geolocation.watchPosition()", () => {
       });
 
       describe("when there is a cached position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(geolocation, (position) => {

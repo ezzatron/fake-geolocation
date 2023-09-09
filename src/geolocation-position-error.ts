@@ -1,14 +1,12 @@
-import { StdGeolocationPositionError } from "./types/std.js";
-
-const PERMISSION_DENIED: StdGeolocationPositionError["PERMISSION_DENIED"] = 1;
-const POSITION_UNAVAILABLE: StdGeolocationPositionError["POSITION_UNAVAILABLE"] = 2;
-const TIMEOUT: StdGeolocationPositionError["TIMEOUT"] = 3;
+const PERMISSION_DENIED: globalThis.GeolocationPositionError["PERMISSION_DENIED"] = 1;
+const POSITION_UNAVAILABLE: globalThis.GeolocationPositionError["POSITION_UNAVAILABLE"] = 2;
+const TIMEOUT: globalThis.GeolocationPositionError["TIMEOUT"] = 3;
 
 let canConstruct = false;
 
 export function createPermissionDeniedError(
   message: string,
-): StdGeolocationPositionError {
+): globalThis.GeolocationPositionError {
   canConstruct = true;
 
   return new GeolocationPositionError(PERMISSION_DENIED, message);
@@ -16,7 +14,7 @@ export function createPermissionDeniedError(
 
 export function createPositionUnavailableError(
   message: string,
-): StdGeolocationPositionError {
+): globalThis.GeolocationPositionError {
   canConstruct = true;
 
   return new GeolocationPositionError(POSITION_UNAVAILABLE, message);
@@ -24,7 +22,7 @@ export function createPositionUnavailableError(
 
 export function createTimeoutError(
   message: string,
-): StdGeolocationPositionError {
+): globalThis.GeolocationPositionError {
   canConstruct = true;
 
   return new GeolocationPositionError(TIMEOUT, message);
@@ -49,7 +47,3 @@ export class GeolocationPositionError {
     this.message = message;
   }
 }
-
-GeolocationPositionError satisfies new (
-  ...args: never[]
-) => StdGeolocationPositionError;

@@ -1,8 +1,4 @@
 import { createCoordinates } from "./geolocation-coordinates.js";
-import {
-  StdGeolocationCoordinates,
-  StdGeolocationPosition,
-} from "./types/std.js";
 
 const internal = new WeakMap<
   GeolocationPosition,
@@ -12,10 +8,10 @@ const internal = new WeakMap<
 let canConstruct = false;
 
 export function createPosition(
-  coords: StdGeolocationCoordinates,
+  coords: GeolocationCoordinates,
   timestamp: number,
   isHighAccuracy: boolean,
-): StdGeolocationPosition {
+): globalThis.GeolocationPosition {
   canConstruct = true;
 
   const position = new GeolocationPosition(
@@ -28,10 +24,10 @@ export function createPosition(
 }
 
 export class GeolocationPosition {
-  readonly coords: StdGeolocationCoordinates;
+  readonly coords: GeolocationCoordinates;
   readonly timestamp: number;
 
-  constructor(coords: StdGeolocationCoordinates, timestamp: number) {
+  constructor(coords: GeolocationCoordinates, timestamp: number) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
@@ -40,9 +36,7 @@ export class GeolocationPosition {
   }
 }
 
-GeolocationPosition satisfies new (...args: never[]) => StdGeolocationPosition;
-
-export function isHighAccuracy(position: StdGeolocationPosition) {
+export function isHighAccuracy(position: globalThis.GeolocationPosition) {
   const slots = internal.get(position);
 
   /* istanbul ignore next: internal function, can't occur normally  */

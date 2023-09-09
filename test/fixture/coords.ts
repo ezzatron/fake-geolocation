@@ -1,6 +1,4 @@
-import { StdGeolocationCoordinates } from "../../src/types/std.js";
-
-export const coordsA: StdGeolocationCoordinates = {
+export const coordsA: GeolocationCoordinates = {
   latitude: 40.71703581534977,
   longitude: -74.03457283319447,
   accuracy: 25.019,
@@ -10,7 +8,7 @@ export const coordsA: StdGeolocationCoordinates = {
   speed: null,
 };
 
-export const coordsB: StdGeolocationCoordinates = {
+export const coordsB: GeolocationCoordinates = {
   latitude: 12,
   longitude: 34,
   accuracy: 56,
@@ -20,7 +18,7 @@ export const coordsB: StdGeolocationCoordinates = {
   speed: null,
 };
 
-export const coordsC: StdGeolocationCoordinates = {
+export const coordsC: GeolocationCoordinates = {
   latitude: 98,
   longitude: 76,
   accuracy: 54,
@@ -30,7 +28,7 @@ export const coordsC: StdGeolocationCoordinates = {
   speed: null,
 };
 
-export const coordsD: StdGeolocationCoordinates = {
+export const coordsD: GeolocationCoordinates = {
   latitude: 23,
   longitude: 45,
   accuracy: 67,

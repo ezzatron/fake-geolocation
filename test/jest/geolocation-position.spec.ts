@@ -1,12 +1,8 @@
 import { createCoordinates, createPosition } from "../../src/index.js";
-import {
-  StdGeolocationCoordinates,
-  StdGeolocationPosition,
-} from "../../src/types/std.js";
 
 describe("GeolocationPosition", () => {
-  let coords: StdGeolocationCoordinates;
-  let position: StdGeolocationPosition;
+  let coords: GeolocationCoordinates;
+  let position: GeolocationPosition;
 
   beforeEach(() => {
     coords = createCoordinates({

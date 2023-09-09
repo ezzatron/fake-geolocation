@@ -1,12 +1,11 @@
 import { sleep } from "./async.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
-import { StdGeolocationCoordinates } from "./types/std.js";
 
 export interface LocationServices {
   readonly isEnabled: boolean;
   acquireCoordinates(
     enableHighAccuracy: boolean,
-  ): Promise<StdGeolocationCoordinates>;
+  ): Promise<GeolocationCoordinates>;
   subscribe(subscriber: Subscriber): Unsubscribe;
 }
 
@@ -16,12 +15,8 @@ export type Subscriber = (isHighAccuracy: boolean) => void;
 export interface MutableLocationServices extends LocationServices {
   enable(): void;
   disable(): void;
-  setHighAccuracyCoordinates(
-    coords: StdGeolocationCoordinates | undefined,
-  ): void;
-  setLowAccuracyCoordinates(
-    coords: StdGeolocationCoordinates | undefined,
-  ): void;
+  setHighAccuracyCoordinates(coords: GeolocationCoordinates | undefined): void;
+  setLowAccuracyCoordinates(coords: GeolocationCoordinates | undefined): void;
 }
 
 export function createLocationServices({
@@ -29,8 +24,8 @@ export function createLocationServices({
 }: { acquireDelay?: number } = {}): MutableLocationServices {
   const subscribers = new Set<Subscriber>();
   let isEnabled = true;
-  let highAccuracyCoords: StdGeolocationCoordinates | undefined;
-  let lowAccuracyCoords: StdGeolocationCoordinates | undefined;
+  let highAccuracyCoords: GeolocationCoordinates | undefined;
+  let lowAccuracyCoords: GeolocationCoordinates | undefined;
 
   return {
     get isEnabled() {

@@ -12,7 +12,6 @@ import {
   createPosition,
   createUser,
 } from "../../src/index.js";
-import { StdGeolocation } from "../../src/types/std.js";
 import { coordsA, coordsB, coordsC, coordsD } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
 import { waitFor } from "../wait-for.js";
@@ -26,9 +25,9 @@ describe("Delegated geolocation", () => {
   let permissionsB: Permissions;
   let userA: User;
   let userB: User;
-  let delegateA: StdGeolocation;
-  let delegateB: StdGeolocation;
-  let geolocation: StdGeolocation;
+  let delegateA: Geolocation;
+  let delegateB: Geolocation;
+  let geolocation: Geolocation;
   let selectDelegate: SelectDelegate;
 
   let successCallback: jest.Mock;

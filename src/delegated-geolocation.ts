@@ -1,13 +1,11 @@
-import { StdGeolocation } from "./types/std.js";
-
 let canConstruct = false;
 
 export function createDelegatedGeolocation({
   delegates,
 }: {
-  delegates: StdGeolocation[];
+  delegates: globalThis.Geolocation[];
 }): {
-  geolocation: StdGeolocation;
+  geolocation: globalThis.Geolocation;
   selectDelegate: SelectDelegate;
 } {
   let [delegate] = delegates;
@@ -46,10 +44,10 @@ export function createDelegatedGeolocation({
   };
 }
 
-export type SelectDelegate = (delegate: StdGeolocation) => void;
+export type SelectDelegate = (delegate: globalThis.Geolocation) => void;
 
 type GeolocationParameters = {
-  delegate: () => StdGeolocation;
+  delegate: () => globalThis.Geolocation;
   subscribe: (subscriber: Subscriber) => void;
   unsubscribe: (subscriber: Subscriber) => void;
 };
@@ -113,7 +111,7 @@ export class Geolocation {
     }
   }
 
-  readonly #delegate: () => StdGeolocation;
+  readonly #delegate: () => globalThis.Geolocation;
   readonly #subscribe: (subscriber: Subscriber) => void;
   readonly #unsubscribe: (subscriber: Subscriber) => void;
   #watchId: number;
@@ -121,17 +119,17 @@ export class Geolocation {
   readonly #handleDelegateChange: () => void;
 }
 
-Geolocation satisfies new (...args: never[]) => StdGeolocation;
-
 type Subscriber = () => void;
 
 type Watch = {
   readonly args: WatchPositionParameters;
-  delegate: StdGeolocation;
+  delegate: globalThis.Geolocation;
   delegateWatchId: number;
 };
 
 type GetCurrentPositionParameters = Parameters<
-  StdGeolocation["getCurrentPosition"]
+  globalThis.Geolocation["getCurrentPosition"]
 >;
-type WatchPositionParameters = Parameters<StdGeolocation["watchPosition"]>;
+type WatchPositionParameters = Parameters<
+  globalThis.Geolocation["watchPosition"]
+>;

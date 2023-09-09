@@ -1,8 +1,7 @@
 import { createAPIs } from "../../../src/index.js";
-import { StdGeolocation } from "../../../src/types/std.js";
 
 describe("Geolocation", () => {
-  let geolocation: StdGeolocation;
+  let geolocation: Geolocation;
 
   beforeEach(() => {
     ({ geolocation } = createAPIs());

@@ -1,15 +1,8 @@
-import {
-  StdGeolocation,
-  StdPositionCallback,
-  StdPositionErrorCallback,
-  StdPositionOptions,
-} from "../src/types/std.js";
-
 export async function getCurrentPosition(
-  geolocation: StdGeolocation,
-  successCallback: StdPositionCallback,
-  errorCallback?: StdPositionErrorCallback,
-  options?: StdPositionOptions,
+  geolocation: Geolocation,
+  successCallback: PositionCallback,
+  errorCallback?: PositionErrorCallback,
+  options?: PositionOptions,
   signal?: AbortSignal,
 ): Promise<void> {
   return new Promise((resolve) => {

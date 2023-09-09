@@ -9,7 +9,6 @@ import {
   MutableLocationServices,
   createLocationServices,
 } from "./location-services.js";
-import { StdGeolocation, StdGeolocationCoordinates } from "./types/std.js";
 import { User, createUser } from "./user.js";
 
 export function createAPIs({
@@ -19,11 +18,11 @@ export function createAPIs({
 }: {
   handlePermissionRequest?: HandlePermissionRequest;
   lowAccuracyTransform?: (
-    coords: StdGeolocationCoordinates,
-  ) => StdGeolocationCoordinates;
+    coords: GeolocationCoordinates,
+  ) => GeolocationCoordinates;
   permissionStore?: PermissionStore;
 } = {}): {
-  geolocation: StdGeolocation;
+  geolocation: Geolocation;
   locationServices: MutableLocationServices;
   permissions: Permissions;
   permissionStore: PermissionStore;

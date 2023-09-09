@@ -1,14 +1,9 @@
 import { jest } from "@jest/globals";
 import { GeolocationPositionError } from "../../src/index.js";
-import {
-  StdGeolocationPosition,
-  StdPositionCallback,
-  StdPositionErrorCallback,
-} from "../../src/types/std.js";
 
 export function expectGeolocationError(
-  successCallback: jest.Mock<StdPositionCallback>,
-  errorCallback: jest.Mock<StdPositionErrorCallback>,
+  successCallback: jest.Mock<PositionCallback>,
+  errorCallback: jest.Mock<PositionErrorCallback>,
   error: GeolocationPositionError,
 ): void {
   expect(successCallback).not.toHaveBeenCalled();
@@ -16,9 +11,9 @@ export function expectGeolocationError(
 }
 
 export function expectGeolocationSuccess(
-  successCallback: jest.Mock<StdPositionCallback>,
-  errorCallback: jest.Mock<StdPositionErrorCallback>,
-  position: StdGeolocationPosition,
+  successCallback: jest.Mock<PositionCallback>,
+  errorCallback: jest.Mock<PositionErrorCallback>,
+  position: GeolocationPosition,
   exact: boolean = false,
 ): void {
   expect(errorCallback).not.toHaveBeenCalled();

@@ -1,8 +1,7 @@
 import { createPositionUnavailableError } from "../../src/index.js";
-import { StdGeolocationPositionError } from "../../src/types/std.js";
 
 describe("GeolocationPositionError", () => {
-  let error: StdGeolocationPositionError;
+  let error: GeolocationPositionError;
 
   beforeEach(() => {
     error = createPositionUnavailableError("<message>");

@@ -10,10 +10,6 @@ import {
   createPositionUnavailableError,
   createTimeoutError,
 } from "../../../src/index.js";
-import {
-  StdGeolocation,
-  StdGeolocationPosition,
-} from "../../../src/types/std.js";
 import { coordsA, coordsB } from "../../fixture/coords.js";
 import { getCurrentPosition } from "../../get-current-position.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
@@ -23,7 +19,7 @@ describe("Geolocation.getCurrentPosition()", () => {
   let locationServices: MutableLocationServices;
   let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
   let user: User;
-  let geolocation: StdGeolocation;
+  let geolocation: Geolocation;
 
   let successCallback: jest.Mock;
   let errorCallback: jest.Mock;
@@ -327,7 +323,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       it("cannot be read synchronously", () => {
-        let position: StdGeolocationPosition | undefined;
+        let position: GeolocationPosition | undefined;
         geolocation.getCurrentPosition((nextPosition) => {
           position = nextPosition;
         });
@@ -476,7 +472,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       describe("when there is a cached high accuracy position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(
@@ -583,7 +579,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       describe("when there is a cached low accuracy position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(
@@ -694,7 +690,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       describe("when there is a cached position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(geolocation, (position) => {
@@ -839,7 +835,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       describe("when there is a cached position", () => {
-        let cachedPosition: StdGeolocationPosition;
+        let cachedPosition: GeolocationPosition;
 
         beforeEach(async () => {
           await getCurrentPosition(geolocation, (position) => {
