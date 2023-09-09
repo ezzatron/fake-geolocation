@@ -3,7 +3,7 @@ import {
   PermissionStore,
   createDelegatedPermissions,
 } from "fake-permissions";
-import { createStandardAPIs } from "./create-standard-apis.js";
+import { createAPIs } from "./create-apis.js";
 import { createDelegatedGeolocation } from "./delegated-geolocation.js";
 import { MutableLocationServices } from "./location-services.js";
 import { StdGeolocation, StdGeolocationCoordinates } from "./types/std.js";
@@ -37,7 +37,7 @@ export function createWrappedAPIs({
     permissions: fakePermissions,
     permissionStore,
     user,
-  } = createStandardAPIs({
+  } = createAPIs({
     handlePermissionRequest,
     lowAccuracyTransform,
     permissionStore: suppliedPermissionStore,

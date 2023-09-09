@@ -12,7 +12,7 @@ import {
 import { StdGeolocation, StdGeolocationCoordinates } from "./types/std.js";
 import { User, createUser } from "./user.js";
 
-export function createStandardAPIs({
+export function createAPIs({
   handlePermissionRequest,
   lowAccuracyTransform = (coords) => coords,
   permissionStore = createPermissionStore(),
@@ -30,10 +30,7 @@ export function createStandardAPIs({
   user: User;
 } {
   const locationServices = createLocationServices();
-
-  const permissions = createPermissions({
-    permissionStore,
-  });
+  const permissions = createPermissions({ permissionStore });
 
   const user = createUser({
     handlePermissionRequest,

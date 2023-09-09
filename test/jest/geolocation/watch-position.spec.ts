@@ -4,10 +4,10 @@ import { sleep } from "../../../src/async.js";
 import {
   MutableLocationServices,
   User,
+  createAPIs,
   createPermissionDeniedError,
   createPosition,
   createPositionUnavailableError,
-  createStandardAPIs,
   createTimeoutError,
 } from "../../../src/index.js";
 import {
@@ -36,7 +36,7 @@ describe("Geolocation.watchPosition()", () => {
 
     handlePermissionRequest = jest.fn<HandlePermissionRequest>();
 
-    ({ geolocation, locationServices, user } = createStandardAPIs({
+    ({ geolocation, locationServices, user } = createAPIs({
       handlePermissionRequest,
     }));
 
