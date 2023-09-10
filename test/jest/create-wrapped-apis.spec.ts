@@ -73,7 +73,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Permissions API", async () => {
-      await user.requestPermission({ name: "push" }); 
+      await user.requestPermission({ name: "push" });
 
       expect((await permissions.query({ name: "push" })).state).toBe("granted");
     });
