@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.3.0] - 2023-09-10
+
+[v0.3.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.3.0
+
+### Added
+
+- Delegate selection can now be queried with `isDelegateSelected()`.
+- Wrapped APIs can now be queried with `isUsingSuppliedAPIs()`.
+
 ## [v0.2.0] - 2023-09-10
 
 [v0.2.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.2.0
