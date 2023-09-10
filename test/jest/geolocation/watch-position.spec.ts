@@ -368,7 +368,7 @@ describe("Geolocation.watchPosition()", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runAllTimersAsync(); // ensure that the first position is acquired
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             user.jumpToCoordinates(coordsB);
             await sleep(delay);
@@ -400,7 +400,7 @@ describe("Geolocation.watchPosition()", () => {
             const delay = 20;
 
             beforeEach(async () => {
-              await jest.runAllTimersAsync(); // ensure that the first position is acquired
+              await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
               await sleep(delay);
               successCallback.mockClear();
               errorCallback.mockClear();
@@ -424,7 +424,7 @@ describe("Geolocation.watchPosition()", () => {
             const delay = 20;
 
             beforeEach(async () => {
-              await jest.runAllTimersAsync(); // ensure that the first position is acquired
+              await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
               await sleep(delay);
               successCallback.mockClear();
               errorCallback.mockClear();
@@ -448,7 +448,7 @@ describe("Geolocation.watchPosition()", () => {
 
               describe("when the coords change", () => {
                 beforeEach(async () => {
-                  await jest.runAllTimersAsync(); // ensure that the previous position is acquired
+                  await jest.runOnlyPendingTimersAsync(); // ensure that the previous position is acquired
                   await sleep(delay);
                   successCallback.mockClear();
                   errorCallback.mockClear();
@@ -541,7 +541,7 @@ describe("Geolocation.watchPosition()", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runAllTimersAsync(); // ensure that the first position is acquired
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();

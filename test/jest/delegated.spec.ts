@@ -155,7 +155,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runAllTimersAsync(); // ensure that the first position is acquired
+          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           userA.jumpToCoordinates(coordsC);
           await sleep(delay);
@@ -182,7 +182,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runAllTimersAsync(); // ensure that the first position is acquired
+          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -200,7 +200,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runAllTimersAsync(); // ensure that the first position is acquired
+          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -221,7 +221,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runAllTimersAsync(); // ensure that the first position is acquired
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -251,7 +251,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runAllTimersAsync(); // ensure that the first position is acquired
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -369,7 +369,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runAllTimersAsync(); // ensure that the first position is acquired
+          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           userB.jumpToCoordinates(coordsC);
           await sleep(delay);
@@ -396,7 +396,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runAllTimersAsync(); // ensure that the first position is acquired
+          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -414,7 +414,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runAllTimersAsync(); // ensure that the first position is acquired
+          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -435,7 +435,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runAllTimersAsync(); // ensure that the first position is acquired
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -465,7 +465,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runAllTimersAsync(); // ensure that the first position is acquired
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
