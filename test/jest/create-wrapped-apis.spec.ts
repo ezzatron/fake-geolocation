@@ -21,6 +21,7 @@ describe("createWrappedAPIs()", () => {
   let permissions: Permissions;
   let user: User;
   let selectAPIs: (useSuppliedAPIs: boolean) => void;
+  let isUsingSuppliedAPIs: () => boolean;
 
   let successCallback: jest.Mock;
   let errorCallback: jest.Mock;
@@ -48,6 +49,7 @@ describe("createWrappedAPIs()", () => {
     permissions = wrapped.permissions;
     user = wrapped.user;
     selectAPIs = wrapped.selectAPIs;
+    isUsingSuppliedAPIs = wrapped.isUsingSuppliedAPIs;
     user.jumpToCoordinates(coordsB);
     user.grantPermission({ name: "geolocation" });
 
@@ -56,6 +58,10 @@ describe("createWrappedAPIs()", () => {
   });
 
   describe("before selecting APIs", () => {
+    it("has selected the fake APIs", () => {
+      expect(isUsingSuppliedAPIs()).toBe(false);
+    });
+
     it("delegates to the fake Geolocation API", async () => {
       await getCurrentPosition(geolocation, successCallback, errorCallback);
 
@@ -76,6 +82,10 @@ describe("createWrappedAPIs()", () => {
   describe("after selecting the supplied APIs", () => {
     beforeEach(() => {
       selectAPIs(true);
+    });
+
+    it("has selected the supplied APIs", () => {
+      expect(isUsingSuppliedAPIs()).toBe(true);
     });
 
     it("delegates to the supplied Geolocation API", async () => {
@@ -122,6 +132,10 @@ describe("createWrappedAPIs()", () => {
   describe("after selecting the fake APIs", () => {
     beforeEach(() => {
       selectAPIs(false);
+    });
+
+    it("has selected the fake APIs", () => {
+      expect(isUsingSuppliedAPIs()).toBe(false);
     });
 
     it("delegates to the fake Geolocation API", async () => {

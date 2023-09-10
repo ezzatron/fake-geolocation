@@ -24,6 +24,7 @@ export function createWrappedAPIs({
   permissionStore?: PermissionStore;
 }): {
   geolocation: Geolocation;
+  isUsingSuppliedAPIs: () => boolean;
   locationServices: MutableLocationServices;
   permissions: Permissions;
   permissionStore: PermissionStore;
@@ -42,10 +43,13 @@ export function createWrappedAPIs({
     permissionStore: suppliedPermissionStore,
   });
 
-  const { geolocation, selectDelegate: selectGeolocationDelegate } =
-    createDelegatedGeolocation({
-      delegates: [fakeGeolocation, suppliedGeolocation],
-    });
+  const {
+    geolocation,
+    selectDelegate: selectGeolocationDelegate,
+    isDelegateSelected: isGeolocationDelegateSelected,
+  } = createDelegatedGeolocation({
+    delegates: [fakeGeolocation, suppliedGeolocation],
+  });
 
   const { permissions, selectDelegate: selectPermissionsDelegate } =
     createDelegatedPermissions({
@@ -66,6 +70,10 @@ export function createWrappedAPIs({
       selectPermissionsDelegate(
         useSuppliedAPIs ? suppliedPermissions : fakePermissions,
       );
+    },
+
+    isUsingSuppliedAPIs() {
+      return isGeolocationDelegateSelected(suppliedGeolocation);
     },
   };
 }
