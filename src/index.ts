@@ -1,7 +1,10 @@
 export * from "./create-apis.js";
 export * from "./create-wrapped-apis.js";
 export { createDelegatedGeolocation } from "./delegated-geolocation.js";
-export type { SelectDelegate } from "./delegated-geolocation.js";
+export type {
+  IsDelegateSelected,
+  SelectDelegate,
+} from "./delegated-geolocation.js";
 export {
   GeolocationCoordinates,
   createCoordinates,

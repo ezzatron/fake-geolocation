@@ -7,6 +7,7 @@ export function createDelegatedGeolocation({
 }): {
   geolocation: globalThis.Geolocation;
   selectDelegate: SelectDelegate;
+  isDelegateSelected: IsDelegateSelected;
 } {
   let [delegate] = delegates;
   if (!delegate) throw new TypeError("No delegates provided");
@@ -41,10 +42,15 @@ export function createDelegatedGeolocation({
         }
       }
     },
+
+    isDelegateSelected(query) {
+      return query === delegate;
+    },
   };
 }
 
 export type SelectDelegate = (delegate: globalThis.Geolocation) => void;
+export type IsDelegateSelected = (delegate: globalThis.Geolocation) => boolean;
 
 type GeolocationParameters = {
   delegate: () => globalThis.Geolocation;

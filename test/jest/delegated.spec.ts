@@ -2,6 +2,7 @@ import { jest } from "@jest/globals";
 import { createPermissionStore, createPermissions } from "fake-permissions";
 import { sleep } from "../../src/async.js";
 import {
+  IsDelegateSelected,
   MutableLocationServices,
   SelectDelegate,
   User,
@@ -29,6 +30,7 @@ describe("Delegated geolocation", () => {
   let delegateB: Geolocation;
   let geolocation: Geolocation;
   let selectDelegate: SelectDelegate;
+  let isDelegateSelected: IsDelegateSelected;
 
   let successCallback: jest.Mock;
   let errorCallback: jest.Mock;
@@ -80,9 +82,10 @@ describe("Delegated geolocation", () => {
       },
     });
 
-    ({ geolocation, selectDelegate } = createDelegatedGeolocation({
-      delegates: [delegateA, delegateB],
-    }));
+    ({ geolocation, selectDelegate, isDelegateSelected } =
+      createDelegatedGeolocation({
+        delegates: [delegateA, delegateB],
+      }));
 
     successCallback = jest.fn();
     errorCallback = jest.fn();
@@ -119,6 +122,11 @@ describe("Delegated geolocation", () => {
   });
 
   describe("before selecting a delegate", () => {
+    it("has selected the first delegate", () => {
+      expect(isDelegateSelected(delegateA)).toBe(true);
+      expect(isDelegateSelected(delegateB)).toBe(false);
+    });
+
     describe("when reading the position", () => {
       beforeEach(async () => {
         await getCurrentPosition(geolocation, successCallback, errorCallback);
@@ -331,6 +339,11 @@ describe("Delegated geolocation", () => {
   describe("after selecting a delegate", () => {
     beforeEach(() => {
       selectDelegate(delegateB);
+    });
+
+    it("has selected the specified delegate", () => {
+      expect(isDelegateSelected(delegateB)).toBe(true);
+      expect(isDelegateSelected(delegateA)).toBe(false);
     });
 
     describe("when reading the position", () => {
