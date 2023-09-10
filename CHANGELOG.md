@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.2.0] - 2023-09-10
+
+[v0.2.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.2.0
+
+### Added
+
+- Finalized initial features.
+
 ## [v0.1.0] - 2023-07-29
 
 [v0.1.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.1.0
