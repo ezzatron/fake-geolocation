@@ -10,6 +10,7 @@ export interface User extends PermissionsUser {
   enableLocationServices(): void;
   disableLocationServices(): void;
   jumpToCoordinates(coords: Partial<GeolocationCoordinates>): void;
+  takeJourney(journey: AsyncIterable<GeolocationCoordinates>): Promise<void>;
 }
 
 export function createUser({
@@ -63,6 +64,12 @@ export function createUser({
       locationServices.setLowAccuracyCoordinates(
         lowAccuracyTransform(normalized),
       );
+    },
+
+    async takeJourney(journey) {
+      for await (const coords of journey) {
+        this.jumpToCoordinates(coords);
+      }
     },
   };
 }

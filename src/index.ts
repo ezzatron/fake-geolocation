@@ -12,6 +12,7 @@ export {
 export * from "./geolocation-position-error.js";
 export { GeolocationPosition, createPosition } from "./geolocation-position.js";
 export { Geolocation, createGeolocation } from "./geolocation.js";
+export * from "./journey.js";
 export { createLocationServices } from "./location-services.js";
 export type {
   LocationServices,

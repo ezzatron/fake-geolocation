@@ -1,11 +1,21 @@
-import { PermissionStore, createPermissionStore } from "fake-permissions";
+import { jest } from "@jest/globals";
+import {
+  PermissionStore,
+  createPermissionStore,
+  createPermissions,
+} from "fake-permissions";
+import { sleep } from "../../src/async.js";
 import {
   MutableLocationServices,
   User,
+  createGeolocation,
   createLocationServices,
+  createPosition,
   createUser,
 } from "../../src/index.js";
-import { coordsA } from "../fixture/coords.js";
+import { coordsA, coordsB } from "../fixture/coords.js";
+import { waitFor } from "../wait-for.js";
+import { expectGeolocationSuccess } from "./expect.js";
 
 describe("User", () => {
   let locationServices: MutableLocationServices;
@@ -152,6 +162,121 @@ describe("User", () => {
         altitudeAccuracy: null,
         heading: null,
         speed: null,
+      });
+    });
+  });
+
+  describe("when taking a journey", () => {
+    const startTime = 100;
+    const delay = 40;
+    const watchIds: number[] = [];
+    let geolocation: Geolocation;
+
+    let highAccuracySuccessCallback: jest.Mock;
+    let highAccuracyErrorCallback: jest.Mock;
+    let lowAccuracySuccessCallback: jest.Mock;
+    let lowAccuracyErrorCallback: jest.Mock;
+
+    beforeEach(async () => {
+      jest.setSystemTime(startTime);
+
+      user = createUser({
+        locationServices,
+        permissionStore,
+
+        lowAccuracyTransform(coords) {
+          return {
+            ...coords,
+            accuracy: 111111,
+            altitudeAccuracy: 222222,
+          };
+        },
+      });
+      user.grantPermission({ name: "geolocation" });
+
+      geolocation = createGeolocation({
+        locationServices,
+        permissions: createPermissions({ permissionStore }),
+
+        async requestPermission(descriptor) {
+          return user.requestPermission(descriptor);
+        },
+      });
+
+      highAccuracySuccessCallback = jest.fn();
+      highAccuracyErrorCallback = jest.fn();
+      lowAccuracySuccessCallback = jest.fn();
+      lowAccuracyErrorCallback = jest.fn();
+
+      watchIds.push(
+        geolocation.watchPosition(
+          highAccuracySuccessCallback,
+          highAccuracyErrorCallback,
+          { enableHighAccuracy: true },
+        ),
+      );
+      watchIds.push(
+        geolocation.watchPosition(
+          lowAccuracySuccessCallback,
+          lowAccuracyErrorCallback,
+          { enableHighAccuracy: false },
+        ),
+      );
+
+      await user.takeJourney({
+        async *[Symbol.asyncIterator]() {
+          yield coordsA;
+          await sleep(delay);
+          yield coordsB;
+        },
+      });
+    });
+
+    afterEach(() => {
+      for (const watchId of watchIds) {
+        try {
+          geolocation.clearWatch(watchId);
+        } catch {
+          // ignored
+        }
+      }
+    });
+
+    it("updates the high-accuracy coordinates over time", async () => {
+      await waitFor(() => {
+        expectGeolocationSuccess(
+          highAccuracySuccessCallback,
+          highAccuracyErrorCallback,
+          createPosition(coordsA, startTime, true),
+        );
+        expectGeolocationSuccess(
+          highAccuracySuccessCallback,
+          highAccuracyErrorCallback,
+          createPosition(coordsB, startTime + delay, true),
+        );
+      });
+    });
+
+    it("updates the low-accuracy coordinates over time", async () => {
+      await waitFor(() => {
+        expectGeolocationSuccess(
+          lowAccuracySuccessCallback,
+          lowAccuracyErrorCallback,
+          createPosition(
+            { ...coordsA, accuracy: 111111, altitudeAccuracy: 222222 },
+            startTime,
+            true,
+          ),
+        );
+        expectGeolocationSuccess(
+          lowAccuracySuccessCallback,
+          lowAccuracyErrorCallback,
+          createPosition(
+            { ...coordsB, accuracy: 111111, altitudeAccuracy: 222222 },
+            startTime + delay,
+            true,
+          ),
+        );
       });
     });
   });
