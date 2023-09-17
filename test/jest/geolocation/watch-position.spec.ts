@@ -47,7 +47,7 @@ describe("Geolocation.watchPosition()", () => {
       try {
         geolocation.clearWatch(watchId);
       } catch {
-        // ignore
+        // ignored
       }
     }
   });

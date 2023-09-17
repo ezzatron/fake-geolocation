@@ -98,7 +98,7 @@ describe("Delegated geolocation", () => {
       try {
         geolocation.clearWatch(watchId);
       } catch {
-        // ignore
+        // ignored
       }
     }
   });
