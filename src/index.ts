@@ -1,3 +1,4 @@
+export * from "./compare-coordinates.js";
 export * from "./create-apis.js";
 export * from "./create-wrapped-apis.js";
 export { createDelegatedGeolocation } from "./delegated-geolocation.js";
@@ -18,3 +19,4 @@ export type {
   MutableLocationServices,
 } from "./location-services.js";
 export * from "./user.js";
+export * from "./wait-for-coordinates.js";
