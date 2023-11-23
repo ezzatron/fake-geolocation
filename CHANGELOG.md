@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.4.0] - 2023-11-23
+
+[v0.4.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.4.0
+
+### Changed
+
+- **\[BC BREAK]** `createDelegatedGeolocation()` now requires a
+  `permissionsDelegates` argument, which is a `Map` of `Geolocation` delegates
+  to their related `Permissions` delegates.
+
+### Added
+
+- Added `waitForCoordinates()` and `compareCoordinates()`
+
+### Fixed
+
+- Changing delegates while watching the position no longer causes permission
+  prompts when the selected delegate's `geolocation` permission is in the
+  `prompt` state. Instead, the error callback will be called with a
+  `PERMISSION_DENIED` error. If the selected delegate's `geolocation` permission
+  subsequently changes to `granted` or `denied`, the watch will resume.
+
 ## [v0.3.1] - 2023-09-10
 
 [v0.3.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.3.1
