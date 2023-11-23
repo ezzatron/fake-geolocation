@@ -1,5 +1,9 @@
 import { jest } from "@jest/globals";
-import { createPermissionStore, createPermissions } from "fake-permissions";
+import {
+  HandlePermissionRequest,
+  createPermissionStore,
+  createPermissions,
+} from "fake-permissions";
 import { sleep } from "../../src/async.js";
 import {
   IsDelegateSelected,
@@ -31,6 +35,9 @@ describe("Delegated geolocation", () => {
   let geolocation: Geolocation;
   let selectDelegate: SelectDelegate;
   let isDelegateSelected: IsDelegateSelected;
+
+  let requestPermissionA: jest.Mock<HandlePermissionRequest>;
+  let requestPermissionB: jest.Mock<HandlePermissionRequest>;
 
   let successCallback: jest.Mock;
   let errorCallback: jest.Mock;
@@ -65,26 +72,27 @@ describe("Delegated geolocation", () => {
     });
     userB.jumpToCoordinates(coordsB);
 
+    requestPermissionA = jest.fn(async (d) => userA.requestPermission(d));
+    requestPermissionB = jest.fn(async (d) => userB.requestPermission(d));
+
     delegateA = createGeolocation({
       locationServices: locationServicesA,
       permissions: permissionsA,
-
-      async requestPermission(descriptor) {
-        return userA.requestPermission(descriptor);
-      },
+      requestPermission: requestPermissionA,
     });
     delegateB = createGeolocation({
       locationServices: locationServicesB,
       permissions: permissionsB,
-
-      async requestPermission(descriptor) {
-        return userB.requestPermission(descriptor);
-      },
+      requestPermission: requestPermissionB,
     });
 
     ({ geolocation, selectDelegate, isDelegateSelected } =
       createDelegatedGeolocation({
         delegates: [delegateA, delegateB],
+        permissionsDelegates: new Map([
+          [delegateA, permissionsA],
+          [delegateB, permissionsB],
+        ]),
       }));
 
     successCallback = jest.fn();
@@ -114,11 +122,28 @@ describe("Delegated geolocation", () => {
 
   it("requires at least one delegate", () => {
     const call = () => {
-      createDelegatedGeolocation({ delegates: [] });
+      createDelegatedGeolocation({
+        delegates: [],
+        permissionsDelegates: new Map(),
+      });
     };
 
     expect(call).toThrow(TypeError);
     expect(call).toThrow("No delegates provided");
+  });
+
+  it("requires permissions delegates for all delegates", () => {
+    const call = () => {
+      createDelegatedGeolocation({
+        delegates: [delegateA, delegateB],
+        permissionsDelegates: new Map([[delegateA, permissionsA]]),
+      });
+    };
+
+    expect(call).toThrow(TypeError);
+    expect(call).toThrow(
+      "Missing Permissions delegate for Geolocation delegate at index 1",
+    );
   });
 
   describe("before selecting a delegate", () => {
@@ -246,6 +271,66 @@ describe("Delegated geolocation", () => {
 
               expect(successCallback).not.toHaveBeenCalled();
             });
+          });
+        });
+      });
+
+      describe("when selecting another delegate where permission has not been requested", () => {
+        const delay = 20;
+
+        beforeEach(async () => {
+          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await sleep(delay);
+          userB.resetPermission({ name: "geolocation" });
+          successCallback.mockClear();
+          errorCallback.mockClear();
+          requestPermissionB.mockClear();
+          selectDelegate(delegateB);
+        });
+
+        it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
+          expectGeolocationError(
+            successCallback,
+            errorCallback,
+            createPermissionDeniedError(""),
+          );
+        });
+
+        it("does not cause a permission request", () => {
+          expect(requestPermissionB).not.toHaveBeenCalled();
+        });
+
+        describe("when permission is granted", () => {
+          beforeEach(() => {
+            successCallback.mockClear();
+            errorCallback.mockClear();
+            userB.grantPermission({ name: "geolocation" });
+          });
+
+          it("calls the success callback with a position that matches the selected delegate", async () => {
+            await waitFor(() => {
+              expectGeolocationSuccess(
+                successCallback,
+                errorCallback,
+                createPosition(coordsB, startTime + delay, false),
+              );
+            });
+          });
+        });
+
+        describe("when permission is denied", () => {
+          beforeEach(() => {
+            successCallback.mockClear();
+            errorCallback.mockClear();
+            userB.denyPermission({ name: "geolocation" });
+          });
+
+          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
+            expectGeolocationError(
+              successCallback,
+              errorCallback,
+              createPermissionDeniedError(""),
+            );
           });
         });
       });

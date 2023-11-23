@@ -49,6 +49,10 @@ export function createWrappedAPIs({
     isDelegateSelected: isGeolocationDelegateSelected,
   } = createDelegatedGeolocation({
     delegates: [fakeGeolocation, suppliedGeolocation],
+    permissionsDelegates: new Map([
+      [fakeGeolocation, fakePermissions],
+      [suppliedGeolocation, suppliedPermissions],
+    ]),
   });
 
   const { permissions, selectDelegate: selectPermissionsDelegate } =

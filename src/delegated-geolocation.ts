@@ -1,9 +1,13 @@
+import { createPermissionDeniedError } from "./geolocation-position-error.js";
+
 let canConstruct = false;
 
 export function createDelegatedGeolocation({
   delegates,
+  permissionsDelegates,
 }: {
   delegates: globalThis.Geolocation[];
+  permissionsDelegates: Map<globalThis.Geolocation, globalThis.Permissions>;
 }): {
   geolocation: globalThis.Geolocation;
   selectDelegate: SelectDelegate;
@@ -11,6 +15,14 @@ export function createDelegatedGeolocation({
 } {
   let [delegate] = delegates;
   if (!delegate) throw new TypeError("No delegates provided");
+
+  for (let i = 0; i < delegates.length; ++i) {
+    if (!permissionsDelegates.has(delegates[i])) {
+      throw new TypeError(
+        `Missing Permissions delegate for Geolocation delegate at index ${i}`,
+      );
+    }
+  }
 
   const subscribers = new Set<Subscriber>();
 
@@ -20,6 +32,14 @@ export function createDelegatedGeolocation({
     geolocation: new Geolocation({
       delegate() {
         return delegate;
+      },
+
+      permissionsDelegate() {
+        const permissions = permissionsDelegates.get(delegate);
+        /* istanbul ignore next: unlikely because of constructor assertion */
+        if (!permissions) throw new TypeError("Missing permissions delegate");
+
+        return permissions;
       },
 
       subscribe(subscriber) {
@@ -54,6 +74,7 @@ export type IsDelegateSelected = (delegate: globalThis.Geolocation) => boolean;
 
 type GeolocationParameters = {
   delegate: () => globalThis.Geolocation;
+  permissionsDelegate: () => globalThis.Permissions;
   subscribe: (subscriber: Subscriber) => void;
   unsubscribe: (subscriber: Subscriber) => void;
 };
@@ -62,29 +83,73 @@ export class Geolocation {
   /**
    * @deprecated Use the `createDelegatedGeolocation()` function instead.
    */
-  constructor({ delegate, subscribe, unsubscribe }: GeolocationParameters) {
+  constructor({
+    delegate,
+    permissionsDelegate,
+    subscribe,
+    unsubscribe,
+  }: GeolocationParameters) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
     this.#delegate = delegate;
+    this.#permissionsDelegate = permissionsDelegate;
     this.#subscribe = subscribe;
     this.#unsubscribe = unsubscribe;
     this.#watchId = 1;
     this.watches = {};
 
     this.#handleDelegateChange = () => {
-      for (const watch of Object.values(this.watches)) {
-        try {
-          const { args, delegate, delegateWatchId } = watch;
-          const nextDelegate = this.#delegate();
+      (async () => {
+        for (const watch of Object.values(this.watches)) {
+          try {
+            const permissions = this.#permissionsDelegate();
+            const permissionStatus = await permissions.query({
+              name: "geolocation",
+            });
 
-          delegate.clearWatch(delegateWatchId);
-          watch.delegate = nextDelegate;
-          watch.delegateWatchId = nextDelegate.watchPosition(...args);
-        } catch {
-          // ignored
+            watch.clear();
+
+            const startWatching = () => {
+              const delegate = this.#delegate();
+              const delegateWatchId = delegate.watchPosition(...watch.args);
+              watch.clear = () => {
+                delegate.clearWatch(delegateWatchId);
+              };
+            };
+
+            // switching delegates should not trigger a permission prompt
+            if (permissionStatus.state === "prompt") {
+              const [, errorCallback] = watch.args;
+              /* istanbul ignore next: difficult to test cases with no error callback */
+              errorCallback?.(createPermissionDeniedError(""));
+
+              const onPermissionChange = () => {
+                /* istanbul ignore next: can't change from "prompt" to "prompt" */
+                if (permissionStatus.state === "prompt") return;
+
+                watch.clear();
+                startWatching();
+              };
+
+              permissionStatus.addEventListener("change", onPermissionChange);
+              watch.clear = () => {
+                permissionStatus.removeEventListener(
+                  "change",
+                  onPermissionChange,
+                );
+              };
+            } else {
+              startWatching();
+            }
+          } catch {
+            // ignored
+          }
         }
-      }
+      })().catch(
+        /* istanbul ignore next: promise failsafe, can't occur normally */
+        () => {},
+      );
     };
   }
 
@@ -95,9 +160,12 @@ export class Geolocation {
   watchPosition(...args: WatchPositionParameters): number {
     const delegate = this.#delegate();
     const delegateWatchId = delegate.watchPosition(...args);
+    const clear = () => {
+      delegate.clearWatch(delegateWatchId);
+    };
 
     const watchId = this.#watchId++;
-    this.watches[watchId] = { args, delegate, delegateWatchId };
+    this.watches[watchId] = { args, clear };
 
     this.#subscribe(this.#handleDelegateChange);
 
@@ -108,8 +176,7 @@ export class Geolocation {
     const watch = this.watches[watchId];
     if (!watch) return;
 
-    const { delegate, delegateWatchId } = watch;
-    delegate.clearWatch(delegateWatchId);
+    watch.clear();
     delete this.watches[watchId];
 
     if (Object.keys(this.watches).length < 1) {
@@ -118,6 +185,7 @@ export class Geolocation {
   }
 
   readonly #delegate: () => globalThis.Geolocation;
+  readonly #permissionsDelegate: () => globalThis.Permissions;
   readonly #subscribe: (subscriber: Subscriber) => void;
   readonly #unsubscribe: (subscriber: Subscriber) => void;
   #watchId: number;
@@ -129,8 +197,7 @@ type Subscriber = () => void;
 
 type Watch = {
   readonly args: WatchPositionParameters;
-  delegate: globalThis.Geolocation;
-  delegateWatchId: number;
+  clear: () => void;
 };
 
 type GetCurrentPositionParameters = Parameters<
