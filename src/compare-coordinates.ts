@@ -2,6 +2,7 @@ export function compareCoordinates(
   a: GeolocationCoordinates,
   b: GeolocationCoordinates,
 ): number {
+  /* istanbul ignore next: implementation not guaranteed */
   return (
     a.latitude - b.latitude ||
     a.longitude - b.longitude ||

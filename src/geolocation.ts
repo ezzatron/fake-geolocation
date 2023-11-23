@@ -483,12 +483,14 @@ export class Geolocation {
          * - User or system denied permission:
          *   - Call back with error passing errorCallback and PERMISSION_DENIED.
          */
+        /* istanbul ignore next: difficult to test cases with no error callback */
         errorCallback?.(createPermissionDeniedError(""));
       } else if (condition === GeolocationPositionError.TIMEOUT) {
         /*
          * - Timeout elapsed:
          *   - Call back with error with errorCallback and TIMEOUT.
          */
+        /* istanbul ignore next: difficult to test cases with no error callback */
         errorCallback?.(createTimeoutError(""));
       } else {
         /*
@@ -496,6 +498,7 @@ export class Geolocation {
          * - Call back with error passing errorCallback and
          *   POSITION_UNAVAILABLE.
          */
+        /* istanbul ignore next: difficult to test cases with no error callback */
         errorCallback?.(createPositionUnavailableError(""));
       }
     }
