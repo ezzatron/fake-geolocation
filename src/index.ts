@@ -20,3 +20,4 @@ export type {
 } from "./location-services.js";
 export * from "./user.js";
 export * from "./wait-for-coordinates.js";
+export * from "./wait-for-position-error.js";
