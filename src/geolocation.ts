@@ -470,7 +470,14 @@ export class Geolocation {
     if (timeoutTask) tasks.push(timeoutTask);
 
     try {
-      successCallback(await Promise.race(tasks));
+      const position = await Promise.race(tasks);
+
+      /* istanbul ignore next: hard to reproduce this race condition */
+      if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
+        return;
+      }
+
+      successCallback(position);
     } catch (condition) {
       /*
        * Dealing with failures:
