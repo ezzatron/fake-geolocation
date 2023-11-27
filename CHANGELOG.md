@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.5.1] - 2023-11-27
+
+[v0.5.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.5.1
+
+### Fixed
+
+- Fixed a race condition that could occur with `watchPosition()` where the
+  success callback could be called after `clearWatch()` was called.
+
 ## [v0.5.0] - 2023-11-27
 
 [v0.5.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.5.0
