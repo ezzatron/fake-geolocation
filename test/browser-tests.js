@@ -208,3 +208,72 @@ async function singularCachedPosition() {
     console.log("✅ Position was not cached");
   }
 }
+
+async function geolocationWarming() {
+  let resolveFirstPosition;
+  const firstPosition = new Promise((resolve) => {
+    resolveFirstPosition = resolve;
+  });
+
+  const positionsA = [];
+  const positionsB = [];
+
+  navigator.geolocation.watchPosition(
+    (p) => {
+      positionsA.push(p);
+      resolveFirstPosition();
+    },
+    undefined,
+    { enableHighAccuracy: true },
+  );
+
+  await firstPosition;
+  await new Promise((resolve) => {
+    setTimeout(resolve, 3000);
+  });
+
+  const startTime = Date.now();
+
+  navigator.geolocation.getCurrentPosition(
+    () => {
+      console.log(
+        `Cached position received by getCurrentPosition() after ${
+          Date.now() - startTime
+        }ms`,
+      );
+    },
+    undefined,
+    { enableHighAccuracy: true, maximumAge: Infinity },
+  );
+
+  let isSeen = false;
+
+  navigator.geolocation.watchPosition(
+    (p) => {
+      if (!isSeen) {
+        isSeen = true;
+
+        console.log(
+          `Cached position received by watchPosition() after ${
+            Date.now() - startTime
+          }ms`,
+        );
+      }
+
+      console.log(`Received position is ${Date.now() - p.timestamp}ms old`);
+
+      positionsB.push(p);
+    },
+    undefined,
+    { enableHighAccuracy: true, maximumAge: Infinity },
+  );
+
+  // check that the positions are the same every 100ms
+  const interval = setInterval(() => {
+    const matches = positionsA.map((p) => {
+      return positionsB.includes(p);
+    });
+
+    console.log(matches.map((m) => (m ? "✅" : "❌")).join(" "));
+  }, 1000);
+}
