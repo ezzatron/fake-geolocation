@@ -479,6 +479,11 @@ export class Geolocation {
 
       successCallback(position);
     } catch (condition) {
+      /* istanbul ignore next: hard to reproduce this race condition */
+      if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
+        return;
+      }
+
       /*
        * Dealing with failures:
        *
