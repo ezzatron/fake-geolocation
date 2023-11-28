@@ -261,6 +261,7 @@ export class Geolocation {
     const onPermissionChange = () => {
       if (permission.state === "granted") return;
 
+      /* istanbul ignore next: difficult to test cases with no error callback */
       errorCallback?.(createPermissionDeniedError(""));
     };
     permission.addEventListener("change", onPermissionChange);
@@ -410,31 +411,43 @@ export class Geolocation {
        *          during acquisition.
        */
       if (!position) {
-        let coords: GeolocationCoordinates;
+        const coords = await Promise.race([
+          (async () => {
+            try {
+              return await this.#locationServices.acquireCoordinates(
+                options.enableHighAccuracy,
+              );
+            } catch {
+              /*
+               * 5. (cont.)
+               *    3. (cont.)
+               *       4. If the timeout elapses during acquisition, or acquiring
+               *          the device's position results in failure:
+               *          1. Stop the timeout.
+               */
+              clearTimeout(timeoutId);
 
-        try {
-          coords = await this.#locationServices.acquireCoordinates(
-            options.enableHighAccuracy,
-          );
-        } catch {
-          /*
-           * 5. (cont.)
-           *    3. (cont.)
-           *       4. If the timeout elapses during acquisition, or acquiring
-           *          the device's position results in failure:
-           *          1. Stop the timeout.
-           */
-          clearTimeout(timeoutId);
+              /*
+               * 5. (cont.)
+               *    3. (cont.)
+               *       4. (cont.)
+               *          2. Go to dealing with failures.
+               *          3. Terminate this algorithm.
+               */
+              throw GeolocationPositionError.POSITION_UNAVAILABLE;
+            }
+          })(),
+          new Promise<never>((_resolve, reject) => {
+            function onPermissionChange() {
+              /* istanbul ignore next: can't change from "granted" to "granted" */
+              if (permission.state === "granted") return;
 
-          /*
-           * 5. (cont.)
-           *    3. (cont.)
-           *       4. (cont.)
-           *          2. Go to dealing with failures.
-           *          3. Terminate this algorithm.
-           */
-          throw GeolocationPositionError.POSITION_UNAVAILABLE;
-        }
+              reject(GeolocationPositionError.PERMISSION_DENIED);
+              permission.removeEventListener("change", onPermissionChange);
+            }
+            permission.addEventListener("change", onPermissionChange);
+          }),
+        ]);
 
         /*
          * 5. (cont.)
