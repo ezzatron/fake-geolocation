@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.6.0] - 2023-11-28
+
+[v0.6.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.6.0
+
+### Changed
+
+- Changing the `geolocation` permission from `granted` while watching a position
+  will now cause an immediate call to the error callback with a
+  `PERMISSION_DENIED` error. This should be ergonomic for testing, as previously
+  you'd have to change the permission *and* jump to a new location to trigger
+  an error.
+
 ## [v0.5.2] - 2023-11-28
 
 [v0.5.2]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.5.2
