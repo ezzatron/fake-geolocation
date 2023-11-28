@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.6.2] - 2023-11-28
+
+[v0.6.2]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.6.2
+
+### Fixed
+
+- Fixed a race condition that could occur when permission state changes from
+  `granted` while waiting to acquire coordinates from location services.
+
 ## [v0.6.1] - 2023-11-28
 
 [v0.6.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.6.1
