@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changing the `geolocation` permission from `granted` while watching a position
   will now cause an immediate call to the error callback with a
   `PERMISSION_DENIED` error. This should be ergonomic for testing, as previously
-  you'd have to change the permission *and* jump to a new location to trigger
+  you'd have to change the permission _and_ jump to a new location to trigger
   an error.
 
 ## [v0.5.2] - 2023-11-28
