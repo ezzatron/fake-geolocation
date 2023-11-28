@@ -245,21 +245,29 @@ export class Geolocation {
      *     3. Wait to acquire a position passing successCallback, errorCallback,
      *        options, and watchId.
      */
-    this.#watchUnsubscribers[watchId] = this.#locationServices.subscribe(
-      (isHighAccuracy) => {
-        if (isHighAccuracy !== options.enableHighAccuracy) return;
+    const unsubscribe = this.#locationServices.subscribe((isHighAccuracy) => {
+      if (isHighAccuracy !== options.enableHighAccuracy) return;
 
-        this.#acquirePosition(
-          successCallback,
-          errorCallback,
-          options,
-          watchId,
-        ).catch(
-          /* istanbul ignore next: promise failsafe, can't occur normally */
-          () => {},
-        );
-      },
-    );
+      this.#acquirePosition(
+        successCallback,
+        errorCallback,
+        options,
+        watchId,
+      ).catch(
+        /* istanbul ignore next: promise failsafe, can't occur normally */
+        () => {},
+      );
+    });
+    const onPermissionChange = () => {
+      if (permission.state === "granted") return;
+
+      errorCallback?.(createPermissionDeniedError(""));
+    };
+    permission.addEventListener("change", onPermissionChange);
+    this.#watchUnsubscribers[watchId] = () => {
+      permission.removeEventListener("change", onPermissionChange);
+      unsubscribe();
+    };
   }
 
   /**

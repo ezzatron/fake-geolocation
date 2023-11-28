@@ -416,8 +416,24 @@ describe("Geolocation.watchPosition()", () => {
         });
 
         describe("when permission is revoked", () => {
-          beforeEach(() => {
+          const delay = 20;
+
+          beforeEach(async () => {
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await sleep(delay);
+            successCallback.mockClear();
+            errorCallback.mockClear();
             user.denyPermission({ name: "geolocation" });
+          });
+
+          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
+            await waitFor(() => {
+              expectGeolocationError(
+                successCallback,
+                errorCallback,
+                createPermissionDeniedError(""),
+              );
+            });
           });
 
           describe("when the coords change", () => {
@@ -460,12 +476,30 @@ describe("Geolocation.watchPosition()", () => {
                     expectGeolocationSuccess(
                       successCallback,
                       errorCallback,
-                      createPosition(coordsC, startTime + delay * 2, false),
+                      createPosition(coordsC, startTime + delay * 3, false),
                     );
                   });
                 });
               });
             });
+          });
+        });
+
+        describe("when a permission other than geolocation is revoked", () => {
+          const delay = 20;
+
+          beforeEach(async () => {
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await sleep(delay);
+            successCallback.mockClear();
+            errorCallback.mockClear();
+            user.denyPermission({ name: "notifications" });
+          });
+
+          it("does not call the error callback", async () => {
+            await sleep(delay * 2);
+
+            expect(errorCallback).not.toHaveBeenCalled();
           });
         });
       });
