@@ -459,7 +459,19 @@ describe("Geolocation.watchPosition()", () => {
 
             describe("when permission is re-granted", () => {
               beforeEach(() => {
+                successCallback.mockClear();
+                errorCallback.mockClear();
                 user.grantPermission({ name: "geolocation" });
+              });
+
+              it("calls the success callback with the position", async () => {
+                await waitFor(() => {
+                  expectGeolocationSuccess(
+                    successCallback,
+                    errorCallback,
+                    createPosition(coordsB, startTime + delay * 2, false),
+                  );
+                });
               });
 
               describe("when the coords change", () => {

@@ -259,10 +259,20 @@ export class Geolocation {
       );
     });
     const onPermissionChange = () => {
-      if (permission.state === "granted") return;
-
-      /* istanbul ignore next: difficult to test cases with no error callback */
-      errorCallback?.(createPermissionDeniedError(""));
+      if (permission.state === "granted") {
+        this.#acquirePosition(
+          successCallback,
+          errorCallback,
+          options,
+          watchId,
+        ).catch(
+          /* istanbul ignore next: promise failsafe, can't occur normally */
+          () => {},
+        );
+      } else {
+        /* istanbul ignore next: difficult to test cases with no error callback */
+        errorCallback?.(createPermissionDeniedError(""));
+      }
     };
     permission.addEventListener("change", onPermissionChange);
     this.#watchUnsubscribers[watchId] = () => {
