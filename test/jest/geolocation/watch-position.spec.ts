@@ -502,6 +502,66 @@ describe("Geolocation.watchPosition()", () => {
             expect(errorCallback).not.toHaveBeenCalled();
           });
         });
+
+        describe("when location services is disabled", () => {
+          const delay = 20;
+
+          beforeEach(async () => {
+            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await sleep(delay);
+            successCallback.mockClear();
+            errorCallback.mockClear();
+            user.disableLocationServices();
+          });
+
+          it("calls the error callback with a GeolocationPositionError with a code of POSITION_UNAVAILABLE and an empty message", async () => {
+            await waitFor(() => {
+              expectGeolocationError(
+                successCallback,
+                errorCallback,
+                createPositionUnavailableError(""),
+              );
+            });
+          });
+
+          describe("when location services is re-enabled", () => {
+            beforeEach(() => {
+              successCallback.mockClear();
+              errorCallback.mockClear();
+              user.enableLocationServices();
+            });
+
+            it("calls the success callback with the position", async () => {
+              await waitFor(() => {
+                expectGeolocationSuccess(
+                  successCallback,
+                  errorCallback,
+                  createPosition(coordsA, startTime + delay, false),
+                );
+              });
+            });
+
+            describe("when the coords change", () => {
+              beforeEach(async () => {
+                await jest.runOnlyPendingTimersAsync(); // ensure that the previous position is acquired
+                await sleep(delay);
+                successCallback.mockClear();
+                errorCallback.mockClear();
+                user.jumpToCoordinates(coordsC);
+              });
+
+              it("calls the success callback with the new position", async () => {
+                await waitFor(() => {
+                  expectGeolocationSuccess(
+                    successCallback,
+                    errorCallback,
+                    createPosition(coordsC, startTime + delay * 2, false),
+                  );
+                });
+              });
+            });
+          });
+        });
       });
     });
 

@@ -34,10 +34,14 @@ export function createLocationServices({
 
     enable() {
       isEnabled = true;
+      dispatch(true);
+      dispatch(false);
     },
 
     disable() {
       isEnabled = false;
+      dispatch(true);
+      dispatch(false);
     },
 
     async acquireCoordinates(enableHighAccuracy) {
