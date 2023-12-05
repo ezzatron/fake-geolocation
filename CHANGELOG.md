@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.7.0] - 2023-12-05
+
+[v0.7.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.7.0
+
+### Changed
+
+- Watched positions now receive updates when location services are disabled, and
+  also when they are re-enabled.
+- Watched positions now receive updates when the `geolocation` permission is
+  re-granted after being revoked.
+
 ## [v0.6.2] - 2023-11-28
 
 [v0.6.2]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.6.2
