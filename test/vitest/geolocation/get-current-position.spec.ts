@@ -1,6 +1,3 @@
-import { jest } from "@jest/globals";
-import { HandlePermissionRequest } from "fake-permissions";
-import { sleep } from "../../../src/async.js";
 import {
   MutableLocationServices,
   User,
@@ -9,32 +6,37 @@ import {
   createPosition,
   createPositionUnavailableError,
   createTimeoutError,
-} from "../../../src/index.js";
+} from "fake-geolocation";
+import { HandlePermissionRequest } from "fake-permissions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { sleep } from "../../../src/async.js";
 import { coordsA, coordsB } from "../../fixture/coords.js";
 import { getCurrentPosition } from "../../get-current-position.js";
+import { mockFn, type Mocked } from "../../helpers.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
 
 describe("Geolocation.getCurrentPosition()", () => {
   const startTime = 100;
   let locationServices: MutableLocationServices;
-  let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+  let handlePermissionRequest: Mocked<HandlePermissionRequest>;
   let user: User;
   let geolocation: Geolocation;
 
-  let successCallback: jest.Mock;
-  let errorCallback: jest.Mock;
+  let successCallback: Mocked<PositionCallback>;
+  let errorCallback: Mocked<PositionErrorCallback>;
 
   beforeEach(() => {
-    jest.setSystemTime(startTime);
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(startTime);
 
-    handlePermissionRequest = jest.fn<HandlePermissionRequest>();
+    handlePermissionRequest = mockFn<HandlePermissionRequest>();
 
     ({ geolocation, locationServices, user } = createAPIs({
       handlePermissionRequest,
     }));
 
-    successCallback = jest.fn();
-    errorCallback = jest.fn();
+    successCallback = mockFn();
+    errorCallback = mockFn();
   });
 
   describe("when permission has not been requested", () => {
@@ -277,9 +279,9 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     describe("when acquiring coords throws an error", () => {
       beforeEach(() => {
-        jest
-          .spyOn(locationServices, "acquireCoordinates")
-          .mockRejectedValue(new Error("An error occurred"));
+        vi.spyOn(locationServices, "acquireCoordinates").mockRejectedValue(
+          new Error("An error occurred"),
+        );
       });
 
       describe("when reading the position", () => {
@@ -698,7 +700,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           user.jumpToCoordinates(coordsB);
-          jest.setSystemTime(startTime + 20);
+          vi.setSystemTime(startTime + 20);
         });
 
         it("has cached the position", () => {

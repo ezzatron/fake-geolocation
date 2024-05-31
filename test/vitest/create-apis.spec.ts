@@ -1,13 +1,15 @@
-import { jest } from "@jest/globals";
-import { createAPIs } from "../../src/create-apis.js";
+import { createAPIs } from "fake-geolocation";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { coordsA } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
+import { mockFn } from "../helpers.js";
 
 describe("createAPIs()", () => {
   const startTime = 100;
 
   beforeEach(() => {
-    jest.setSystemTime(startTime);
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(startTime);
   });
 
   it("creates APIs that handle permission requests for geolocation", async () => {
@@ -20,7 +22,7 @@ describe("createAPIs()", () => {
       "prompt",
     );
 
-    await getCurrentPosition(geolocation, jest.fn());
+    await getCurrentPosition(geolocation, mockFn());
 
     expect((await permissions.query({ name: "geolocation" })).state).toBe(
       "granted",

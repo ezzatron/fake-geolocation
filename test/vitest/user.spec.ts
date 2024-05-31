@@ -1,10 +1,11 @@
-import { PermissionStore, createPermissionStore } from "fake-permissions";
 import {
   MutableLocationServices,
   User,
   createLocationServices,
   createUser,
-} from "../../src/index.js";
+} from "fake-geolocation";
+import { PermissionStore, createPermissionStore } from "fake-permissions";
+import { beforeEach, describe, expect, it } from "vitest";
 import { coordsA } from "../fixture/coords.js";
 
 describe("User", () => {

@@ -1,9 +1,10 @@
-import { jest } from "@jest/globals";
-import { GeolocationPositionError } from "../../src/index.js";
+import { GeolocationPositionError } from "fake-geolocation";
+import { expect } from "vitest";
+import type { Mocked } from "../helpers.js";
 
 export function expectGeolocationError(
-  successCallback: jest.Mock<PositionCallback>,
-  errorCallback: jest.Mock<PositionErrorCallback>,
+  successCallback: Mocked<PositionCallback>,
+  errorCallback: Mocked<PositionErrorCallback>,
   error: GeolocationPositionError,
 ): void {
   expect(successCallback).not.toHaveBeenCalled();
@@ -11,8 +12,8 @@ export function expectGeolocationError(
 }
 
 export function expectGeolocationSuccess(
-  successCallback: jest.Mock<PositionCallback>,
-  errorCallback: jest.Mock<PositionErrorCallback>,
+  successCallback: Mocked<PositionCallback>,
+  errorCallback: Mocked<PositionErrorCallback>,
   position: GeolocationPosition,
   exact: boolean = false,
 ): void {

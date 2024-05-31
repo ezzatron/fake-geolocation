@@ -1,10 +1,3 @@
-import { jest } from "@jest/globals";
-import {
-  HandlePermissionRequest,
-  createPermissionStore,
-  createPermissions,
-} from "fake-permissions";
-import { sleep } from "../../src/async.js";
 import {
   IsDelegateSelected,
   MutableLocationServices,
@@ -16,9 +9,17 @@ import {
   createPermissionDeniedError,
   createPosition,
   createUser,
-} from "../../src/index.js";
+} from "fake-geolocation";
+import {
+  HandlePermissionRequest,
+  createPermissionStore,
+  createPermissions,
+} from "fake-permissions";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { sleep } from "../../src/async.js";
 import { coordsA, coordsB, coordsC, coordsD } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
+import { mockFn, type Mocked } from "../helpers.js";
 import { waitFor } from "../wait-for.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "./expect.js";
 
@@ -36,16 +37,17 @@ describe("Delegated geolocation", () => {
   let selectDelegate: SelectDelegate;
   let isDelegateSelected: IsDelegateSelected;
 
-  let requestPermissionA: jest.Mock<HandlePermissionRequest>;
-  let requestPermissionB: jest.Mock<HandlePermissionRequest>;
+  let requestPermissionA: Mocked<HandlePermissionRequest>;
+  let requestPermissionB: Mocked<HandlePermissionRequest>;
 
-  let successCallback: jest.Mock;
-  let errorCallback: jest.Mock;
+  let successCallback: Mocked<PositionCallback>;
+  let errorCallback: Mocked<PositionErrorCallback>;
 
   let watchIds: number[];
 
   beforeEach(() => {
-    jest.setSystemTime(startTime);
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(startTime);
 
     locationServicesA = createLocationServices();
     locationServicesB = createLocationServices();
@@ -72,8 +74,12 @@ describe("Delegated geolocation", () => {
     });
     userB.jumpToCoordinates(coordsB);
 
-    requestPermissionA = jest.fn(async (d) => userA.requestPermission(d));
-    requestPermissionB = jest.fn(async (d) => userB.requestPermission(d));
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    requestPermissionA = mockFn((async (d) =>
+      userA.requestPermission(d)) as HandlePermissionRequest);
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    requestPermissionB = mockFn((async (d) =>
+      userB.requestPermission(d)) as HandlePermissionRequest);
 
     delegateA = createGeolocation({
       locationServices: locationServicesA,
@@ -95,8 +101,8 @@ describe("Delegated geolocation", () => {
         ]),
       }));
 
-    successCallback = jest.fn();
-    errorCallback = jest.fn();
+    successCallback = mockFn();
+    errorCallback = mockFn();
 
     watchIds = [];
   });
@@ -188,7 +194,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           userA.jumpToCoordinates(coordsC);
           await sleep(delay);
@@ -215,7 +221,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -233,7 +239,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -254,7 +260,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -279,7 +285,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           userB.resetPermission({ name: "geolocation" });
           successCallback.mockClear();
@@ -319,10 +325,11 @@ describe("Delegated geolocation", () => {
         });
 
         describe("when permission is denied", () => {
-          beforeEach(() => {
+          beforeEach(async () => {
             successCallback.mockClear();
             errorCallback.mockClear();
             userB.denyPermission({ name: "geolocation" });
+            await vi.runOnlyPendingTimersAsync();
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
@@ -344,7 +351,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -467,7 +474,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           userB.jumpToCoordinates(coordsC);
           await sleep(delay);
@@ -494,7 +501,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -512,7 +519,7 @@ describe("Delegated geolocation", () => {
         const delay = 20;
 
         beforeEach(async () => {
-          await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+          await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
@@ -533,7 +540,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -563,7 +570,7 @@ describe("Delegated geolocation", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();

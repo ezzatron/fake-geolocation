@@ -1,4 +1,5 @@
-import { createCoordinates, createPosition } from "../../src/index.js";
+import { createCoordinates, createPosition } from "fake-geolocation";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("GeolocationPosition", () => {
   let coords: GeolocationCoordinates;

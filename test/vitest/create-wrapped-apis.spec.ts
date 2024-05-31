@@ -1,35 +1,37 @@
-import { jest } from "@jest/globals";
-import { HandlePermissionRequest } from "fake-permissions";
 import {
   User,
   createAPIs,
   createPosition,
   createWrappedAPIs,
-} from "../../src/index.js";
+} from "fake-geolocation";
+import { HandlePermissionRequest } from "fake-permissions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
+import { mockFn, type Mocked } from "../helpers.js";
 import { expectGeolocationSuccess } from "./expect.js";
 
 describe("createWrappedAPIs()", () => {
   const startTime = 100;
 
-  let suppliedHandlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+  let suppliedHandlePermissionRequest: Mocked<HandlePermissionRequest>;
   let suppliedUser: User;
 
-  let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+  let handlePermissionRequest: Mocked<HandlePermissionRequest>;
   let geolocation: Geolocation;
   let permissions: Permissions;
   let user: User;
   let selectAPIs: (useSuppliedAPIs: boolean) => void;
   let isUsingSuppliedAPIs: () => boolean;
 
-  let successCallback: jest.Mock;
-  let errorCallback: jest.Mock;
+  let successCallback: Mocked<PositionCallback>;
+  let errorCallback: Mocked<PositionErrorCallback>;
 
   beforeEach(() => {
-    jest.setSystemTime(startTime);
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(startTime);
 
-    suppliedHandlePermissionRequest = jest.fn<HandlePermissionRequest>(
+    suppliedHandlePermissionRequest = mockFn<HandlePermissionRequest>(
       () => "denied",
     );
     const supplied = createAPIs({
@@ -39,7 +41,7 @@ describe("createWrappedAPIs()", () => {
     suppliedUser.jumpToCoordinates(coordsA);
     suppliedUser.grantPermission({ name: "geolocation" });
 
-    handlePermissionRequest = jest.fn<HandlePermissionRequest>(() => "granted");
+    handlePermissionRequest = mockFn<HandlePermissionRequest>(() => "granted");
     const wrapped = createWrappedAPIs({
       geolocation: supplied.geolocation,
       permissions: supplied.permissions,
@@ -53,8 +55,8 @@ describe("createWrappedAPIs()", () => {
     user.jumpToCoordinates(coordsB);
     user.grantPermission({ name: "geolocation" });
 
-    successCallback = jest.fn();
-    errorCallback = jest.fn();
+    successCallback = mockFn();
+    errorCallback = mockFn();
   });
 
   describe("before selecting APIs", () => {

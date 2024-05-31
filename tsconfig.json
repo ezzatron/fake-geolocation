@@ -5,6 +5,10 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmitOnError": true,
+    "paths": {
+      "fake-geolocation": ["./src/index.ts"]
+    },
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "ESNext"

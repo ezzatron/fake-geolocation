@@ -1,4 +1,5 @@
-import { createPositionUnavailableError } from "../../src/index.js";
+import { createPositionUnavailableError } from "fake-geolocation";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("GeolocationPositionError", () => {
   let error: GeolocationPositionError;

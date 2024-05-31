@@ -1,5 +1,3 @@
-import { jest } from "@jest/globals";
-import { createPermissionStore, createPermissions } from "fake-permissions";
 import {
   MutableLocationServices,
   User,
@@ -7,7 +5,9 @@ import {
   createLocationServices,
   createUser,
   waitForCoordinates,
-} from "../../src/index.js";
+} from "fake-geolocation";
+import { createPermissionStore, createPermissions } from "fake-permissions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { coordsA, coordsB, coordsC } from "../fixture/coords.js";
 
 describe("waitForCoordinates()", () => {
@@ -18,7 +18,8 @@ describe("waitForCoordinates()", () => {
   let geolocation: Geolocation;
 
   beforeEach(() => {
-    jest.setSystemTime(startTime);
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(startTime);
 
     locationServices = createLocationServices();
 

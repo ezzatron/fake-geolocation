@@ -1,6 +1,3 @@
-import { jest } from "@jest/globals";
-import { HandlePermissionRequest } from "fake-permissions";
-import { sleep } from "../../../src/async.js";
 import {
   MutableLocationServices,
   User,
@@ -9,35 +6,40 @@ import {
   createPosition,
   createPositionUnavailableError,
   createTimeoutError,
-} from "../../../src/index.js";
+} from "fake-geolocation";
+import { HandlePermissionRequest } from "fake-permissions";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { sleep } from "../../../src/async.js";
 import { coordsA, coordsB, coordsC } from "../../fixture/coords.js";
 import { getCurrentPosition } from "../../get-current-position.js";
+import { mockFn, type Mocked } from "../../helpers.js";
 import { waitFor } from "../../wait-for.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
 
 describe("Geolocation.watchPosition()", () => {
   const startTime = 100;
   let locationServices: MutableLocationServices;
-  let handlePermissionRequest: jest.Mock<HandlePermissionRequest>;
+  let handlePermissionRequest: Mocked<HandlePermissionRequest>;
   let user: User;
   let geolocation: Geolocation;
 
-  let successCallback: jest.Mock;
-  let errorCallback: jest.Mock;
+  let successCallback: Mocked<PositionCallback>;
+  let errorCallback: Mocked<PositionErrorCallback>;
 
   let watchIds: number[];
 
   beforeEach(() => {
-    jest.setSystemTime(startTime);
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(startTime);
 
-    handlePermissionRequest = jest.fn<HandlePermissionRequest>();
+    handlePermissionRequest = mockFn<HandlePermissionRequest>();
 
     ({ geolocation, locationServices, user } = createAPIs({
       handlePermissionRequest,
     }));
 
-    successCallback = jest.fn();
-    errorCallback = jest.fn();
+    successCallback = mockFn();
+    errorCallback = mockFn();
 
     watchIds = [];
   });
@@ -293,9 +295,9 @@ describe("Geolocation.watchPosition()", () => {
 
     describe("when acquiring coords throws an error", () => {
       beforeEach(() => {
-        jest
-          .spyOn(locationServices, "acquireCoordinates")
-          .mockRejectedValue(new Error("An error occurred"));
+        vi.spyOn(locationServices, "acquireCoordinates").mockRejectedValue(
+          new Error("An error occurred"),
+        );
       });
 
       describe("when watching the position", () => {
@@ -368,7 +370,7 @@ describe("Geolocation.watchPosition()", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             user.jumpToCoordinates(coordsB);
             await sleep(delay);
@@ -400,7 +402,7 @@ describe("Geolocation.watchPosition()", () => {
             const delay = 20;
 
             beforeEach(async () => {
-              await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+              await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
               await sleep(delay);
               successCallback.mockClear();
               errorCallback.mockClear();
@@ -419,7 +421,7 @@ describe("Geolocation.watchPosition()", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -440,7 +442,7 @@ describe("Geolocation.watchPosition()", () => {
             const delay = 20;
 
             beforeEach(async () => {
-              await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+              await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
               await sleep(delay);
               successCallback.mockClear();
               errorCallback.mockClear();
@@ -476,7 +478,7 @@ describe("Geolocation.watchPosition()", () => {
 
               describe("when the coords change", () => {
                 beforeEach(async () => {
-                  await jest.runOnlyPendingTimersAsync(); // ensure that the previous position is acquired
+                  await vi.runOnlyPendingTimersAsync(); // ensure that the previous position is acquired
                   await sleep(delay);
                   successCallback.mockClear();
                   errorCallback.mockClear();
@@ -501,7 +503,7 @@ describe("Geolocation.watchPosition()", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -519,7 +521,7 @@ describe("Geolocation.watchPosition()", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -537,7 +539,8 @@ describe("Geolocation.watchPosition()", () => {
           });
 
           describe("when location services is re-enabled", () => {
-            beforeEach(() => {
+            beforeEach(async () => {
+              await vi.runOnlyPendingTimersAsync();
               successCallback.mockClear();
               errorCallback.mockClear();
               user.enableLocationServices();
@@ -555,7 +558,7 @@ describe("Geolocation.watchPosition()", () => {
 
             describe("when the coords change", () => {
               beforeEach(async () => {
-                await jest.runOnlyPendingTimersAsync(); // ensure that the previous position is acquired
+                await vi.runOnlyPendingTimersAsync(); // ensure that the previous position is acquired
                 await sleep(delay);
                 successCallback.mockClear();
                 errorCallback.mockClear();
@@ -647,7 +650,7 @@ describe("Geolocation.watchPosition()", () => {
           const delay = 20;
 
           beforeEach(async () => {
-            await jest.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+            await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
@@ -941,7 +944,7 @@ describe("Geolocation.watchPosition()", () => {
           });
 
           user.jumpToCoordinates(coordsB);
-          jest.setSystemTime(startTime + 20);
+          vi.setSystemTime(startTime + 20);
         });
 
         it("has cached the position", () => {

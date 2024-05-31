@@ -1,4 +1,5 @@
-import { createAPIs } from "../../../src/index.js";
+import { createAPIs } from "fake-geolocation";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Geolocation", () => {
   let geolocation: Geolocation;

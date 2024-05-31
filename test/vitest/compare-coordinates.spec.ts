@@ -1,4 +1,5 @@
-import { compareCoordinates } from "../../src/index.js";
+import { compareCoordinates } from "fake-geolocation";
+import { describe, expect, it } from "vitest";
 import { coordsA, coordsB, coordsC, coordsD } from "../fixture/coords.js";
 
 describe("compareCoordinates()", () => {

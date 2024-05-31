@@ -1,5 +1,3 @@
-import { jest } from "@jest/globals";
-import { createPermissionStore, createPermissions } from "fake-permissions";
 import {
   GeolocationPositionError,
   MutableLocationServices,
@@ -10,9 +8,12 @@ import {
   createPositionUnavailableError,
   createUser,
   waitForPositionError,
-} from "../../src/index.js";
+} from "fake-geolocation";
+import { createPermissionStore, createPermissions } from "fake-permissions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
+import { mockFn, type Mocked } from "../helpers.js";
 import { expectGeolocationError } from "./expect.js";
 
 describe("waitForPositionError()", () => {
@@ -22,11 +23,12 @@ describe("waitForPositionError()", () => {
   let user: User;
   let geolocation: Geolocation;
 
-  let successCallback: jest.Mock;
-  let errorCallback: jest.Mock;
+  let successCallback: Mocked<PositionCallback>;
+  let errorCallback: Mocked<PositionErrorCallback>;
 
   beforeEach(() => {
-    jest.setSystemTime(startTime);
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(startTime);
 
     locationServices = createLocationServices();
 
@@ -48,8 +50,8 @@ describe("waitForPositionError()", () => {
       },
     });
 
-    successCallback = jest.fn();
-    errorCallback = jest.fn();
+    successCallback = mockFn();
+    errorCallback = mockFn();
   });
 
   describe("when called without a code", () => {
