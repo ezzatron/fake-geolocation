@@ -8,6 +8,12 @@ describe("GeolocationPositionError", () => {
     error = createPositionUnavailableError("<message>");
   });
 
+  it("has a string tag", () => {
+    expect(Object.prototype.toString.call(error)).toBe(
+      "[object GeolocationPositionError]",
+    );
+  });
+
   it("cannot be instantiated directly", () => {
     const call = () => {
       new (error.constructor as new (p: object) => unknown)({});

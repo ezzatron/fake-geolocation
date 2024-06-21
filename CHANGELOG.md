@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+- Added [`Symbol.toStringTag`] methods to all `Geolocation`,
+  `GeolocationPosition`, `GeolocationCoordinates`, and
+  `GeolocationPositionError` objects.
+
+[`Symbol.toStringTag`]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol/toStringTag
+
 ## [v0.7.0] - 2023-12-05
 
 [v0.7.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.7.0

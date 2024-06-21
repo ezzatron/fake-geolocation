@@ -8,6 +8,12 @@ describe("Geolocation", () => {
     ({ geolocation } = createAPIs());
   });
 
+  it("has a string tag", () => {
+    expect(Object.prototype.toString.call(geolocation)).toBe(
+      "[object Geolocation]",
+    );
+  });
+
   it("cannot be instantiated directly", () => {
     const call = () => {
       new (geolocation.constructor as new (p: object) => unknown)({});

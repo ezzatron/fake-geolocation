@@ -29,4 +29,6 @@ export class GeolocationCoordinates {
     this.heading = coords.heading;
     this.speed = coords.speed;
   }
+
+  readonly [Symbol.toStringTag] = "GeolocationCoordinates";
 }

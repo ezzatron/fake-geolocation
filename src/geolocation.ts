@@ -150,6 +150,8 @@ export class Geolocation {
     this.#removeWatchId(this.#watchIds, watchId);
   }
 
+  readonly [Symbol.toStringTag] = "Geolocation";
+
   /**
    * § 6.5 Request a position
    *

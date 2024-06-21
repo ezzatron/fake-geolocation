@@ -1,7 +1,7 @@
 import { createCoordinates } from "./geolocation-coordinates.js";
 
 const internal = new WeakMap<
-  GeolocationPosition,
+  globalThis.GeolocationPosition,
   { isHighAccuracy: boolean }
 >();
 
@@ -34,6 +34,8 @@ export class GeolocationPosition {
     this.coords = coords;
     this.timestamp = timestamp;
   }
+
+  readonly [Symbol.toStringTag] = "GeolocationPosition";
 }
 
 export function isHighAccuracy(position: globalThis.GeolocationPosition) {

@@ -117,6 +117,12 @@ describe("Delegated geolocation", () => {
     }
   });
 
+  it("has a string tag", () => {
+    expect(Object.prototype.toString.call(geolocation)).toBe(
+      "[object Geolocation]",
+    );
+  });
+
   it("cannot be instantiated directly", async () => {
     const instantiateGeolocation = () => {
       new (geolocation.constructor as new (p: object) => unknown)({});

@@ -184,6 +184,8 @@ export class Geolocation {
     }
   }
 
+  readonly [Symbol.toStringTag] = "Geolocation";
+
   readonly #delegate: () => globalThis.Geolocation;
   readonly #permissionsDelegate: () => globalThis.Permissions;
   readonly #subscribe: (subscriber: Subscriber) => void;

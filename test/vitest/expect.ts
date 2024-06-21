@@ -1,11 +1,10 @@
-import { GeolocationPositionError } from "fake-geolocation";
 import { expect } from "vitest";
 import type { Mocked } from "../helpers.js";
 
 export function expectGeolocationError(
   successCallback: Mocked<PositionCallback>,
   errorCallback: Mocked<PositionErrorCallback>,
-  error: GeolocationPositionError,
+  error: globalThis.GeolocationPositionError,
 ): void {
   expect(successCallback).not.toHaveBeenCalled();
   expect(errorCallback).toHaveBeenCalledWith(error);

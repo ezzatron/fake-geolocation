@@ -46,4 +46,6 @@ export class GeolocationPositionError {
     this.code = code;
     this.message = message;
   }
+
+  readonly [Symbol.toStringTag] = "GeolocationPositionError";
 }

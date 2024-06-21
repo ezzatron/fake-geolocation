@@ -19,6 +19,12 @@ describe("GeolocationPosition", () => {
     position = createPosition(coords, 1687923355537, true);
   });
 
+  it("has a string tag", () => {
+    expect(Object.prototype.toString.call(position)).toBe(
+      "[object GeolocationPosition]",
+    );
+  });
+
   it("cannot be instantiated directly", () => {
     const call = () => {
       new (position.constructor as new (p: object) => unknown)({});

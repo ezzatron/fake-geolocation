@@ -134,6 +134,7 @@ describe("User", () => {
           altitudeAccuracy: 222222,
           heading: null,
           speed: null,
+          [Symbol.toStringTag]: "GeolocationCoordinates",
         });
       });
     });
@@ -153,6 +154,7 @@ describe("User", () => {
         altitudeAccuracy: null,
         heading: null,
         speed: null,
+        [Symbol.toStringTag]: "GeolocationCoordinates",
       });
     });
   });
