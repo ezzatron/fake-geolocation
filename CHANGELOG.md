@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.8.0] - 2024-06-21
+
+[v0.8.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.8.0
+
 ### Changed
 
 - The `createCoordinates()` and `createPosition()` functions now have optional
