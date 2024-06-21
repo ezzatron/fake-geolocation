@@ -10,6 +10,10 @@ Versioning].
 
 ## Unreleased
 
+## [v0.8.1] - 2024-06-21
+
+[v0.8.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.8.1
+
 ### Fixed
 
 - Fixed an issue where passing explicit `undefined` values to
