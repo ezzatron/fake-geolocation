@@ -1,19 +1,24 @@
 let canConstruct = false;
 
-export function createCoordinates(
-  coords: Partial<globalThis.GeolocationCoordinates> = {},
-): globalThis.GeolocationCoordinates {
+export function createCoordinates({
+  latitude = 0,
+  longitude = 0,
+  altitude = null,
+  accuracy = 0,
+  altitudeAccuracy = null,
+  heading = null,
+  speed = null,
+}: Partial<globalThis.GeolocationCoordinates> = {}): globalThis.GeolocationCoordinates {
   canConstruct = true;
 
   return new GeolocationCoordinates({
-    latitude: 0,
-    longitude: 0,
-    altitude: null,
-    accuracy: 0,
-    altitudeAccuracy: null,
-    heading: null,
-    speed: null,
-    ...coords,
+    latitude,
+    longitude,
+    altitude,
+    accuracy,
+    altitudeAccuracy,
+    heading,
+    speed,
   });
 }
 

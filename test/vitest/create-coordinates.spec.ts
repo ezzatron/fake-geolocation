@@ -71,4 +71,32 @@ describe("createCoordinates()", () => {
       });
     });
   });
+
+  describe("when explicit undefined properties are provided", () => {
+    const properties = {
+      latitude: undefined,
+      longitude: undefined,
+      accuracy: undefined,
+      altitude: undefined,
+      altitudeAccuracy: undefined,
+      heading: undefined,
+      speed: undefined,
+    } as const;
+
+    it("creates coordinates", () => {
+      const coords = createCoordinates(properties);
+
+      expect(coords).toBeInstanceOf(GeolocationCoordinates);
+      expect(coords).toEqual({
+        latitude: 0,
+        longitude: 0,
+        altitude: null,
+        accuracy: 0,
+        altitudeAccuracy: null,
+        heading: null,
+        speed: null,
+        [Symbol.toStringTag]: "GeolocationCoordinates",
+      });
+    });
+  });
 });

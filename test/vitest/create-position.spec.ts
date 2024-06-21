@@ -94,4 +94,38 @@ describe("createPosition()", () => {
       expect(isHighAccuracy(position)).toBe(true);
     });
   });
+
+  describe("when explicit undefined arguments and properties are provided", () => {
+    const coordsProperties = {
+      latitude: undefined,
+      longitude: undefined,
+      accuracy: undefined,
+      altitude: undefined,
+      altitudeAccuracy: undefined,
+      heading: undefined,
+      speed: undefined,
+    } as const;
+
+    it("creates a position", () => {
+      const position = createPosition(coordsProperties, undefined, undefined);
+
+      expect(position).toBeInstanceOf(GeolocationPosition);
+      expect(position.coords).toBeInstanceOf(GeolocationCoordinates);
+      expect(position).toEqual({
+        coords: {
+          latitude: 0,
+          longitude: 0,
+          altitude: null,
+          accuracy: 0,
+          altitudeAccuracy: null,
+          heading: null,
+          speed: null,
+          [Symbol.toStringTag]: "GeolocationCoordinates",
+        },
+        timestamp: 0,
+        [Symbol.toStringTag]: "GeolocationPosition",
+      });
+      expect(isHighAccuracy(position)).toBe(true);
+    });
+  });
 });

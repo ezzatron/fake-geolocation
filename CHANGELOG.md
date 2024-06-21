@@ -10,6 +10,12 @@ Versioning].
 
 ## Unreleased
 
+### Fixed
+
+- Fixed an issue where passing explicit `undefined` values to
+  `createCoordinates()` or `createPosition()` could produce a
+  `GeolocationCoordinates` object with `undefined` properties.
+
 ## [v0.8.0] - 2024-06-21
 
 [v0.8.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.8.0
