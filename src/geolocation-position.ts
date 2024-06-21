@@ -8,9 +8,9 @@ const internal = new WeakMap<
 let canConstruct = false;
 
 export function createPosition(
-  coords: GeolocationCoordinates,
-  timestamp: number,
-  isHighAccuracy: boolean,
+  coords: Partial<globalThis.GeolocationCoordinates> = {},
+  timestamp: number = 0,
+  isHighAccuracy: boolean = true,
 ): globalThis.GeolocationPosition {
   canConstruct = true;
 

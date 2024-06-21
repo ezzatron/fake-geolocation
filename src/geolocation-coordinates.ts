@@ -1,11 +1,20 @@
 let canConstruct = false;
 
 export function createCoordinates(
-  coords: globalThis.GeolocationCoordinates,
+  coords: Partial<globalThis.GeolocationCoordinates> = {},
 ): globalThis.GeolocationCoordinates {
   canConstruct = true;
 
-  return new GeolocationCoordinates(coords);
+  return new GeolocationCoordinates({
+    latitude: 0,
+    longitude: 0,
+    altitude: null,
+    accuracy: 0,
+    altitudeAccuracy: null,
+    heading: null,
+    speed: null,
+    ...coords,
+  });
 }
 
 export class GeolocationCoordinates {

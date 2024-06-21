@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- The `createCoordinates()` and `createPosition()` functions now have optional
+  arguments, making them more useful for creating test data. The
+  `isHighAccuracy` argument now defaults to `true`, and other omitted arguments
+  or properties will be filled with "empty" values:
+  - `0` for `latitude`, `longitude`, `accuracy`, and `timestamp`.
+  - `null` for `altitude`, `altitudeAccuracy`, `heading`, and `speed`.
+
 ### Added
 
 - Added [`Symbol.toStringTag`] methods to all `Geolocation`,
