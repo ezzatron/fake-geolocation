@@ -10,6 +10,16 @@ Versioning].
 
 ## Unreleased
 
+## [v0.10.0] - 2024-07-05
+
+[v0.10.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.10.0
+
+### Added
+
+- Added the `GeolocationPositionParameters` type, which can be used for typing
+  simple objects that have the same properties as `GeolocationPosition`, but
+  don't implement the full interface.
+
 ## [v0.9.0] - 2024-07-04
 
 [v0.9.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.9.0
