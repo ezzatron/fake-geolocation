@@ -1,14 +1,15 @@
 let canConstruct = false;
 
-export type GeolocationCoordinatesParameters = {
-  latitude: typeof globalThis.GeolocationCoordinates.prototype.latitude;
-  longitude: typeof globalThis.GeolocationCoordinates.prototype.longitude;
-  altitude: typeof globalThis.GeolocationCoordinates.prototype.altitude;
-  accuracy: typeof globalThis.GeolocationCoordinates.prototype.accuracy;
-  altitudeAccuracy: typeof globalThis.GeolocationCoordinates.prototype.altitudeAccuracy;
-  heading: typeof globalThis.GeolocationCoordinates.prototype.heading;
-  speed: typeof globalThis.GeolocationCoordinates.prototype.speed;
-};
+export type GeolocationCoordinatesParameters = Pick<
+  globalThis.GeolocationCoordinates,
+  | "latitude"
+  | "longitude"
+  | "altitude"
+  | "accuracy"
+  | "altitudeAccuracy"
+  | "heading"
+  | "speed"
+>;
 
 export function createCoordinates({
   latitude = 0,
