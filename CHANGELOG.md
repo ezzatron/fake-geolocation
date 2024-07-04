@@ -10,6 +10,26 @@ Versioning].
 
 ## Unreleased
 
+## [v0.9.0] - 2024-07-04
+
+[v0.9.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.9.0
+
+### Added
+
+- Added `toJSON()` methods to `GeolocationCoordinates` and
+  `GeolocationPosition`.
+- Added the `GeolocationCoordinatesParameters` type, which can be used for
+  typing simple objects that have the same properties as
+  `GeolocationCoordinates`, but don't implement the full interface.
+
+### Changed
+
+- Errors thrown from `successCallback` and `errorCallback` arguments to
+  `getCurrentPosition()` and `watchPosition()` are now thrown asynchronously,
+  instead of being discarded.
+- Errors thrown from subscriber functions used in geolocation delegates and
+  location services are now thrown asynchronously, instead of being discarded.
+
 ## [v0.8.1] - 2024-06-21
 
 [v0.8.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.8.1
