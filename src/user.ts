@@ -23,8 +23,8 @@ export function createUser({
   normalizeCoordinates = ({
     latitude = 0,
     longitude = 0,
-    accuracy = 10,
     altitude = null,
+    accuracy = 10,
     altitudeAccuracy = null,
     heading = null,
     speed = null,
@@ -32,8 +32,8 @@ export function createUser({
     createCoordinates({
       latitude,
       longitude,
-      accuracy,
       altitude,
+      accuracy,
       altitudeAccuracy,
       heading,
       speed,

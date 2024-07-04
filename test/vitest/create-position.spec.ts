@@ -99,8 +99,8 @@ describe("createPosition()", () => {
     const coordsProperties = {
       latitude: undefined,
       longitude: undefined,
-      accuracy: undefined,
       altitude: undefined,
+      accuracy: undefined,
       altitudeAccuracy: undefined,
       heading: undefined,
       speed: undefined,

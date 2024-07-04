@@ -129,8 +129,8 @@ describe("User", () => {
         expect(await locationServices.acquireCoordinates(false)).toEqual({
           latitude: 40.71703581534977,
           longitude: -74.03457283319447,
-          accuracy: 111111,
           altitude: 22.27227783203125,
+          accuracy: 111111,
           altitudeAccuracy: 222222,
           heading: null,
           speed: null,
@@ -149,8 +149,8 @@ describe("User", () => {
       expect(await locationServices.acquireCoordinates(true)).toEqual({
         latitude: 0,
         longitude: 0,
-        accuracy: 10,
         altitude: null,
+        accuracy: 10,
         altitudeAccuracy: null,
         heading: null,
         speed: null,

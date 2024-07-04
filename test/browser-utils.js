@@ -6,8 +6,8 @@ function logPosition(
     coords: {
       latitude,
       longitude,
-      accuracy,
       altitude,
+      accuracy,
       altitudeAccuracy,
       heading,
       speed,
@@ -22,8 +22,8 @@ function logPosition(
       coords: {
         latitude,
         longitude,
-        accuracy,
         altitude,
+        accuracy,
         altitudeAccuracy,
         heading,
         speed,

@@ -49,12 +49,12 @@ describe("GeolocationCoordinates", () => {
     expect(coordinates.longitude).toBe(-74.03457283319447);
   });
 
-  it("has an accuracy property", () => {
-    expect(coordinates.accuracy).toBe(25.019);
-  });
-
   it("has an altitude property", () => {
     expect(coordinates.altitude).toBe(22.27227783203125);
+  });
+
+  it("has an accuracy property", () => {
+    expect(coordinates.accuracy).toBe(25.019);
   });
 
   it("has an altitudeAccuracy property", () => {

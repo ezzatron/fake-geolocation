@@ -42,8 +42,8 @@ describe("GeolocationPosition", () => {
     expect(position.coords).toMatchObject({
       latitude: 40.71703581534977,
       longitude: -74.03457283319447,
-      accuracy: 25.019,
       altitude: 22.27227783203125,
+      accuracy: 25.019,
       altitudeAccuracy: 9.838127136230469,
       heading: 90,
       speed: 111,
@@ -62,8 +62,8 @@ describe("GeolocationPosition", () => {
       coords: {
         latitude: 40.71703581534977,
         longitude: -74.03457283319447,
-        accuracy: 25.019,
         altitude: 22.27227783203125,
+        accuracy: 25.019,
         altitudeAccuracy: 9.838127136230469,
         heading: 90,
         speed: 111,
