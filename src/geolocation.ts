@@ -215,7 +215,7 @@ export class Geolocation {
        *    2. Call back with error passing errorCallback and PERMISSION_DENIED.
        *    3. Terminate this algorithm.
        */
-      errorCallback?.(createPermissionDeniedError(""));
+      this.#invokeErrorCallback(errorCallback, createPermissionDeniedError(""));
       return;
     }
 
@@ -273,7 +273,10 @@ export class Geolocation {
         );
       } else {
         /* istanbul ignore next: difficult to test cases with no error callback */
-        errorCallback?.(createPermissionDeniedError(""));
+        this.#invokeErrorCallback(
+          errorCallback,
+          createPermissionDeniedError(""),
+        );
       }
     };
     permission.addEventListener("change", onPermissionChange);
@@ -510,7 +513,7 @@ export class Geolocation {
         return;
       }
 
-      successCallback(position);
+      this.#invokeSuccessCallback(successCallback, position);
     } catch (condition) {
       /* istanbul ignore next: hard to reproduce this race condition */
       if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
@@ -529,14 +532,17 @@ export class Geolocation {
          *   - Call back with error passing errorCallback and PERMISSION_DENIED.
          */
         /* istanbul ignore next: difficult to test cases with no error callback */
-        errorCallback?.(createPermissionDeniedError(""));
+        this.#invokeErrorCallback(
+          errorCallback,
+          createPermissionDeniedError(""),
+        );
       } else if (condition === GeolocationPositionError.TIMEOUT) {
         /*
          * - Timeout elapsed:
          *   - Call back with error with errorCallback and TIMEOUT.
          */
         /* istanbul ignore next: difficult to test cases with no error callback */
-        errorCallback?.(createTimeoutError(""));
+        this.#invokeErrorCallback(errorCallback, createTimeoutError(""));
       } else {
         /*
          * Data acquisition error or any other reason:
@@ -544,7 +550,10 @@ export class Geolocation {
          *   POSITION_UNAVAILABLE.
          */
         /* istanbul ignore next: difficult to test cases with no error callback */
-        errorCallback?.(createPositionUnavailableError(""));
+        this.#invokeErrorCallback(
+          errorCallback,
+          createPositionUnavailableError(""),
+        );
       }
     }
   }
@@ -559,6 +568,36 @@ export class Geolocation {
 
     this.#watchUnsubscribers[watchId]?.();
     delete this.#watchUnsubscribers[watchId];
+  }
+
+  #invokeSuccessCallback(
+    successCallback: PositionCallback,
+    position: GeolocationPosition,
+  ): void {
+    try {
+      successCallback(position);
+    } catch (error) {
+      // Throw callback errors asynchronously, so that users will at least see
+      // it in the console and notice that their success callback throws.
+      setTimeout(() => {
+        throw error;
+      }, 0);
+    }
+  }
+
+  #invokeErrorCallback(
+    errorCallback: PositionErrorCallback | undefined,
+    error: globalThis.GeolocationPositionError,
+  ): void {
+    try {
+      errorCallback?.(error);
+    } catch (error) {
+      // Throw callback errors asynchronously, so that users will at least see
+      // it in the console and notice that their error callback throws.
+      setTimeout(() => {
+        throw error;
+      }, 0);
+    }
   }
 
   #locationServices: LocationServices;
