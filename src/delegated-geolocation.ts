@@ -57,9 +57,15 @@ export function createDelegatedGeolocation({
       for (const subscriber of subscribers) {
         try {
           subscriber();
-        } catch {
-          // ignored
+          /* v8 ignore start: impossible to test under Vitest */
+        } catch (error) {
+          // Throw subscriber errors asynchronously, so that users will at least
+          // see it in the console and notice that their subscriber throws.
+          setTimeout(() => {
+            throw error;
+          }, 0);
         }
+        /* v8 ignore stop */
       }
     },
 
@@ -142,9 +148,12 @@ export class Geolocation {
             } else {
               startWatching();
             }
+
+            /* v8 ignore start: hard to deliberately induce an error here */
           } catch {
             // ignored
           }
+          /* v8 ignore stop */
         }
       })().catch(
         /* v8 ignore next: promise failsafe, can't occur normally */
