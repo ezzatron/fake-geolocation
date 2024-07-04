@@ -83,8 +83,8 @@ describe("GeolocationCoordinates", () => {
 
     // A naive implementation would probably return NaN, which JSON.stringify()
     // would turn into a null. But this can't be distinguished from an actual
-    // null, which indicates that heading information is not available from at
-    // all from location services.
+    // null, which indicates that heading information is not supported by
+    // location services on the device.
 
     const coordinates = createCoordinates({ heading: NaN });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
