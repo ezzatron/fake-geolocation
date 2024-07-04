@@ -9,8 +9,8 @@ describe("GeolocationPosition", () => {
     coords = createCoordinates({
       latitude: 40.71703581534977,
       longitude: -74.03457283319447,
-      accuracy: 25.019,
       altitude: 22.27227783203125,
+      accuracy: 25.019,
       altitudeAccuracy: 9.838127136230469,
       heading: 90,
       speed: 111,
@@ -52,5 +52,24 @@ describe("GeolocationPosition", () => {
 
   it("has a timestamp property", () => {
     expect(position.timestamp).toBe(1687923355537);
+  });
+
+  it("has a toJSON method", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const json = position.toJSON() as object;
+
+    expect(json).toEqual({
+      coords: {
+        latitude: 40.71703581534977,
+        longitude: -74.03457283319447,
+        accuracy: 25.019,
+        altitude: 22.27227783203125,
+        altitudeAccuracy: 9.838127136230469,
+        heading: 90,
+        speed: 111,
+      },
+      timestamp: 1687923355537,
+    });
+    expect(JSON.parse(JSON.stringify(position))).toEqual(json);
   });
 });

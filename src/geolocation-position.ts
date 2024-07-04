@@ -1,3 +1,4 @@
+import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
 
 const internal = new WeakMap<
@@ -8,7 +9,7 @@ const internal = new WeakMap<
 let canConstruct = false;
 
 export function createPosition(
-  coords: Partial<globalThis.GeolocationCoordinates> = {},
+  coords: Partial<GeolocationCoordinatesParameters> = {},
   timestamp: number = 0,
   isHighAccuracy: boolean = true,
 ): globalThis.GeolocationPosition {
@@ -33,6 +34,14 @@ export class GeolocationPosition {
 
     this.coords = coords;
     this.timestamp = timestamp;
+  }
+
+  toJSON() {
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      coords: this.coords.toJSON() as object,
+      timestamp: this.timestamp,
+    };
   }
 
   readonly [Symbol.toStringTag] = "GeolocationPosition";

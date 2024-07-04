@@ -1,4 +1,6 @@
-export const coordsA: GeolocationCoordinatesWithToStringTag = {
+import { createCoordinates } from "fake-geolocation";
+
+export const coordsA: GeolocationCoordinates = createCoordinates({
   latitude: 40.71703581534977,
   longitude: -74.03457283319447,
   accuracy: 25.019,
@@ -6,10 +8,9 @@ export const coordsA: GeolocationCoordinatesWithToStringTag = {
   altitudeAccuracy: 9.838127136230469,
   heading: null,
   speed: null,
-  [Symbol.toStringTag]: "GeolocationCoordinates",
-};
+});
 
-export const coordsB: GeolocationCoordinatesWithToStringTag = {
+export const coordsB: GeolocationCoordinates = createCoordinates({
   latitude: 12,
   longitude: 34,
   accuracy: 56,
@@ -17,10 +18,9 @@ export const coordsB: GeolocationCoordinatesWithToStringTag = {
   altitudeAccuracy: 9,
   heading: null,
   speed: null,
-  [Symbol.toStringTag]: "GeolocationCoordinates",
-};
+});
 
-export const coordsC: GeolocationCoordinatesWithToStringTag = {
+export const coordsC: GeolocationCoordinates = createCoordinates({
   latitude: 98,
   longitude: 76,
   accuracy: 54,
@@ -28,10 +28,9 @@ export const coordsC: GeolocationCoordinatesWithToStringTag = {
   altitudeAccuracy: 10,
   heading: null,
   speed: null,
-  [Symbol.toStringTag]: "GeolocationCoordinates",
-};
+});
 
-export const coordsD: GeolocationCoordinatesWithToStringTag = {
+export const coordsD: GeolocationCoordinates = createCoordinates({
   latitude: 23,
   longitude: 45,
   accuracy: 67,
@@ -39,9 +38,4 @@ export const coordsD: GeolocationCoordinatesWithToStringTag = {
   altitudeAccuracy: 10,
   heading: null,
   speed: null,
-  [Symbol.toStringTag]: "GeolocationCoordinates",
-};
-
-type GeolocationCoordinatesWithToStringTag = GeolocationCoordinates & {
-  [Symbol.toStringTag]: string;
-};
+});

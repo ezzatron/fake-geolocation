@@ -4,6 +4,10 @@ import {
   User as PermissionsUser,
   createUser as createPermissionsUser,
 } from "fake-permissions";
+import {
+  createCoordinates,
+  type GeolocationCoordinatesParameters,
+} from "./geolocation-coordinates.js";
 import { MutableLocationServices } from "./location-services.js";
 
 export interface User extends PermissionsUser {
@@ -24,15 +28,16 @@ export function createUser({
     altitudeAccuracy = null,
     heading = null,
     speed = null,
-  }) => ({
-    latitude,
-    longitude,
-    accuracy,
-    altitude,
-    altitudeAccuracy,
-    heading,
-    speed,
-  }),
+  }) =>
+    createCoordinates({
+      latitude,
+      longitude,
+      accuracy,
+      altitude,
+      altitudeAccuracy,
+      heading,
+      speed,
+    }),
   permissionStore,
 }: {
   handlePermissionRequest?: HandlePermissionRequest;
@@ -41,7 +46,7 @@ export function createUser({
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
   normalizeCoordinates?: (
-    coords: Partial<GeolocationCoordinates>,
+    coords: Partial<GeolocationCoordinatesParameters>,
   ) => GeolocationCoordinates;
   permissionStore: PermissionStore;
 }): User {
