@@ -13,6 +13,7 @@ export {
 export type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 export * from "./geolocation-position-error.js";
 export { GeolocationPosition, createPosition } from "./geolocation-position.js";
+export type { GeolocationPositionParameters } from "./geolocation-position.js";
 export { Geolocation, createGeolocation } from "./geolocation.js";
 export { createLocationServices } from "./location-services.js";
 export type {

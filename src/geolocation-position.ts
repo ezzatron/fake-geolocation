@@ -1,6 +1,10 @@
 import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
 
+export type GeolocationPositionParameters = {
+  coords: GeolocationCoordinatesParameters;
+} & Pick<globalThis.GeolocationPosition, "timestamp">;
+
 const internal = new WeakMap<
   globalThis.GeolocationPosition,
   { isHighAccuracy: boolean }
