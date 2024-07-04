@@ -36,7 +36,7 @@ export function createDelegatedGeolocation({
 
       permissionsDelegate() {
         const permissions = permissionsDelegates.get(delegate);
-        /* istanbul ignore next: unlikely because of constructor assertion */
+        /* v8 ignore next: unlikely because of constructor assertion */
         if (!permissions) throw new TypeError("Missing permissions delegate");
 
         return permissions;
@@ -121,11 +121,11 @@ export class Geolocation {
             // switching delegates should not trigger a permission prompt
             if (permissionStatus.state === "prompt") {
               const [, errorCallback] = watch.args;
-              /* istanbul ignore next: difficult to test cases with no error callback */
+              /* v8 ignore next: difficult to test cases with no error callback */
               errorCallback?.(createPermissionDeniedError(""));
 
               const onPermissionChange = () => {
-                /* istanbul ignore next: can't change from "prompt" to "prompt" */
+                /* v8 ignore next: can't change from "prompt" to "prompt" */
                 if (permissionStatus.state === "prompt") return;
 
                 watch.clear();
@@ -147,7 +147,7 @@ export class Geolocation {
           }
         }
       })().catch(
-        /* istanbul ignore next: promise failsafe, can't occur normally */
+        /* v8 ignore next: promise failsafe, can't occur normally */
         () => {},
       );
     };

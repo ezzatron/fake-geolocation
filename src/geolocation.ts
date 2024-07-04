@@ -77,7 +77,7 @@ export class Geolocation {
       errorCallback ?? undefined,
       options,
     ).catch(
-      /* istanbul ignore next: promise failsafe, can't occur normally */
+      /* v8 ignore next: promise failsafe, can't occur normally */
       () => {},
     );
   }
@@ -130,7 +130,7 @@ export class Geolocation {
       options,
       watchId,
     ).catch(
-      /* istanbul ignore next: promise failsafe, can't occur normally */
+      /* v8 ignore next: promise failsafe, can't occur normally */
       () => {},
     );
 
@@ -256,7 +256,7 @@ export class Geolocation {
         options,
         watchId,
       ).catch(
-        /* istanbul ignore next: promise failsafe, can't occur normally */
+        /* v8 ignore next: promise failsafe, can't occur normally */
         () => {},
       );
     });
@@ -268,11 +268,11 @@ export class Geolocation {
           options,
           watchId,
         ).catch(
-          /* istanbul ignore next: promise failsafe, can't occur normally */
+          /* v8 ignore next: promise failsafe, can't occur normally */
           () => {},
         );
       } else {
-        /* istanbul ignore next: difficult to test cases with no error callback */
+        /* v8 ignore next: difficult to test cases with no error callback */
         this.#invokeErrorCallback(
           errorCallback,
           createPermissionDeniedError(""),
@@ -303,7 +303,7 @@ export class Geolocation {
      * 1. If watchId was passed and this's [[watchIDs]] does not contain
      *    watchId, terminate this algorithm.
      */
-    /* istanbul ignore next: hard to reproduce this race condition */
+    /* v8 ignore next: hard to reproduce this race condition */
     if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
       return;
     }
@@ -454,7 +454,7 @@ export class Geolocation {
           })(),
           new Promise<never>((_resolve, reject) => {
             function onPermissionChange() {
-              /* istanbul ignore next: can't change from "granted" to "granted" */
+              /* v8 ignore next: can't change from "granted" to "granted" */
               if (permission.state === "granted") return;
 
               reject(GeolocationPositionError.PERMISSION_DENIED);
@@ -508,14 +508,14 @@ export class Geolocation {
     try {
       const position = await Promise.race(tasks);
 
-      /* istanbul ignore next: hard to reproduce this race condition */
+      /* v8 ignore next: hard to reproduce this race condition */
       if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
         return;
       }
 
       this.#invokeSuccessCallback(successCallback, position);
     } catch (condition) {
-      /* istanbul ignore next: hard to reproduce this race condition */
+      /* v8 ignore next: hard to reproduce this race condition */
       if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
         return;
       }
@@ -531,7 +531,7 @@ export class Geolocation {
          * - User or system denied permission:
          *   - Call back with error passing errorCallback and PERMISSION_DENIED.
          */
-        /* istanbul ignore next: difficult to test cases with no error callback */
+        /* v8 ignore next: difficult to test cases with no error callback */
         this.#invokeErrorCallback(
           errorCallback,
           createPermissionDeniedError(""),
@@ -541,7 +541,7 @@ export class Geolocation {
          * - Timeout elapsed:
          *   - Call back with error with errorCallback and TIMEOUT.
          */
-        /* istanbul ignore next: difficult to test cases with no error callback */
+        /* v8 ignore next: difficult to test cases with no error callback */
         this.#invokeErrorCallback(errorCallback, createTimeoutError(""));
       } else {
         /*
@@ -549,7 +549,7 @@ export class Geolocation {
          * - Call back with error passing errorCallback and
          *   POSITION_UNAVAILABLE.
          */
-        /* istanbul ignore next: difficult to test cases with no error callback */
+        /* v8 ignore next: difficult to test cases with no error callback */
         this.#invokeErrorCallback(
           errorCallback,
           createPositionUnavailableError(""),
@@ -561,7 +561,7 @@ export class Geolocation {
   #removeWatchId(watchIds: number[], watchId: number): void {
     const watchIdIndex = watchIds.indexOf(watchId);
 
-    /* istanbul ignore next: hard to reproduce this race condition */
+    /* v8 ignore next: hard to reproduce this race condition */
     if (watchIdIndex === -1) return;
 
     watchIds.splice(watchIdIndex, 1);
@@ -576,6 +576,7 @@ export class Geolocation {
   ): void {
     try {
       successCallback(position);
+      /* v8 ignore start: impossible to test under Vitest */
     } catch (error) {
       // Throw callback errors asynchronously, so that users will at least see
       // it in the console and notice that their success callback throws.
@@ -583,6 +584,7 @@ export class Geolocation {
         throw error;
       }, 0);
     }
+    /* v8 ignore stop */
   }
 
   #invokeErrorCallback(
@@ -591,6 +593,7 @@ export class Geolocation {
   ): void {
     try {
       errorCallback?.(error);
+      /* v8 ignore start: impossible to test under Vitest */
     } catch (error) {
       // Throw callback errors asynchronously, so that users will at least see
       // it in the console and notice that their error callback throws.
@@ -598,6 +601,7 @@ export class Geolocation {
         throw error;
       }, 0);
     }
+    /* v8 ignore stop */
   }
 
   #locationServices: LocationServices;

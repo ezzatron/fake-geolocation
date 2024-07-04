@@ -2,7 +2,7 @@ export function compareCoordinates(
   a: GeolocationCoordinates,
   b: GeolocationCoordinates,
 ): number {
-  /* istanbul ignore next: implementation not guaranteed */
+  /* v8 ignore start: implementation not guaranteed */
   return (
     a.latitude - b.latitude ||
     a.longitude - b.longitude ||
@@ -13,4 +13,5 @@ export function compareCoordinates(
     (a.altitudeAccuracy ?? 0) - (b.altitudeAccuracy ?? 0) ||
     0
   );
+  /* v8 ignore end */
 }

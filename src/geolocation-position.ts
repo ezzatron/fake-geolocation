@@ -50,7 +50,7 @@ export class GeolocationPosition {
 export function isHighAccuracy(position: globalThis.GeolocationPosition) {
   const slots = internal.get(position);
 
-  /* istanbul ignore next: internal function, can't occur normally  */
+  /* v8 ignore next: internal function, can't occur normally  */
   if (!slots) throw new TypeError("Unknown position instance");
 
   return slots.isHighAccuracy;
