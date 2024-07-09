@@ -10,6 +10,10 @@ Versioning].
 
 ## Unreleased
 
+## [v0.10.1] - 2024-07-10
+
+[v0.10.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.10.1
+
 ### Fixed
 
 - Fixed an issue where calling `watchPosition()` with a `maximumAge` of
