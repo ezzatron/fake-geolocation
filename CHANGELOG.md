@@ -10,6 +10,13 @@ Versioning].
 
 ## Unreleased
 
+### Fixed
+
+- Fixed an issue where calling `watchPosition()` with a `maximumAge` of
+  `Infinity` would cause the `successCallback` to be called with the first
+  cached position indefinitely, even when setting new coordinates via location
+  services.
+
 ## [v0.10.0] - 2024-07-05
 
 [v0.10.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.10.0

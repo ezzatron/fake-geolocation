@@ -250,6 +250,14 @@ export class Geolocation {
     const unsubscribe = this.#locationServices.subscribe((isHighAccuracy) => {
       if (isHighAccuracy !== options.enableHighAccuracy) return;
 
+      /*
+       * A user agent MAY evict [[cachedPosition]] by resetting it to null at
+       * any time for any reason.
+       */
+      //
+      // In this case, we need to evict the cached position, otherwise the watch
+      // position callback is called with the cached position forever.
+      this.#cachedPosition = null;
       this.#acquirePosition(
         successCallback,
         errorCallback,

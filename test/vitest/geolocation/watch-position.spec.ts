@@ -741,6 +741,23 @@ describe("Geolocation.watchPosition()", () => {
               );
             });
           });
+
+          describe("when the coords change", () => {
+            beforeEach(async () => {
+              await sleep(20);
+              user.jumpToCoordinates(coordsB);
+            });
+
+            it("calls the success callback with the new position", async () => {
+              await waitFor(() => {
+                expectGeolocationSuccess(
+                  successCallback,
+                  errorCallback,
+                  createPosition(coordsB, startTime + 40, true),
+                );
+              });
+            });
+          });
         });
 
         describe("when watching the position with low accuracy", () => {
