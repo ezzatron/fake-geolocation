@@ -39,7 +39,7 @@
     "fake-permissions": "^0.6.0"
   },
   "devDependencies": {
-    "@types/web": "^0.0.150",
+    "@types/web": "^0.0.151",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitest/coverage-v8": "^1.5.2",
