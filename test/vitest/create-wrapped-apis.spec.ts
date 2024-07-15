@@ -5,35 +5,32 @@ import {
   createWrappedAPIs,
 } from "fake-geolocation";
 import { HandlePermissionRequest } from "fake-permissions";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
-import { mockFn, type Mocked } from "../helpers.js";
 import { expectGeolocationSuccess } from "./expect.js";
 
 describe("createWrappedAPIs()", () => {
   const startTime = 100;
 
-  let suppliedHandlePermissionRequest: Mocked<HandlePermissionRequest>;
+  let suppliedHandlePermissionRequest: Mock<HandlePermissionRequest>;
   let suppliedUser: User;
 
-  let handlePermissionRequest: Mocked<HandlePermissionRequest>;
+  let handlePermissionRequest: Mock<HandlePermissionRequest>;
   let geolocation: Geolocation;
   let permissions: Permissions;
   let user: User;
   let selectAPIs: (useSuppliedAPIs: boolean) => void;
   let isUsingSuppliedAPIs: () => boolean;
 
-  let successCallback: Mocked<PositionCallback>;
-  let errorCallback: Mocked<PositionErrorCallback>;
+  let successCallback: Mock<PositionCallback>;
+  let errorCallback: Mock<PositionErrorCallback>;
 
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(startTime);
 
-    suppliedHandlePermissionRequest = mockFn<HandlePermissionRequest>(
-      () => "denied",
-    );
+    suppliedHandlePermissionRequest = vi.fn(() => "denied");
     const supplied = createAPIs({
       handlePermissionRequest: suppliedHandlePermissionRequest,
     });
@@ -41,7 +38,7 @@ describe("createWrappedAPIs()", () => {
     suppliedUser.jumpToCoordinates(coordsA);
     suppliedUser.grantPermission({ name: "geolocation" });
 
-    handlePermissionRequest = mockFn<HandlePermissionRequest>(() => "granted");
+    handlePermissionRequest = vi.fn(() => "granted");
     const wrapped = createWrappedAPIs({
       geolocation: supplied.geolocation,
       permissions: supplied.permissions,
@@ -55,8 +52,8 @@ describe("createWrappedAPIs()", () => {
     user.jumpToCoordinates(coordsB);
     user.grantPermission({ name: "geolocation" });
 
-    successCallback = mockFn();
-    errorCallback = mockFn();
+    successCallback = vi.fn();
+    errorCallback = vi.fn();
   });
 
   describe("before selecting APIs", () => {

@@ -1,9 +1,8 @@
-import { expect } from "vitest";
-import type { Mocked } from "../helpers.js";
+import { expect, type Mock } from "vitest";
 
 export function expectGeolocationError(
-  successCallback: Mocked<PositionCallback>,
-  errorCallback: Mocked<PositionErrorCallback>,
+  successCallback: Mock<PositionCallback>,
+  errorCallback: Mock<PositionErrorCallback>,
   error: globalThis.GeolocationPositionError,
 ): void {
   expect(successCallback).not.toHaveBeenCalled();
@@ -11,8 +10,8 @@ export function expectGeolocationError(
 }
 
 export function expectGeolocationSuccess(
-  successCallback: Mocked<PositionCallback>,
-  errorCallback: Mocked<PositionErrorCallback>,
+  successCallback: Mock<PositionCallback>,
+  errorCallback: Mock<PositionErrorCallback>,
   position: GeolocationPosition,
   exact: boolean = false,
 ): void {

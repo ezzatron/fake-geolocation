@@ -8,35 +8,34 @@ import {
   createTimeoutError,
 } from "fake-geolocation";
 import { HandlePermissionRequest } from "fake-permissions";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { sleep } from "../../../src/async.js";
 import { coordsA, coordsB } from "../../fixture/coords.js";
 import { getCurrentPosition } from "../../get-current-position.js";
-import { mockFn, type Mocked } from "../../helpers.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
 
 describe("Geolocation.getCurrentPosition()", () => {
   const startTime = 100;
   let locationServices: MutableLocationServices;
-  let handlePermissionRequest: Mocked<HandlePermissionRequest>;
+  let handlePermissionRequest: Mock<HandlePermissionRequest>;
   let user: User;
   let geolocation: Geolocation;
 
-  let successCallback: Mocked<PositionCallback>;
-  let errorCallback: Mocked<PositionErrorCallback>;
+  let successCallback: Mock<PositionCallback>;
+  let errorCallback: Mock<PositionErrorCallback>;
 
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(startTime);
 
-    handlePermissionRequest = mockFn<HandlePermissionRequest>();
+    handlePermissionRequest = vi.fn();
 
     ({ geolocation, locationServices, user } = createAPIs({
       handlePermissionRequest,
     }));
 
-    successCallback = mockFn();
-    errorCallback = mockFn();
+    successCallback = vi.fn();
+    errorCallback = vi.fn();
   });
 
   describe("when permission has not been requested", () => {

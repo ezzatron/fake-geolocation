@@ -2,7 +2,6 @@ import { createAPIs } from "fake-geolocation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { coordsA } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
-import { mockFn } from "../helpers.js";
 
 describe("createAPIs()", () => {
   const startTime = 100;
@@ -22,7 +21,7 @@ describe("createAPIs()", () => {
       "prompt",
     );
 
-    await getCurrentPosition(geolocation, mockFn());
+    await getCurrentPosition(geolocation, vi.fn());
 
     expect((await permissions.query({ name: "geolocation" })).state).toBe(
       "granted",

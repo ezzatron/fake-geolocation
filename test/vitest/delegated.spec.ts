@@ -15,11 +15,18 @@ import {
   createPermissionStore,
   createPermissions,
 } from "fake-permissions";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vitest";
 import { sleep } from "../../src/async.js";
 import { coordsA, coordsB, coordsC, coordsD } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
-import { mockFn, type Mocked } from "../helpers.js";
 import { waitFor } from "../wait-for.js";
 import { expectGeolocationError, expectGeolocationSuccess } from "./expect.js";
 
@@ -37,11 +44,11 @@ describe("Delegated geolocation", () => {
   let selectDelegate: SelectDelegate;
   let isDelegateSelected: IsDelegateSelected;
 
-  let requestPermissionA: Mocked<HandlePermissionRequest>;
-  let requestPermissionB: Mocked<HandlePermissionRequest>;
+  let requestPermissionA: Mock<HandlePermissionRequest>;
+  let requestPermissionB: Mock<HandlePermissionRequest>;
 
-  let successCallback: Mocked<PositionCallback>;
-  let errorCallback: Mocked<PositionErrorCallback>;
+  let successCallback: Mock<PositionCallback>;
+  let errorCallback: Mock<PositionErrorCallback>;
 
   let watchIds: number[];
 
@@ -74,12 +81,8 @@ describe("Delegated geolocation", () => {
     });
     userB.jumpToCoordinates(coordsB);
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    requestPermissionA = mockFn((async (d) =>
-      userA.requestPermission(d)) as HandlePermissionRequest);
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    requestPermissionB = mockFn((async (d) =>
-      userB.requestPermission(d)) as HandlePermissionRequest);
+    requestPermissionA = vi.fn(async (d) => userA.requestPermission(d));
+    requestPermissionB = vi.fn(async (d) => userB.requestPermission(d));
 
     delegateA = createGeolocation({
       locationServices: locationServicesA,
@@ -101,8 +104,8 @@ describe("Delegated geolocation", () => {
         ]),
       }));
 
-    successCallback = mockFn();
-    errorCallback = mockFn();
+    successCallback = vi.fn();
+    errorCallback = vi.fn();
 
     watchIds = [];
   });
