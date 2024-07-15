@@ -10,10 +10,9 @@ import {
   waitForPositionError,
 } from "fake-geolocation";
 import { createPermissionStore, createPermissions } from "fake-permissions";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
-import { mockFn, type Mocked } from "../helpers.js";
 import { expectGeolocationError } from "./expect.js";
 
 describe("waitForPositionError()", () => {
@@ -23,8 +22,8 @@ describe("waitForPositionError()", () => {
   let user: User;
   let geolocation: Geolocation;
 
-  let successCallback: Mocked<PositionCallback>;
-  let errorCallback: Mocked<PositionErrorCallback>;
+  let successCallback: Mock<PositionCallback>;
+  let errorCallback: Mock<PositionErrorCallback>;
 
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -50,8 +49,8 @@ describe("waitForPositionError()", () => {
       },
     });
 
-    successCallback = mockFn();
-    errorCallback = mockFn();
+    successCallback = vi.fn();
+    errorCallback = vi.fn();
   });
 
   describe("when called without a code", () => {
