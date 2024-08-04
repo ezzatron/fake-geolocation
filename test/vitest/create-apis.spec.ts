@@ -11,9 +11,11 @@ describe("createAPIs()", () => {
     vi.setSystemTime(startTime);
   });
 
-  it("creates APIs that handle permission requests for geolocation", async () => {
+  it("creates APIs that handle access requests for geolocation", async () => {
     const { geolocation, permissions, user } = createAPIs({
-      handlePermissionRequest: () => "granted",
+      handleAccessRequest: async (dialog) => {
+        dialog.allow(true);
+      },
     });
     user.jumpToCoordinates(coordsA);
 

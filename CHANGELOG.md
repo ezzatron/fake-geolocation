@@ -10,6 +10,24 @@ Versioning].
 
 ## Unreleased
 
+### Changed
+
+- **\[BREAKING]** This release includes an update to the version of
+  `fake-permissions` used for permissions handling, which includes many breaking
+  changes. See the [`fake-permissions@v0.7.0` release notes] for details and
+  updated usage examples.
+- **\[BREAKING]** The `handlePermissionRequest` option for `createAPIs()`,
+  `createWrappedAPIs()`, and `createUser()` has been renamed to
+  `handleAccessRequest` in line with the changes to `fake-permissions`.
+- **\[BREAKING]** The `createGeolocation()` function now has a `permissionStore`
+  option that takes a `PermissionsStore` object instead of a `permissions`
+  option that takes a `Permissions` object.
+- **\[BREAKING]** The `createGeolocation()` function now has a `user` option
+  that takes a `User` object instead of a `requestPermission` option that takes
+  a callback.
+
+[`fake-permissions@v0.7.0` release notes]: https://github.com/ezzatron/fake-permissions/releases/v0.7.0
+
 ## [v0.10.1] - 2024-07-10
 
 [v0.10.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.10.1

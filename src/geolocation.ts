@@ -1,4 +1,4 @@
-import { HandlePermissionRequest } from "fake-permissions";
+import type { PermissionStore } from "fake-permissions";
 import {
   GeolocationPositionError,
   createPermissionDeniedError,
@@ -7,11 +7,12 @@ import {
 } from "./geolocation-position-error.js";
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
 import { LocationServices, Unsubscribe } from "./location-services.js";
+import type { User } from "./user.js";
 
 type GeolocationParameters = {
   locationServices: LocationServices;
-  permissions: Permissions;
-  requestPermission: HandlePermissionRequest;
+  permissionStore: PermissionStore;
+  user: User;
 };
 
 let canConstruct = false;
@@ -27,15 +28,15 @@ export function createGeolocation(
 export class Geolocation {
   constructor({
     locationServices,
-    permissions,
-    requestPermission,
+    permissionStore,
+    user,
   }: GeolocationParameters) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
     this.#locationServices = locationServices;
-    this.#permissions = permissions;
-    this.#requestPermission = requestPermission;
+    this.#permissionStore = permissionStore;
+    this.#user = user;
     this.#cachedPosition = null;
     this.#watchIds = [];
     this.#watchUnsubscribers = {};
@@ -195,13 +196,12 @@ export class Geolocation {
     /*
      * 6. Set permission to request permission to use descriptor.
      */
-    await this.#requestPermission(descriptor);
-    const permission = await this.#permissions.query(descriptor);
+    const isAllowed = await this.#user.requestAccess(descriptor);
 
     /*
      * 7. If permission is "denied", then:
      */
-    if (permission.state === "denied") {
+    if (!isAllowed) {
       /*
        * 7. (cont.)
        *    1. If watchId was passed, remove watchId from watchIDs.
@@ -247,29 +247,18 @@ export class Geolocation {
      *     3. Wait to acquire a position passing successCallback, errorCallback,
      *        options, and watchId.
      */
-    const unsubscribe = this.#locationServices.subscribe((isHighAccuracy) => {
-      if (isHighAccuracy !== options.enableHighAccuracy) return;
+    const unsubscribeLocation = this.#locationServices.subscribe(
+      (isHighAccuracy) => {
+        if (isHighAccuracy !== options.enableHighAccuracy) return;
 
-      /*
-       * A user agent MAY evict [[cachedPosition]] by resetting it to null at
-       * any time for any reason.
-       */
-      //
-      // In this case, we need to evict the cached position, otherwise the watch
-      // position callback is called with the cached position forever.
-      this.#cachedPosition = null;
-      this.#acquirePosition(
-        successCallback,
-        errorCallback,
-        options,
-        watchId,
-      ).catch(
-        /* v8 ignore next: promise failsafe, can't occur normally */
-        () => {},
-      );
-    });
-    const onPermissionChange = () => {
-      if (permission.state === "granted") {
+        /*
+         * A user agent MAY evict [[cachedPosition]] by resetting it to null at
+         * any time for any reason.
+         */
+        //
+        // In this case, we need to evict the cached position, otherwise the watch
+        // position callback is called with the cached position forever.
+        this.#cachedPosition = null;
         this.#acquirePosition(
           successCallback,
           errorCallback,
@@ -279,18 +268,40 @@ export class Geolocation {
           /* v8 ignore next: promise failsafe, can't occur normally */
           () => {},
         );
-      } else {
-        /* v8 ignore next: difficult to test cases with no error callback */
-        this.#invokeErrorCallback(
-          errorCallback,
-          createPermissionDeniedError(""),
-        );
-      }
-    };
-    permission.addEventListener("change", onPermissionChange);
+      },
+    );
+
+    const unsubscribePermission = this.#permissionStore.subscribe(
+      (descriptor, toState) => {
+        if (descriptor.name !== "geolocation") return;
+
+        if (toState === "granted") {
+          // Produce a new position immediately when the permission changes to
+          // "granted".
+          this.#acquirePosition(
+            successCallback,
+            errorCallback,
+            options,
+            watchId,
+          ).catch(
+            /* v8 ignore next: promise failsafe, can't occur normally */
+            () => {},
+          );
+        } else {
+          // Produce PERMISSION_DENIED errors immediately when the permission
+          // changes to something other than "granted". This is not part of the
+          // spec, but Chrome does it, and it's useful for testing.
+          this.#invokeErrorCallback(
+            errorCallback,
+            createPermissionDeniedError(""),
+          );
+        }
+      },
+    );
+
     this.#watchUnsubscribers[watchId] = () => {
-      permission.removeEventListener("change", onPermissionChange);
-      unsubscribe();
+      unsubscribePermission();
+      unsubscribeLocation();
     };
   }
 
@@ -355,13 +366,13 @@ export class Geolocation {
        *    1. Let permission be get the current permission state of
        *       "geolocation".
        */
-      const permission = await this.#permissions.query({ name: "geolocation" });
+      const permission = this.#permissionStore.get({ name: "geolocation" });
 
       /*
        * 5. (cont.)
        *    2. If permission is "denied":
        */
-      if (permission.state !== "granted") {
+      if (permission === "denied") {
         /*
          * 5. (cont.)
          *    2. (cont.)
@@ -460,15 +471,17 @@ export class Geolocation {
               throw GeolocationPositionError.POSITION_UNAVAILABLE;
             }
           })(),
-          new Promise<never>((_resolve, reject) => {
-            function onPermissionChange() {
-              /* v8 ignore next: can't change from "granted" to "granted" */
-              if (permission.state === "granted") return;
 
-              reject(GeolocationPositionError.PERMISSION_DENIED);
-              permission.removeEventListener("change", onPermissionChange);
-            }
-            permission.addEventListener("change", onPermissionChange);
+          new Promise<never>((_resolve, reject) => {
+            const unsubscribePermission = this.#permissionStore.subscribe(
+              (descriptor, toState) => {
+                if (descriptor.name !== "geolocation") return;
+                if (toState === "granted") return;
+
+                reject(GeolocationPositionError.PERMISSION_DENIED);
+                unsubscribePermission();
+              },
+            );
           }),
         ]);
 
@@ -613,8 +626,8 @@ export class Geolocation {
   }
 
   #locationServices: LocationServices;
-  #permissions: Permissions;
-  #requestPermission: HandlePermissionRequest;
+  #permissionStore: PermissionStore;
+  #user: User;
   #cachedPosition: GeolocationPosition | null;
   #watchIds: number[];
   #watchUnsubscribers: Record<number, Unsubscribe>;

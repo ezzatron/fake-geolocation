@@ -10,11 +10,7 @@ import {
   createPosition,
   createUser,
 } from "fake-geolocation";
-import {
-  HandlePermissionRequest,
-  createPermissionStore,
-  createPermissions,
-} from "fake-permissions";
+import { createPermissionStore, createPermissions } from "fake-permissions";
 import {
   afterEach,
   beforeEach,
@@ -43,9 +39,6 @@ describe("Delegated geolocation", () => {
   let geolocation: Geolocation;
   let selectDelegate: SelectDelegate;
   let isDelegateSelected: IsDelegateSelected;
-
-  let requestPermissionA: Mock<HandlePermissionRequest>;
-  let requestPermissionB: Mock<HandlePermissionRequest>;
 
   let successCallback: Mock<PositionCallback>;
   let errorCallback: Mock<PositionErrorCallback>;
@@ -81,18 +74,15 @@ describe("Delegated geolocation", () => {
     });
     userB.jumpToCoordinates(coordsB);
 
-    requestPermissionA = vi.fn(async (d) => userA.requestPermission(d));
-    requestPermissionB = vi.fn(async (d) => userB.requestPermission(d));
-
     delegateA = createGeolocation({
       locationServices: locationServicesA,
-      permissions: permissionsA,
-      requestPermission: requestPermissionA,
+      permissionStore: permissionStoreA,
+      user: userA,
     });
     delegateB = createGeolocation({
       locationServices: locationServicesB,
-      permissions: permissionsB,
-      requestPermission: requestPermissionB,
+      permissionStore: permissionStoreB,
+      user: userB,
     });
 
     ({ geolocation, selectDelegate, isDelegateSelected } =
@@ -299,7 +289,7 @@ describe("Delegated geolocation", () => {
           userB.resetPermission({ name: "geolocation" });
           successCallback.mockClear();
           errorCallback.mockClear();
-          requestPermissionB.mockClear();
+          vi.spyOn(userB, "requestAccess");
           selectDelegate(delegateB);
         });
 
@@ -311,8 +301,9 @@ describe("Delegated geolocation", () => {
           );
         });
 
-        it("does not cause a permission request", () => {
-          expect(requestPermissionB).not.toHaveBeenCalled();
+        it("does not cause an access request", () => {
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          expect(userB.requestAccess).not.toHaveBeenCalled();
         });
 
         describe("when permission is granted", () => {

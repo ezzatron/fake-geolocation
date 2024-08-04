@@ -1,8 +1,8 @@
 import {
-  HandlePermissionRequest,
   PermissionStore,
   User as PermissionsUser,
   createUser as createPermissionsUser,
+  type HandleAccessRequest,
 } from "fake-permissions";
 import {
   createCoordinates,
@@ -17,7 +17,7 @@ export interface User extends PermissionsUser {
 }
 
 export function createUser({
-  handlePermissionRequest,
+  handleAccessRequest,
   locationServices,
   lowAccuracyTransform = (coords) => coords,
   normalizeCoordinates = ({
@@ -40,7 +40,7 @@ export function createUser({
     }),
   permissionStore,
 }: {
-  handlePermissionRequest?: HandlePermissionRequest;
+  handleAccessRequest?: HandleAccessRequest;
   locationServices: MutableLocationServices;
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
@@ -51,7 +51,7 @@ export function createUser({
   permissionStore: PermissionStore;
 }): User {
   return {
-    ...createPermissionsUser({ permissionStore, handlePermissionRequest }),
+    ...createPermissionsUser({ permissionStore, handleAccessRequest }),
 
     enableLocationServices() {
       locationServices.enable();

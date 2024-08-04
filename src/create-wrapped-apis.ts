@@ -1,7 +1,7 @@
 import {
-  HandlePermissionRequest,
   PermissionStore,
   createDelegatedPermissions,
+  type HandleAccessRequest,
 } from "fake-permissions";
 import { createAPIs } from "./create-apis.js";
 import { createDelegatedGeolocation } from "./delegated-geolocation.js";
@@ -10,13 +10,13 @@ import { User } from "./user.js";
 
 export function createWrappedAPIs({
   geolocation: suppliedGeolocation,
-  handlePermissionRequest,
+  handleAccessRequest,
   lowAccuracyTransform,
   permissions: suppliedPermissions,
   permissionStore: suppliedPermissionStore,
 }: {
   geolocation: Geolocation;
-  handlePermissionRequest?: HandlePermissionRequest;
+  handleAccessRequest?: HandleAccessRequest;
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
@@ -38,7 +38,7 @@ export function createWrappedAPIs({
     permissionStore,
     user,
   } = createAPIs({
-    handlePermissionRequest,
+    handleAccessRequest,
     lowAccuracyTransform,
     permissionStore: suppliedPermissionStore,
   });

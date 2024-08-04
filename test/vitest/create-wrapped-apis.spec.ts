@@ -4,7 +4,6 @@ import {
   createPosition,
   createWrappedAPIs,
 } from "fake-geolocation";
-import { HandlePermissionRequest } from "fake-permissions";
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
@@ -13,10 +12,8 @@ import { expectGeolocationSuccess } from "./expect.js";
 describe("createWrappedAPIs()", () => {
   const startTime = 100;
 
-  let suppliedHandlePermissionRequest: Mock<HandlePermissionRequest>;
   let suppliedUser: User;
 
-  let handlePermissionRequest: Mock<HandlePermissionRequest>;
   let geolocation: Geolocation;
   let permissions: Permissions;
   let user: User;
@@ -30,19 +27,21 @@ describe("createWrappedAPIs()", () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(startTime);
 
-    suppliedHandlePermissionRequest = vi.fn(() => "denied");
     const supplied = createAPIs({
-      handlePermissionRequest: suppliedHandlePermissionRequest,
+      handleAccessRequest: async (dialog) => {
+        dialog.deny(true);
+      },
     });
     suppliedUser = supplied.user;
     suppliedUser.jumpToCoordinates(coordsA);
     suppliedUser.grantPermission({ name: "geolocation" });
 
-    handlePermissionRequest = vi.fn(() => "granted");
     const wrapped = createWrappedAPIs({
       geolocation: supplied.geolocation,
       permissions: supplied.permissions,
-      handlePermissionRequest,
+      handleAccessRequest: async (dialog) => {
+        dialog.allow(true);
+      },
     });
     geolocation = wrapped.geolocation;
     permissions = wrapped.permissions;
@@ -72,8 +71,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Permissions API", async () => {
-      await user.requestPermission({ name: "push" });
-
+      expect(await user.requestAccess({ name: "push" })).toBe(true);
       expect((await permissions.query({ name: "push" })).state).toBe("granted");
     });
   });
@@ -98,8 +96,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the supplied Permissions API", async () => {
-      await suppliedUser.requestPermission({ name: "push" });
-
+      expect(await suppliedUser.requestAccess({ name: "push" })).toBe(false);
       expect((await permissions.query({ name: "push" })).state).toBe("denied");
     });
 
@@ -119,8 +116,7 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the fake Permissions API", async () => {
-        await user.requestPermission({ name: "push" });
-
+        expect(await user.requestAccess({ name: "push" })).toBe(true);
         expect((await permissions.query({ name: "push" })).state).toBe(
           "granted",
         );
@@ -148,8 +144,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Permissions API", async () => {
-      await user.requestPermission({ name: "push" });
-
+      expect(await user.requestAccess({ name: "push" })).toBe(true);
       expect((await permissions.query({ name: "push" })).state).toBe("granted");
     });
 
@@ -169,8 +164,7 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the supplied Permissions API", async () => {
-        await suppliedUser.requestPermission({ name: "push" });
-
+        expect(await suppliedUser.requestAccess({ name: "push" })).toBe(false);
         expect((await permissions.query({ name: "push" })).state).toBe(
           "denied",
         );

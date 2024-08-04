@@ -1,5 +1,5 @@
 import {
-  HandlePermissionRequest,
+  HandleAccessRequest,
   PermissionStore,
   createPermissionStore,
   createPermissions,
@@ -12,11 +12,11 @@ import {
 import { User, createUser } from "./user.js";
 
 export function createAPIs({
-  handlePermissionRequest,
+  handleAccessRequest,
   lowAccuracyTransform = (coords) => coords,
   permissionStore = createPermissionStore(),
 }: {
-  handlePermissionRequest?: HandlePermissionRequest;
+  handleAccessRequest?: HandleAccessRequest;
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
@@ -32,7 +32,7 @@ export function createAPIs({
   const permissions = createPermissions({ permissionStore });
 
   const user = createUser({
-    handlePermissionRequest,
+    handleAccessRequest,
     locationServices,
     lowAccuracyTransform,
     permissionStore,
@@ -40,11 +40,8 @@ export function createAPIs({
 
   const geolocation = createGeolocation({
     locationServices,
-    permissions,
-
-    async requestPermission(descriptor) {
-      return user.requestPermission(descriptor);
-    },
+    permissionStore,
+    user,
   });
 
   return {

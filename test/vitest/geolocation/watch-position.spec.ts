@@ -7,7 +7,6 @@ import {
   createPositionUnavailableError,
   createTimeoutError,
 } from "fake-geolocation";
-import { HandlePermissionRequest } from "fake-permissions";
 import {
   afterEach,
   beforeEach,
@@ -26,7 +25,6 @@ import { expectGeolocationError, expectGeolocationSuccess } from "../expect.js";
 describe("Geolocation.watchPosition()", () => {
   const startTime = 100;
   let locationServices: MutableLocationServices;
-  let handlePermissionRequest: Mock<HandlePermissionRequest>;
   let user: User;
   let geolocation: Geolocation;
 
@@ -39,11 +37,7 @@ describe("Geolocation.watchPosition()", () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(startTime);
 
-    handlePermissionRequest = vi.fn();
-
-    ({ geolocation, locationServices, user } = createAPIs({
-      handlePermissionRequest,
-    }));
+    ({ geolocation, locationServices, user } = createAPIs());
 
     successCallback = vi.fn();
     errorCallback = vi.fn();
@@ -71,9 +65,11 @@ describe("Geolocation.watchPosition()", () => {
         user.jumpToCoordinates(coordsA);
       });
 
-      describe("when the user closes the permission dialog immediately", () => {
+      describe("when the user dismisses the access dialog", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue("prompt");
+          user.setAccessRequestHandler(async (dialog) => {
+            dialog.dismiss();
+          });
         });
 
         describe("when watching the position", () => {
@@ -95,15 +91,12 @@ describe("Geolocation.watchPosition()", () => {
         });
       });
 
-      describe("when the user closes the permission dialog after a delay", () => {
+      describe("when the user dismisses the access dialog after a delay", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockImplementation(
-            async (): Promise<PermissionState> => {
-              await sleep(60);
-
-              return "prompt";
-            },
-          );
+          user.setAccessRequestHandler(async (dialog) => {
+            await sleep(60);
+            dialog.dismiss();
+          });
         });
 
         describe("when watching the position with a timeout", () => {
@@ -127,9 +120,11 @@ describe("Geolocation.watchPosition()", () => {
         });
       });
 
-      describe("when the user denies the permission immediately", () => {
+      describe("when the user permanently denies access", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue("denied");
+          user.setAccessRequestHandler(async (dialog) => {
+            dialog.deny(true);
+          });
         });
 
         describe("when watching the position", () => {
@@ -151,15 +146,38 @@ describe("Geolocation.watchPosition()", () => {
         });
       });
 
-      describe("when the user denies the permission after a delay", () => {
+      describe("when the user temporarily denies access", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockImplementation(
-            async (): Promise<PermissionState> => {
-              await sleep(60);
+          user.setAccessRequestHandler(async (dialog) => {
+            dialog.deny(false);
+          });
+        });
 
-              return "denied";
-            },
-          );
+        describe("when watching the position", () => {
+          beforeEach(() => {
+            watchIds.push(
+              geolocation.watchPosition(successCallback, errorCallback),
+            );
+          });
+
+          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
+            await waitFor(() => {
+              expectGeolocationError(
+                successCallback,
+                errorCallback,
+                createPermissionDeniedError(""),
+              );
+            });
+          });
+        });
+      });
+
+      describe("when the user denies access after a delay", () => {
+        beforeEach(() => {
+          user.setAccessRequestHandler(async (dialog) => {
+            await sleep(60);
+            dialog.deny(true);
+          });
         });
 
         describe("when watching the position with a timeout", () => {
@@ -183,9 +201,11 @@ describe("Geolocation.watchPosition()", () => {
         });
       });
 
-      describe("when the user grants the permission immediately", () => {
+      describe("when the user permanently allows access", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue("granted");
+          user.setAccessRequestHandler(async (dialog) => {
+            dialog.allow(true);
+          });
         });
 
         describe("when watching the position", () => {
@@ -207,17 +227,60 @@ describe("Geolocation.watchPosition()", () => {
         });
       });
 
-      describe("when the user grants the permission after a delay", () => {
+      describe("when the user temporarily allows access", () => {
+        beforeEach(() => {
+          user.setAccessRequestHandler(async (dialog) => {
+            dialog.allow(false);
+          });
+        });
+
+        describe("when watching the position", () => {
+          beforeEach(() => {
+            watchIds.push(
+              geolocation.watchPosition(successCallback, errorCallback),
+            );
+          });
+
+          it("calls the success callback with the position", async () => {
+            await waitFor(() => {
+              expectGeolocationSuccess(
+                successCallback,
+                errorCallback,
+                createPosition(coordsA, startTime, false),
+              );
+            });
+          });
+
+          describe("when the coords change", () => {
+            const delay = 20;
+
+            beforeEach(async () => {
+              await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
+              await sleep(delay);
+              user.jumpToCoordinates(coordsB);
+            });
+
+            it("calls the success callback with the new position", async () => {
+              await waitFor(() => {
+                expectGeolocationSuccess(
+                  successCallback,
+                  errorCallback,
+                  createPosition(coordsB, startTime + delay, false),
+                );
+              });
+            });
+          });
+        });
+      });
+
+      describe("when the user allows access after a delay", () => {
         const delay = 60;
 
         beforeEach(() => {
-          handlePermissionRequest.mockImplementation(
-            async (): Promise<PermissionState> => {
-              await sleep(60);
-
-              return "granted";
-            },
-          );
+          user.setAccessRequestHandler(async (dialog) => {
+            await sleep(delay);
+            dialog.allow(true);
+          });
         });
 
         describe("when watching the position with a timeout", () => {
@@ -245,9 +308,11 @@ describe("Geolocation.watchPosition()", () => {
         user.disableLocationServices();
       });
 
-      describe("when the user grants the permission", () => {
+      describe("when the user allows access", () => {
         beforeEach(() => {
-          handlePermissionRequest.mockReturnValue("granted");
+          user.setAccessRequestHandler(async (dialog) => {
+            dialog.allow(true);
+          });
         });
 
         describe("when watching the position", () => {
@@ -1178,7 +1243,9 @@ describe("Geolocation.watchPosition()", () => {
 
   describe("when watching the position will result in an error", () => {
     beforeEach(() => {
-      handlePermissionRequest.mockReturnValue("denied");
+      user.setAccessRequestHandler(async (dialog) => {
+        dialog.deny(true);
+      });
     });
 
     describe("when watching the position with an error callback", () => {

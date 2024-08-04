@@ -9,7 +9,7 @@ import {
   createUser,
   waitForPositionError,
 } from "fake-geolocation";
-import { createPermissionStore, createPermissions } from "fake-permissions";
+import { createPermissionStore } from "fake-permissions";
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
@@ -18,7 +18,6 @@ import { expectGeolocationError } from "./expect.js";
 describe("waitForPositionError()", () => {
   const startTime = 100;
   let locationServices: MutableLocationServices;
-  let permissions: Permissions;
   let user: User;
   let geolocation: Geolocation;
 
@@ -35,18 +34,13 @@ describe("waitForPositionError()", () => {
       initialStates: new Map([[{ name: "geolocation" }, "granted"]]),
     });
 
-    permissions = createPermissions({ permissionStore });
-
     user = createUser({ locationServices, permissionStore });
     user.jumpToCoordinates(coordsA);
 
     geolocation = createGeolocation({
       locationServices,
-      permissions,
-
-      async requestPermission(descriptor) {
-        return user.requestPermission(descriptor);
-      },
+      permissionStore,
+      user,
     });
 
     successCallback = vi.fn();
