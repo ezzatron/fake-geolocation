@@ -116,7 +116,7 @@ describe("Delegated geolocation", () => {
     );
   });
 
-  it("cannot be instantiated directly", async () => {
+  it("cannot be instantiated directly", () => {
     const instantiateGeolocation = () => {
       new (geolocation.constructor as new (p: object) => unknown)({});
     };
@@ -293,7 +293,7 @@ describe("Delegated geolocation", () => {
           selectDelegate(delegateB);
         });
 
-        it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
+        it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
           expectGeolocationError(
             successCallback,
             errorCallback,
@@ -332,7 +332,7 @@ describe("Delegated geolocation", () => {
             await vi.runOnlyPendingTimersAsync();
           });
 
-          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
+          it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
             expectGeolocationError(
               successCallback,
               errorCallback,
