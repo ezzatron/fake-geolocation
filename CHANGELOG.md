@@ -10,6 +10,10 @@ Versioning].
 
 ## Unreleased
 
+## [v0.11.0] - 2024-08-04
+
+[v0.11.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.11.0
+
 ### Changed
 
 - **\[BREAKING]** This release includes an update to the version of
