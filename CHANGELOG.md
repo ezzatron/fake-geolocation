@@ -178,7 +178,7 @@ Versioning].
 
 ### Changed
 
-- **\[BC BREAK]** `createDelegatedGeolocation()` now requires a
+- **\[BREAKING]** `createDelegatedGeolocation()` now requires a
   `permissionsDelegates` argument, which is a `Map` of `Geolocation` delegates
   to their related `Permissions` delegates.
 
