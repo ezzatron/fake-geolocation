@@ -25,6 +25,11 @@ Versioning].
 - **\[BREAKING]** The `createGeolocation()` function now has a `user` option
   that takes a `User` object instead of a `requestPermission` option that takes
   a callback.
+- **\[BREAKING]** The `LocationServices` type is now a type, instead of an
+  interface.
+- **\[BREAKING]** The `MutableLocationServices` type is now a type, instead of
+  an interface.
+- **\[BREAKING]** The `User` type is now a type, instead of an interface.
 
 [`fake-permissions@v0.7.0` release notes]: https://github.com/ezzatron/fake-permissions/releases/v0.7.0
 

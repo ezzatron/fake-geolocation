@@ -10,11 +10,11 @@ import {
 } from "./geolocation-coordinates.js";
 import { MutableLocationServices } from "./location-services.js";
 
-export interface User extends PermissionsUser {
+export type User = PermissionsUser & {
   enableLocationServices(): void;
   disableLocationServices(): void;
   jumpToCoordinates(coords: Partial<GeolocationCoordinates>): void;
-}
+};
 
 export function createUser({
   handleAccessRequest,

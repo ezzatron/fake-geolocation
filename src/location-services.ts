@@ -1,23 +1,23 @@
 import { sleep } from "./async.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
 
-export interface LocationServices {
+export type LocationServices = {
   readonly isEnabled: boolean;
   acquireCoordinates(
     enableHighAccuracy: boolean,
   ): Promise<GeolocationCoordinates>;
   subscribe(subscriber: Subscriber): Unsubscribe;
-}
+};
 
 export type Unsubscribe = () => void;
 export type Subscriber = (isHighAccuracy: boolean) => void;
 
-export interface MutableLocationServices extends LocationServices {
+export type MutableLocationServices = LocationServices & {
   enable(): void;
   disable(): void;
   setHighAccuracyCoordinates(coords: GeolocationCoordinates | undefined): void;
   setLowAccuracyCoordinates(coords: GeolocationCoordinates | undefined): void;
-}
+};
 
 export function createLocationServices({
   acquireDelay = 0,
