@@ -294,7 +294,7 @@ describe("Geolocation.watchPosition()", () => {
 
           it("does not include the time spent waiting for permission in the timeout", async () => {
             await waitFor(() => {
-              expect(successCallback).toHaveBeenCalledWith(
+              expect(successCallback).toBeCalledWith(
                 createPosition(coordsA, startTime + delay, false),
               );
             });
@@ -484,7 +484,7 @@ describe("Geolocation.watchPosition()", () => {
             it("does not call the success callback with the new position", async () => {
               await sleep(delay * 2);
 
-              expect(successCallback).not.toHaveBeenCalled();
+              expect(successCallback).not.toBeCalled();
             });
           });
         });
@@ -585,7 +585,7 @@ describe("Geolocation.watchPosition()", () => {
           it("does not call the error callback", async () => {
             await sleep(delay * 2);
 
-            expect(errorCallback).not.toHaveBeenCalled();
+            expect(errorCallback).not.toBeCalled();
           });
         });
 
@@ -1274,7 +1274,7 @@ describe("Geolocation.watchPosition()", () => {
       it("does not call the success callback", async () => {
         await sleep(10);
 
-        expect(successCallback).not.toHaveBeenCalled();
+        expect(successCallback).not.toBeCalled();
       });
     });
   });

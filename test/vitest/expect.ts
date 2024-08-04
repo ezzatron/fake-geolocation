@@ -5,8 +5,8 @@ export function expectGeolocationError(
   errorCallback: Mock<PositionErrorCallback>,
   error: globalThis.GeolocationPositionError,
 ): void {
-  expect(successCallback).not.toHaveBeenCalled();
-  expect(errorCallback).toHaveBeenCalledWith(error);
+  expect(successCallback).not.toBeCalled();
+  expect(errorCallback).toBeCalledWith(error);
 }
 
 export function expectGeolocationSuccess(
@@ -15,8 +15,8 @@ export function expectGeolocationSuccess(
   position: GeolocationPosition,
   exact: boolean = false,
 ): void {
-  expect(errorCallback).not.toHaveBeenCalled();
-  expect(successCallback).toHaveBeenCalledWith(position);
+  expect(errorCallback).not.toBeCalled();
+  expect(successCallback).toBeCalledWith(position);
 
   if (exact) {
     expect(successCallback.mock.calls.map(([p]) => p)).toContain(position);

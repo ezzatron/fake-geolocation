@@ -255,7 +255,7 @@ describe("Geolocation.getCurrentPosition()", () => {
           });
 
           it("does not include the time spent waiting for permission in the timeout", () => {
-            expect(successCallback).toHaveBeenCalledWith(
+            expect(successCallback).toBeCalledWith(
               createPosition(coordsA, startTime + delay, false),
             );
           });
@@ -973,7 +973,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       });
 
       it("does not call the success callback", () => {
-        expect(successCallback).not.toHaveBeenCalled();
+        expect(successCallback).not.toBeCalled();
       });
     });
   });

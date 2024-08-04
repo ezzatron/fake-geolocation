@@ -230,7 +230,7 @@ describe("Delegated geolocation", () => {
         it("does not call the success callback with the new position", async () => {
           await sleep(delay * 2);
 
-          expect(successCallback).not.toHaveBeenCalled();
+          expect(successCallback).not.toBeCalled();
         });
       });
 
@@ -274,7 +274,7 @@ describe("Delegated geolocation", () => {
             it("does not call the success callback with the new position", async () => {
               await sleep(delay * 2);
 
-              expect(successCallback).not.toHaveBeenCalled();
+              expect(successCallback).not.toBeCalled();
             });
           });
         });
@@ -303,7 +303,7 @@ describe("Delegated geolocation", () => {
 
         it("does not cause an access request", () => {
           // eslint-disable-next-line @typescript-eslint/unbound-method
-          expect(userB.requestAccess).not.toHaveBeenCalled();
+          expect(userB.requestAccess).not.toBeCalled();
         });
 
         describe("when permission is granted", () => {
@@ -361,7 +361,7 @@ describe("Delegated geolocation", () => {
           it("does not call the success callback with the new position", async () => {
             await sleep(delay * 2);
 
-            expect(successCallback).not.toHaveBeenCalled();
+            expect(successCallback).not.toBeCalled();
           });
         });
       });
@@ -511,7 +511,7 @@ describe("Delegated geolocation", () => {
         it("does not call the success callback with the new position", async () => {
           await sleep(delay * 2);
 
-          expect(successCallback).not.toHaveBeenCalled();
+          expect(successCallback).not.toBeCalled();
         });
       });
 
@@ -555,7 +555,7 @@ describe("Delegated geolocation", () => {
             it("does not call the success callback with the new position", async () => {
               await sleep(delay * 2);
 
-              expect(successCallback).not.toHaveBeenCalled();
+              expect(successCallback).not.toBeCalled();
             });
           });
         });
@@ -580,7 +580,7 @@ describe("Delegated geolocation", () => {
           it("does not call the success callback with the new position", async () => {
             await sleep(delay * 2);
 
-            expect(successCallback).not.toHaveBeenCalled();
+            expect(successCallback).not.toBeCalled();
           });
         });
       });
