@@ -7,7 +7,15 @@ import {
   createPositionUnavailableError,
   createTimeoutError,
 } from "fake-geolocation";
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vitest";
 import { sleep } from "../../../src/async.js";
 import { coordsA, coordsB } from "../../fixture/coords.js";
 import { getCurrentPosition } from "../../get-current-position.js";
@@ -30,6 +38,10 @@ describe("Geolocation.getCurrentPosition()", () => {
 
     successCallback = vi.fn();
     errorCallback = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("when permission has not been requested", () => {

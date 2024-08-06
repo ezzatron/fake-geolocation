@@ -53,6 +53,8 @@ describe("Geolocation.watchPosition()", () => {
         // ignore
       }
     }
+
+    vi.useRealTimers();
   });
 
   describe("when permission has not been requested", () => {

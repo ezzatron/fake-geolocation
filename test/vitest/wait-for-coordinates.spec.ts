@@ -7,7 +7,7 @@ import {
   waitForCoordinates,
 } from "fake-geolocation";
 import { createPermissionStore } from "fake-permissions";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { coordsA, coordsB, coordsC } from "../fixture/coords.js";
 
 describe("waitForCoordinates()", () => {
@@ -34,6 +34,10 @@ describe("waitForCoordinates()", () => {
       permissionStore,
       user,
     });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("watches the position until the coordinates match the supplied coordinates", async () => {

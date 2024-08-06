@@ -10,7 +10,15 @@ import {
   waitForPositionError,
 } from "fake-geolocation";
 import { createPermissionStore } from "fake-permissions";
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
 import { expectGeolocationError } from "./expect.js";
@@ -45,6 +53,10 @@ describe("waitForPositionError()", () => {
 
     successCallback = vi.fn();
     errorCallback = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("when called without a code", () => {

@@ -108,6 +108,8 @@ describe("Delegated geolocation", () => {
         // ignore
       }
     }
+
+    vi.useRealTimers();
   });
 
   it("has a string tag", () => {

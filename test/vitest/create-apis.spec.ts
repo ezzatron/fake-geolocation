@@ -1,5 +1,5 @@
 import { createAPIs } from "fake-geolocation";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { coordsA } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
 
@@ -9,6 +9,10 @@ describe("createAPIs()", () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(startTime);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("creates APIs that handle access requests for geolocation", async () => {

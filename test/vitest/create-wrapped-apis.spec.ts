@@ -4,7 +4,15 @@ import {
   createPosition,
   createWrappedAPIs,
 } from "fake-geolocation";
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vitest";
 import { coordsA, coordsB } from "../fixture/coords.js";
 import { getCurrentPosition } from "../get-current-position.js";
 import { expectGeolocationSuccess } from "./expect.js";
@@ -53,6 +61,10 @@ describe("createWrappedAPIs()", () => {
 
     successCallback = vi.fn();
     errorCallback = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("before selecting APIs", () => {
