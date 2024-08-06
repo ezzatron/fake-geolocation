@@ -19,7 +19,7 @@ export function createCoordinates({
   altitudeAccuracy = null,
   heading = null,
   speed = null,
-}: Partial<GeolocationCoordinatesParameters> = {}): globalThis.GeolocationCoordinates {
+}: Partial<GeolocationCoordinates> = {}): globalThis.GeolocationCoordinates {
   canConstruct = true;
 
   return new GeolocationCoordinates({

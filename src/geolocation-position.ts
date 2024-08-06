@@ -13,7 +13,7 @@ const internal = new WeakMap<
 let canConstruct = false;
 
 export function createPosition(
-  coords: Partial<GeolocationCoordinatesParameters> = {},
+  coords: Partial<GeolocationCoordinates> = {},
   timestamp: number = 0,
   isHighAccuracy: boolean = true,
 ): globalThis.GeolocationPosition {

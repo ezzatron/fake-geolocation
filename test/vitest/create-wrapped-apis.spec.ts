@@ -3,6 +3,7 @@ import {
   createAPIs,
   createPosition,
   createWrappedAPIs,
+  type GeolocationObserver,
 } from "fake-geolocation";
 import {
   afterEach,
@@ -23,6 +24,7 @@ describe("createWrappedAPIs()", () => {
   let suppliedUser: User;
 
   let geolocation: Geolocation;
+  let observer: GeolocationObserver;
   let permissions: Permissions;
   let user: User;
   let selectAPIs: (useSuppliedAPIs: boolean) => void;
@@ -52,6 +54,7 @@ describe("createWrappedAPIs()", () => {
       },
     });
     geolocation = wrapped.geolocation;
+    observer = wrapped.observer;
     permissions = wrapped.permissions;
     user = wrapped.user;
     selectAPIs = wrapped.selectAPIs;
@@ -112,6 +115,22 @@ describe("createWrappedAPIs()", () => {
       expect((await permissions.query({ name: "push" })).state).toBe("denied");
     });
 
+    it("observes the supplied Geolocation API", async () => {
+      await expect(
+        observer.waitForCoordinates(coordsA, async () => {
+          suppliedUser.jumpToCoordinates(coordsA);
+        }),
+      ).resolves.toBeUndefined();
+    });
+
+    it("observes the supplied Permissions API", async () => {
+      await expect(
+        observer.waitForPermissionState("denied", async () => {
+          suppliedUser.denyPermission({ name: "geolocation" });
+        }),
+      ).resolves.toBeUndefined();
+    });
+
     describe("after selecting the fake APIs", () => {
       beforeEach(() => {
         selectAPIs(false);
@@ -158,6 +177,22 @@ describe("createWrappedAPIs()", () => {
     it("delegates to the fake Permissions API", async () => {
       expect(await user.requestAccess({ name: "push" })).toBe(true);
       expect((await permissions.query({ name: "push" })).state).toBe("granted");
+    });
+
+    it("observes the fake Geolocation API", async () => {
+      await expect(
+        observer.waitForCoordinates(coordsA, async () => {
+          user.jumpToCoordinates(coordsA);
+        }),
+      ).resolves.toBeUndefined();
+    });
+
+    it("observes the fake Permissions API", async () => {
+      await expect(
+        observer.waitForPermissionState("denied", async () => {
+          user.denyPermission({ name: "geolocation" });
+        }),
+      ).resolves.toBeUndefined();
     });
 
     describe("after selecting the supplied APIs", () => {

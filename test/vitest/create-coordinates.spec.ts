@@ -35,7 +35,7 @@ describe("createCoordinates()", () => {
   });
 
   describe("when some properties are provided", () => {
-    const properties: Partial<GeolocationCoordinatesParameters> = {
+    const properties: Partial<GeolocationCoordinates> = {
       latitude: 11,
       longitude: 22,
       accuracy: 33,
@@ -77,7 +77,7 @@ describe("createCoordinates()", () => {
   });
 
   describe("when explicit undefined properties are provided", () => {
-    const properties: Partial<GeolocationCoordinatesParameters> = {
+    const properties: Partial<GeolocationCoordinates> = {
       latitude: undefined,
       longitude: undefined,
       altitude: undefined,

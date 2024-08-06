@@ -4,6 +4,10 @@ import {
   createPermissionStore,
   createPermissions,
 } from "fake-permissions";
+import {
+  createGeolocationObserver,
+  type GeolocationObserver,
+} from "./geolocation-observer.js";
 import { createGeolocation } from "./geolocation.js";
 import {
   MutableLocationServices,
@@ -26,6 +30,7 @@ export function createAPIs({
 } = {}): {
   geolocation: Geolocation;
   locationServices: MutableLocationServices;
+  observer: GeolocationObserver;
   permissions: Permissions;
   permissionStore: PermissionStore;
   user: User;
@@ -46,9 +51,12 @@ export function createAPIs({
     user,
   });
 
+  const observer = createGeolocationObserver(geolocation, permissions);
+
   return {
     geolocation,
     locationServices,
+    observer,
     permissions,
     permissionStore,
     user,

@@ -33,4 +33,30 @@ describe("createAPIs()", () => {
       "granted",
     );
   });
+
+  it("creates an observer for the APIs", async () => {
+    const { geolocation, observer, permissions, user } = createAPIs();
+
+    await expect(
+      observer.waitForPermissionState("granted", async () => {
+        user.grantPermission({ name: "geolocation" });
+      }),
+    ).resolves.toBeUndefined();
+    expect((await permissions.query({ name: "geolocation" })).state).toBe(
+      "granted",
+    );
+
+    await expect(
+      observer.waitForCoordinates(coordsA, async () => {
+        user.jumpToCoordinates(coordsA);
+      }),
+    ).resolves.toBeUndefined();
+
+    const successCallback = vi.fn();
+    await getCurrentPosition(geolocation, successCallback);
+
+    expect(successCallback).toBeCalledWith(
+      expect.objectContaining({ coords: coordsA, timestamp: startTime }),
+    );
+  });
 });

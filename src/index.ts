@@ -11,8 +11,14 @@ export {
   createCoordinates,
 } from "./geolocation-coordinates.js";
 export type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
+export { createGeolocationObserver } from "./geolocation-observer.js";
+export type { GeolocationObserver } from "./geolocation-observer.js";
 export {
   GeolocationPositionError,
+  GeolocationPositionErrorCode,
+  PERMISSION_DENIED,
+  POSITION_UNAVAILABLE,
+  TIMEOUT,
   createPermissionDeniedError,
   createPositionUnavailableError,
   createTimeoutError,
