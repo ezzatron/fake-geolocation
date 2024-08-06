@@ -10,6 +10,14 @@ Versioning].
 
 ## Unreleased
 
+## [v0.11.1] - 2024-08-06
+
+[v0.11.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.11.1
+
+### Fixed
+
+- Updated version constraint for `fake-permissions`.
+
 ## [v0.11.0] - 2024-08-04
 
 [v0.11.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.11.0
