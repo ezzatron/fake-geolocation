@@ -11,6 +11,9 @@ export type GeolocationCoordinatesParameters = Pick<
   | "speed"
 >;
 
+export type PartialGeolocationCoordinates =
+  Partial<GeolocationCoordinatesParameters>;
+
 export function createCoordinates({
   latitude = 0,
   longitude = 0,
@@ -19,7 +22,7 @@ export function createCoordinates({
   altitudeAccuracy = null,
   heading = null,
   speed = null,
-}: Partial<GeolocationCoordinatesParameters> = {}): globalThis.GeolocationCoordinates {
+}: PartialGeolocationCoordinates = {}): globalThis.GeolocationCoordinates {
   canConstruct = true;
 
   return new GeolocationCoordinates({

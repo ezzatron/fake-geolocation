@@ -19,8 +19,31 @@ Versioning].
 
 ### Added
 
+- Added [geolocation observers].
 - The `createAPIs()` and `createWrappedAPIs()` functions now accept an
   `acquireDelay` option, which is passed along to the location services.
+
+[geolocation observers]: #geolocation-observers
+
+#### Geolocation observers
+
+This release adds geolocation observers, which can be used to wait for specific
+changes to the coordinates or errors produced by a Geolocation API. This can be
+useful for testing scenarios where you want to wait for a specific state to be
+reached before continuing.
+
+You can create a permission observer by calling the
+`createGeolocationObserver()` function. Once you have an observer, you can:
+
+- Wait for specific sets of coordinates by calling either
+  `observer.waitForCoordinates()` or `observer.waitForCoordinatesChange()`.
+- Wait for specific errors by calling either `observer.waitForPositionError()`
+  or `observer.waitForPositionErrorChange()`.
+
+You should use the `waitForX()` variants if you want the wait to resolve
+immediately when the current state already matches the desired state. You can
+use the `waitForXChange()` variants if you only want the wait to resolve when
+the state changes to the desired state _after_ being called.
 
 ### Fixed
 

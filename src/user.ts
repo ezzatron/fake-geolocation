@@ -6,7 +6,7 @@ import {
 } from "fake-permissions";
 import {
   createCoordinates,
-  type GeolocationCoordinatesParameters,
+  type PartialGeolocationCoordinates,
 } from "./geolocation-coordinates.js";
 import { MutableLocationServices } from "./location-services.js";
 
@@ -46,7 +46,7 @@ export function createUser({
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
   normalizeCoordinates?: (
-    coords: Partial<GeolocationCoordinatesParameters>,
+    coords: PartialGeolocationCoordinates,
   ) => GeolocationCoordinates;
   permissionStore: PermissionStore;
 }): User {

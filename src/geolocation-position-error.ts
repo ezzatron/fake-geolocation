@@ -1,6 +1,11 @@
-const PERMISSION_DENIED: globalThis.GeolocationPositionError["PERMISSION_DENIED"] = 1;
-const POSITION_UNAVAILABLE: globalThis.GeolocationPositionError["POSITION_UNAVAILABLE"] = 2;
-const TIMEOUT: globalThis.GeolocationPositionError["TIMEOUT"] = 3;
+export const PERMISSION_DENIED: globalThis.GeolocationPositionError["PERMISSION_DENIED"] = 1;
+export const POSITION_UNAVAILABLE: globalThis.GeolocationPositionError["POSITION_UNAVAILABLE"] = 2;
+export const TIMEOUT: globalThis.GeolocationPositionError["TIMEOUT"] = 3;
+
+export type GeolocationPositionErrorCode =
+  | typeof PERMISSION_DENIED
+  | typeof POSITION_UNAVAILABLE
+  | typeof TIMEOUT;
 
 let canConstruct = false;
 

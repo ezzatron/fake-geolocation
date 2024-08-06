@@ -1,4 +1,7 @@
-import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
+import type {
+  GeolocationCoordinatesParameters,
+  PartialGeolocationCoordinates,
+} from "./geolocation-coordinates.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
 
 export type GeolocationPositionParameters = {
@@ -13,7 +16,7 @@ const internal = new WeakMap<
 let canConstruct = false;
 
 export function createPosition(
-  coords: Partial<GeolocationCoordinatesParameters> = {},
+  coords: PartialGeolocationCoordinates = {},
   timestamp: number = 0,
   isHighAccuracy: boolean = true,
 ): globalThis.GeolocationPosition {
