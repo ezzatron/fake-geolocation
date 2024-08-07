@@ -13,11 +13,11 @@ describe("GeolocationObserver", () => {
   let locationServices: MutableLocationServices;
   let geolocation: Geolocation;
 
-  beforeEach(() => {
-    ({ permissionStore, locationServices, geolocation } = createAPIs());
-  });
-
   describe("when created with default options", () => {
+    beforeEach(() => {
+      ({ permissionStore, locationServices, geolocation } = createAPIs());
+    });
+
     describe("waitForCoordinates()", () => {
       describe("when called with no matchers", () => {
         it("resolves when any coords are already acquired", async () => {
@@ -249,6 +249,7 @@ describe("GeolocationObserver", () => {
           permissionStore.set({ name: "geolocation" }, "granted");
           await runTaskQueue();
           const observer = await createGeolocationObserver(geolocation);
+          await runTaskQueue();
 
           await expect(
             observer.waitForCoordinates(coordsB, async () => {
@@ -532,6 +533,7 @@ describe("GeolocationObserver", () => {
           permissionStore.set({ name: "geolocation" }, "granted");
           await runTaskQueue();
           const observer = await createGeolocationObserver(geolocation);
+          await runTaskQueue();
 
           await expect(
             observer.waitForCoordinatesChange(
@@ -578,6 +580,7 @@ describe("GeolocationObserver", () => {
           permissionStore.set({ name: "geolocation" }, "granted");
           await runTaskQueue();
           const observer = await createGeolocationObserver(geolocation);
+          await runTaskQueue();
 
           await expect(
             observer.waitForCoordinatesChange(coordsB, async () => {
@@ -1105,6 +1108,12 @@ describe("GeolocationObserver", () => {
   });
 
   describe("when created with non-default options", () => {
+    beforeEach(() => {
+      ({ permissionStore, locationServices, geolocation } = createAPIs({
+        acquireDelay: 0,
+      }));
+    });
+
     describe("waitForCoordinates()", () => {
       it("uses the provided options", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
