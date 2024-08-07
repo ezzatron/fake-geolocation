@@ -85,9 +85,9 @@ export function createLocationServices({
       } catch (error) {
         // Throw subscriber errors asynchronously, so that users will at least
         // see it in the console and notice that their subscriber throws.
-        setTimeout(() => {
+        queueMicrotask(() => {
           throw error;
-        }, 0);
+        });
       }
       /* v8 ignore stop */
     }

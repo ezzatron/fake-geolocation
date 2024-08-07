@@ -601,9 +601,9 @@ export class Geolocation {
     } catch (error) {
       // Throw callback errors asynchronously, so that users will at least see
       // it in the console and notice that their success callback throws.
-      setTimeout(() => {
+      queueMicrotask(() => {
         throw error;
-      }, 0);
+      });
     }
     /* v8 ignore stop */
   }
@@ -618,9 +618,9 @@ export class Geolocation {
     } catch (error) {
       // Throw callback errors asynchronously, so that users will at least see
       // it in the console and notice that their error callback throws.
-      setTimeout(() => {
+      queueMicrotask(() => {
         throw error;
-      }, 0);
+      });
     }
     /* v8 ignore stop */
   }
