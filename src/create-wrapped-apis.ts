@@ -9,12 +9,14 @@ import { MutableLocationServices } from "./location-services.js";
 import { User } from "./user.js";
 
 export function createWrappedAPIs({
+  acquireDelay,
   geolocation: suppliedGeolocation,
   handleAccessRequest,
   lowAccuracyTransform,
   permissions: suppliedPermissions,
   permissionStore: suppliedPermissionStore,
 }: {
+  acquireDelay?: number;
   geolocation: Geolocation;
   handleAccessRequest?: HandleAccessRequest;
   lowAccuracyTransform?: (
@@ -38,6 +40,7 @@ export function createWrappedAPIs({
     permissionStore,
     user,
   } = createAPIs({
+    acquireDelay,
     handleAccessRequest,
     lowAccuracyTransform,
     permissionStore: suppliedPermissionStore,

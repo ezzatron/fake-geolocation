@@ -20,7 +20,7 @@ export type MutableLocationServices = LocationServices & {
 };
 
 export function createLocationServices({
-  acquireDelay = 0,
+  acquireDelay,
 }: { acquireDelay?: number } = {}): MutableLocationServices {
   const subscribers = new Set<Subscriber>();
   let isEnabled = true;
@@ -46,7 +46,7 @@ export function createLocationServices({
 
     async acquireCoordinates(enableHighAccuracy) {
       if (isEnabled) {
-        await sleep(acquireDelay);
+        if (acquireDelay != null) await sleep(acquireDelay);
 
         const coords = enableHighAccuracy
           ? highAccuracyCoords

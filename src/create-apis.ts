@@ -12,10 +12,12 @@ import {
 import { User, createUser } from "./user.js";
 
 export function createAPIs({
+  acquireDelay,
   handleAccessRequest,
   lowAccuracyTransform = (coords) => coords,
   permissionStore = createPermissionStore(),
 }: {
+  acquireDelay?: number;
   handleAccessRequest?: HandleAccessRequest;
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
@@ -28,7 +30,7 @@ export function createAPIs({
   permissionStore: PermissionStore;
   user: User;
 } {
-  const locationServices = createLocationServices();
+  const locationServices = createLocationServices({ acquireDelay });
   const permissions = createPermissions({ permissionStore });
 
   const user = createUser({
