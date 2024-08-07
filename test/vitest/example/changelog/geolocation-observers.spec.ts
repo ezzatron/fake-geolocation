@@ -27,14 +27,14 @@ describe("Geolocation observers", () => {
 
     // Start watching the position
     let position: GeolocationPosition | undefined;
-    let error: GeolocationPositionError | undefined;
+    // let error: GeolocationPositionError | undefined;
     geolocation.watchPosition(
       (p) => {
         position = p;
       },
-      (e) => {
-        error = e;
-      },
+      // (e) => {
+      //   error = e;
+      // },
     );
 
     // Start observing high accuracy position changes and errors
