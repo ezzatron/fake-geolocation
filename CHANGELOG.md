@@ -22,6 +22,11 @@ Versioning].
 - The `createAPIs()` and `createWrappedAPIs()` functions now accept an
   `acquireDelay` option, which is passed along to the location services.
 
+### Fixed
+
+- Errors that are thrown asynchronously now use `queueMicrotask()` instead of
+  `setTimeout()`.
+
 ## [v0.11.1] - 2024-08-06
 
 [v0.11.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.11.1
