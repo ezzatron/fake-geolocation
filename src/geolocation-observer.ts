@@ -116,14 +116,16 @@ export function createGeolocationObserver(
 
       watchId = geolocation.watchPosition(
         (p) => {
-          /* v8 ignore next: race condition failsafe */
+          /* v8 ignore start: race condition failsafe */
           if (isStopped) return;
+          /* v8 ignore stop */
 
           successCallback?.(p);
         },
         (e) => {
-          /* v8 ignore next: race condition failsafe */
+          /* v8 ignore start: race condition failsafe */
           if (isStopped) return;
+          /* v8 ignore stop */
 
           geolocation.clearWatch(watchId);
           setTimeout(startWatch, 20);
