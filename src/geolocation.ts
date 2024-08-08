@@ -162,11 +162,29 @@ export class Geolocation {
     options: Required<PositionOptions>,
     watchId?: number,
   ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
     let controller: AbortController | undefined;
+    let isEstablished = false;
 
     if (typeof watchId === "number") {
       controller = new AbortController();
       this.#watchControllers[watchId] = controller;
+
+      const unsubscribeLocation =
+        this.#locationServices.subscribe(handleNewLocation);
+      const unsubscribePermission = this.#permissionStore.subscribe(
+        handlePermissionChange,
+      );
+
+      controller.signal.addEventListener(
+        "abort",
+        () => {
+          unsubscribeLocation();
+          unsubscribePermission();
+        },
+        { once: true },
+      );
     }
 
     /*
@@ -220,6 +238,8 @@ export class Geolocation {
       return;
     }
 
+    isEstablished = true;
+
     /*
      * 8. Wait to [acquire a position] passing _successCallback_,
      *    _errorCallback_, _options_, and _watchId_.
@@ -252,68 +272,54 @@ export class Geolocation {
      *     3. Wait to acquire a position passing successCallback, errorCallback,
      *        options, and watchId.
      */
-    const unsubscribeLocation = this.#locationServices.subscribe(
-      (isHighAccuracy) => {
-        if (isHighAccuracy !== options.enableHighAccuracy) return;
+    function handleNewLocation(isHighAccuracy: boolean): void {
+      if (!isEstablished) return;
+      if (isHighAccuracy !== options.enableHighAccuracy) return;
 
-        /*
-         * A user agent MAY evict [[cachedPosition]] by resetting it to null at
-         * any time for any reason.
-         */
-        //
-        // In this case, we need to evict the cached position, otherwise the watch
-        // position callback is called with the cached position forever.
-        this.#cachedPosition = null;
-        this.#acquirePosition(
-          successCallback,
-          errorCallback,
-          options,
-          watchId,
-        ).catch(
+      /*
+       * A user agent MAY evict [[cachedPosition]] by resetting it to null at
+       * any time for any reason.
+       */
+      //
+      // In this case, we need to evict the cached position, otherwise the
+      // watch position callback is called with the cached position forever.
+      self.#cachedPosition = null;
+      self
+        .#acquirePosition(successCallback, errorCallback, options, watchId)
+        .catch(
           /* v8 ignore start: promise failsafe, can't occur normally */
           () => {},
           /* v8 ignore stop */
         );
-      },
-    );
+    }
 
-    const unsubscribePermission = this.#permissionStore.subscribe(
-      (descriptor, { hasAccess, hadAccess }) => {
-        if (descriptor.name !== "geolocation") return;
-        if (hasAccess === hadAccess) return;
+    function handlePermissionChange(
+      descriptor: PermissionDescriptor,
+      { hasAccess, hadAccess }: { hasAccess: boolean; hadAccess: boolean },
+    ): void {
+      if (!isEstablished) return;
+      if (descriptor.name !== "geolocation") return;
+      if (hasAccess === hadAccess) return;
 
-        if (hasAccess) {
-          // Produce a new position immediately when access is granted.
-          this.#acquirePosition(
-            successCallback,
-            errorCallback,
-            options,
-            watchId,
-          ).catch(
+      if (hasAccess) {
+        // Produce a new position immediately when access is granted.
+        self
+          .#acquirePosition(successCallback, errorCallback, options, watchId)
+          .catch(
             /* v8 ignore start: promise failsafe, can't occur normally */
             () => {},
             /* v8 ignore stop */
           );
-        } else {
-          // Produce PERMISSION_DENIED errors immediately when access is
-          // revoked. This is not part of the spec, but Chrome does it, and it's
-          // useful for testing.
-          this.#invokeErrorCallback(
-            errorCallback,
-            createPermissionDeniedError(""),
-          );
-        }
-      },
-    );
-
-    controller?.signal.addEventListener(
-      "abort",
-      () => {
-        unsubscribeLocation();
-        unsubscribePermission();
-      },
-      { once: true },
-    );
+      } else {
+        // Produce PERMISSION_DENIED errors immediately when access is
+        // revoked. This is not part of the spec, but Chrome does it, and it's
+        // useful for testing.
+        self.#invokeErrorCallback(
+          errorCallback,
+          createPermissionDeniedError(""),
+        );
+      }
+    }
   }
 
   /**

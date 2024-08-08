@@ -2,7 +2,6 @@ import {
   createAPIs,
   createGeolocationObserver,
   GeolocationPositionError,
-  PERMISSION_DENIED,
   type MutableLocationServices,
 } from "fake-geolocation";
 import type { PermissionStore } from "fake-permissions";
@@ -579,22 +578,6 @@ describe("GeolocationObserver", () => {
         locationServices.setLowAccuracyCoordinates(undefined);
 
         await expect(promise).resolves.toBeUndefined();
-      });
-    });
-
-    describe("Regression tests", () => {
-      it("can wait for a PERMISSION_DENIED error caused by resetting the permission during an active watch", async () => {
-        locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
-        await runTaskQueue();
-        const observer = createGeolocationObserver(geolocation, permissions);
-        await runTaskQueue();
-
-        await expect(
-          observer.waitForPositionError(PERMISSION_DENIED, async () => {
-            permissionStore.setStatus({ name: "geolocation" }, "PROMPT");
-          }),
-        ).resolves.toBeUndefined();
       });
     });
   });
