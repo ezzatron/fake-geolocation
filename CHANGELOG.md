@@ -42,11 +42,11 @@ changes to the coordinates or errors produced by a Geolocation API. This can be
 useful for testing scenarios where you want to wait for a specific state to be
 reached before continuing.
 
-You can create a permission observer by calling the
-`createGeolocationObserver()` function. Once you have an observer, you can wait
-for specific sets of coordinates by calling `observer.waitForCoordinates()`, or
-wait for specific geolocation errors by calling
-`observer.waitForPositionError()`.
+Observers are created for you when you call `createAPIs()` or
+`createWrappedAPIs()`. You can wait for specific sets of coordinates by calling
+`observer.waitForCoordinates()`, wait for specific geolocation errors by calling
+`observer.waitForPositionError()`, or wait for specific `geolocation` permission
+states by calling `observer.waitForPermissionState()`.
 
 ```ts
 import {
