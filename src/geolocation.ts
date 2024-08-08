@@ -6,7 +6,7 @@ import {
   createTimeoutError,
 } from "./geolocation-position-error.js";
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
-import { LocationServices, Unsubscribe } from "./location-services.js";
+import { LocationServices } from "./location-services.js";
 
 type GeolocationParameters = {
   locationServices: LocationServices;
@@ -33,7 +33,7 @@ export class Geolocation {
     this.#permissionStore = permissionStore;
     this.#cachedPosition = null;
     this.#watchIds = [];
-    this.#watchUnsubscribers = {};
+    this.#watchControllers = {};
     this.#watchId = 1;
   }
 
@@ -162,6 +162,13 @@ export class Geolocation {
     options: Required<PositionOptions>,
     watchId?: number,
   ): Promise<void> {
+    let controller: AbortController | undefined;
+
+    if (typeof watchId === "number") {
+      controller = new AbortController();
+      this.#watchControllers[watchId] = controller;
+    }
+
     /*
      * 1. Let watchIDs be this's [[watchIDs]].
      */
@@ -229,6 +236,10 @@ export class Geolocation {
      */
     if (typeof watchId !== "number") return;
 
+    // If the watch was cleared while we were waiting for the position, don't
+    // subscribe to anything.
+    if (controller?.signal.aborted) return;
+
     /*
      * 10. While watchIDs contains watchId:
      *     1. Wait for a significant change of geographic position. What
@@ -295,10 +306,14 @@ export class Geolocation {
       },
     );
 
-    this.#watchUnsubscribers[watchId] = () => {
-      unsubscribePermission();
-      unsubscribeLocation();
-    };
+    controller?.signal.addEventListener(
+      "abort",
+      () => {
+        unsubscribeLocation();
+        unsubscribePermission();
+      },
+      { once: true },
+    );
   }
 
   /**
@@ -593,8 +608,8 @@ export class Geolocation {
 
     watchIds.splice(watchIdIndex, 1);
 
-    this.#watchUnsubscribers[watchId]?.();
-    delete this.#watchUnsubscribers[watchId];
+    this.#watchControllers[watchId]?.abort();
+    delete this.#watchControllers[watchId];
   }
 
   #invokeSuccessCallback(
@@ -635,6 +650,6 @@ export class Geolocation {
   #permissionStore: PermissionStore;
   #cachedPosition: GeolocationPosition | null;
   #watchIds: number[];
-  #watchUnsubscribers: Record<number, Unsubscribe>;
+  #watchControllers: Record<number, AbortController>;
   #watchId: number;
 }
