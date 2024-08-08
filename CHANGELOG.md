@@ -10,6 +10,14 @@ Versioning].
 
 ## Unreleased
 
+## [v0.13.1] - 2024-08-08
+
+[v0.13.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.13.1
+
+### Fixed
+
+- Fixed a memory leak in the Geolocation API implementation.
+
 ## [v0.13.0] - 2024-08-08
 
 [v0.13.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.13.0
