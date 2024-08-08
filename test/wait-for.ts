@@ -21,6 +21,7 @@ export function waitFor<T>(fn: () => T): Promise<T> {
 
       if (elapsed >= timeout) {
         clearInterval(intervalId);
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(error ?? new Error("Timed out"));
       }
     }, delay);
