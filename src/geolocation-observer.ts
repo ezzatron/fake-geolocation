@@ -78,9 +78,15 @@ export function createGeolocationObserver(
 
     nextMatcher: for (const matcher of matchers) {
       for (const property in matcher) {
+        const a = matcher[property as keyof typeof matcher];
+        const b = coords[property as keyof typeof coords];
+
         if (
-          matcher[property as keyof typeof matcher] !==
-          coords[property as keyof typeof coords]
+          a !== b &&
+          /* v8 ignore start: can't test without another execution context */
+          !(typeof a === "undefined" && typeof b === "undefined") &&
+          /* v8 ignore stop */
+          !(Number.isNaN(a) && Number.isNaN(b))
         ) {
           continue nextMatcher;
         }

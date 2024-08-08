@@ -244,6 +244,23 @@ describe("GeolocationObserver", () => {
       });
     });
 
+    describe("when called with a matcher with a NaN heading", () => {
+      it("resolves when the coords match", async () => {
+        locationServices.setLowAccuracyCoordinates({
+          ...coordsA,
+          heading: NaN,
+        });
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
+        await runTaskQueue();
+        const observer = createGeolocationObserver(geolocation, permissions);
+        await runTaskQueue();
+
+        await expect(
+          observer.waitForCoordinates({ heading: NaN }),
+        ).resolves.toBeUndefined();
+      });
+    });
+
     describe("when called with an async task function", () => {
       it("runs the task while waiting", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
