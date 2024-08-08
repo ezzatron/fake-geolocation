@@ -1,4 +1,3 @@
-export { compareCoordinates } from "./compare-coordinates.js";
 export { createAPIs } from "./create-apis.js";
 export { createWrappedAPIs } from "./create-wrapped-apis.js";
 export { createDelegatedGeolocation } from "./delegated-geolocation.js";

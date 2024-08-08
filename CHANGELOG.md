@@ -16,6 +16,7 @@ Versioning].
   observers] instead.
 - **\[BREAKING]** Removed the `waitForPositionError()` function - use
   [geolocation observers] instead.
+- **\[BREAKING]** Removed the `compareCoordinates()` function.
 
 ### Changed
 
