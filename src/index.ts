@@ -33,5 +33,3 @@ export type {
 } from "./location-services.js";
 export { createUser } from "./user.js";
 export type { User } from "./user.js";
-export { waitForCoordinates } from "./wait-for-coordinates.js";
-export { waitForPositionError } from "./wait-for-position-error.js";

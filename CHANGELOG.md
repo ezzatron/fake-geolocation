@@ -10,6 +10,13 @@ Versioning].
 
 ## Unreleased
 
+### Removed
+
+- **\[BREAKING]** Removed the `waitForCoordinates()` function - use [geolocation
+  observers] instead.
+- **\[BREAKING]** Removed the `waitForPositionError()` function - use
+  [geolocation observers] instead.
+
 ### Changed
 
 - **\[BREAKING]** Location services will no longer delay acquisition of
