@@ -59,7 +59,7 @@ describe("Geolocation.watchPosition()", () => {
 
   describe("when permission has not been requested", () => {
     beforeEach(() => {
-      user.resetPermission({ name: "geolocation" });
+      user.resetAccess({ name: "geolocation" });
     });
 
     describe("when coords can be acquired", () => {
@@ -340,7 +340,7 @@ describe("Geolocation.watchPosition()", () => {
 
   describe("when permission is denied", () => {
     beforeEach(() => {
-      user.denyPermission({ name: "geolocation" });
+      user.blockAccess({ name: "geolocation" });
     });
 
     describe("when watching the position", () => {
@@ -364,7 +364,7 @@ describe("Geolocation.watchPosition()", () => {
 
   describe("when permission is granted", () => {
     beforeEach(() => {
-      user.grantPermission({ name: "geolocation" });
+      user.grantAccess({ name: "geolocation" });
     });
 
     describe("when acquiring coords throws an error", () => {
@@ -499,7 +499,7 @@ describe("Geolocation.watchPosition()", () => {
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
-            user.denyPermission({ name: "geolocation" });
+            user.blockAccess({ name: "geolocation" });
           });
 
           it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", async () => {
@@ -537,7 +537,7 @@ describe("Geolocation.watchPosition()", () => {
               beforeEach(() => {
                 successCallback.mockClear();
                 errorCallback.mockClear();
-                user.grantPermission({ name: "geolocation" });
+                user.grantAccess({ name: "geolocation" });
               });
 
               it("calls the success callback with the position", async () => {
@@ -571,6 +571,23 @@ describe("Geolocation.watchPosition()", () => {
               });
             });
           });
+
+          describe("when the permission changes, but access is still not allowed", () => {
+            beforeEach(() => {
+              successCallback.mockClear();
+              errorCallback.mockClear();
+              user.setAccessRequestHandler(async (dialog) => {
+                dialog.deny(false);
+              });
+              user.resetAccess({ name: "geolocation" });
+            });
+
+            it("does not call the error callback", async () => {
+              await sleep(20);
+
+              expect(errorCallback).not.toBeCalled();
+            });
+          });
         });
 
         describe("when a permission other than geolocation is revoked", () => {
@@ -581,7 +598,7 @@ describe("Geolocation.watchPosition()", () => {
             await sleep(delay);
             successCallback.mockClear();
             errorCallback.mockClear();
-            user.denyPermission({ name: "notifications" });
+            user.blockAccess({ name: "notifications" });
           });
 
           it("does not call the error callback", async () => {

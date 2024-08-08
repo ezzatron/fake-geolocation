@@ -10,6 +10,16 @@ Versioning].
 
 ## Unreleased
 
+### Changed
+
+- **\[BREAKING]** This release includes an update to the version of
+  `fake-permissions` used for permissions handling, which includes many breaking
+  changes. See the [`fake-permissions` releases] for details.
+- **\[BREAKING]** The `createGeolocation()` function no longer takes a `user`
+  option. Access requests are now handled by the `permissionStore` object.
+
+[`fake-permissions` releases]: https://github.com/ezzatron/fake-permissions/releases
+
 ## [v0.12.0] - 2024-08-08
 
 [v0.12.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.12.0
@@ -76,7 +86,7 @@ const coordsB = createCoordinates({ latitude: 3, longitude: 4 });
 
 // Jump to some coords and grant permission
 user.jumpToCoordinates(coordsA);
-user.grantPermission({ name: "geolocation" });
+user.grantAccess({ name: "geolocation" });
 
 // Start watching the position
 let position: GeolocationPosition | undefined;
@@ -136,14 +146,14 @@ console.log(error?.code === POSITION_UNAVAILABLE);
 
 // Wait for a PERMISSION_DENIED error, while running a task
 await observer.waitForPositionError(PERMISSION_DENIED, async () => {
-  user.denyPermission({ name: "geolocation" });
+  user.blockAccess({ name: "geolocation" });
 });
 // Outputs "true"
 console.log(error?.code === PERMISSION_DENIED);
 
 // You can also wait for geolocation permission states
 await observer.waitForPermissionState("granted", async () => {
-  user.grantPermission({ name: "geolocation" });
+  user.grantAccess({ name: "geolocation" });
 });
 // Outputs "true"
 console.log(status.state === "granted");

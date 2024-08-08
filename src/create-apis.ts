@@ -37,6 +37,8 @@ export function createAPIs({
 } {
   const locationServices = createLocationServices({ acquireDelay });
   const permissions = createPermissions({ permissionStore });
+  const geolocation = createGeolocation({ locationServices, permissionStore });
+  const observer = createGeolocationObserver(geolocation, permissions);
 
   const user = createUser({
     handleAccessRequest,
@@ -44,14 +46,6 @@ export function createAPIs({
     lowAccuracyTransform,
     permissionStore,
   });
-
-  const geolocation = createGeolocation({
-    locationServices,
-    permissionStore,
-    user,
-  });
-
-  const observer = createGeolocationObserver(geolocation, permissions);
 
   return {
     geolocation,

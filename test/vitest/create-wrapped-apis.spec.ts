@@ -5,6 +5,7 @@ import {
   createWrappedAPIs,
   type GeolocationObserver,
 } from "fake-geolocation";
+import type { PermissionStore } from "fake-permissions";
 import {
   afterEach,
   beforeEach,
@@ -22,9 +23,11 @@ describe("createWrappedAPIs()", () => {
   const startTime = 100;
 
   let suppliedUser: User;
+  let suppliedPermissionStore: PermissionStore;
 
   let geolocation: Geolocation;
   let observer: GeolocationObserver;
+  let permissionStore: PermissionStore;
   let permissions: Permissions;
   let user: User;
   let selectAPIs: (useSuppliedAPIs: boolean) => void;
@@ -42,9 +45,10 @@ describe("createWrappedAPIs()", () => {
         dialog.deny(true);
       },
     });
+    suppliedPermissionStore = supplied.permissionStore;
     suppliedUser = supplied.user;
     suppliedUser.jumpToCoordinates(coordsA);
-    suppliedUser.grantPermission({ name: "geolocation" });
+    suppliedUser.grantAccess({ name: "geolocation" });
 
     const wrapped = createWrappedAPIs({
       geolocation: supplied.geolocation,
@@ -55,12 +59,13 @@ describe("createWrappedAPIs()", () => {
     });
     geolocation = wrapped.geolocation;
     observer = wrapped.observer;
+    permissionStore = wrapped.permissionStore;
     permissions = wrapped.permissions;
     user = wrapped.user;
     selectAPIs = wrapped.selectAPIs;
     isUsingSuppliedAPIs = wrapped.isUsingSuppliedAPIs;
     user.jumpToCoordinates(coordsB);
-    user.grantPermission({ name: "geolocation" });
+    user.grantAccess({ name: "geolocation" });
 
     successCallback = vi.fn();
     errorCallback = vi.fn();
@@ -86,7 +91,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Permissions API", async () => {
-      expect(await user.requestAccess({ name: "push" })).toBe(true);
+      expect(await permissionStore.requestAccess({ name: "push" })).toBe(true);
       expect((await permissions.query({ name: "push" })).state).toBe("granted");
     });
   });
@@ -111,7 +116,9 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the supplied Permissions API", async () => {
-      expect(await suppliedUser.requestAccess({ name: "push" })).toBe(false);
+      expect(
+        await suppliedPermissionStore.requestAccess({ name: "push" }),
+      ).toBe(false);
       expect((await permissions.query({ name: "push" })).state).toBe("denied");
     });
 
@@ -126,7 +133,7 @@ describe("createWrappedAPIs()", () => {
     it("observes the supplied Permissions API", async () => {
       await expect(
         observer.waitForPermissionState("denied", async () => {
-          suppliedUser.denyPermission({ name: "geolocation" });
+          suppliedUser.blockAccess({ name: "geolocation" });
         }),
       ).resolves.toBeUndefined();
     });
@@ -147,7 +154,9 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the fake Permissions API", async () => {
-        expect(await user.requestAccess({ name: "push" })).toBe(true);
+        expect(await permissionStore.requestAccess({ name: "push" })).toBe(
+          true,
+        );
         expect((await permissions.query({ name: "push" })).state).toBe(
           "granted",
         );
@@ -175,7 +184,7 @@ describe("createWrappedAPIs()", () => {
     });
 
     it("delegates to the fake Permissions API", async () => {
-      expect(await user.requestAccess({ name: "push" })).toBe(true);
+      expect(await permissionStore.requestAccess({ name: "push" })).toBe(true);
       expect((await permissions.query({ name: "push" })).state).toBe("granted");
     });
 
@@ -190,7 +199,7 @@ describe("createWrappedAPIs()", () => {
     it("observes the fake Permissions API", async () => {
       await expect(
         observer.waitForPermissionState("denied", async () => {
-          user.denyPermission({ name: "geolocation" });
+          user.blockAccess({ name: "geolocation" });
         }),
       ).resolves.toBeUndefined();
     });
@@ -211,7 +220,9 @@ describe("createWrappedAPIs()", () => {
       });
 
       it("delegates to the supplied Permissions API", async () => {
-        expect(await suppliedUser.requestAccess({ name: "push" })).toBe(false);
+        expect(
+          await suppliedPermissionStore.requestAccess({ name: "push" }),
+        ).toBe(false);
         expect((await permissions.query({ name: "push" })).state).toBe(
           "denied",
         );

@@ -2,6 +2,7 @@ import {
   createAPIs,
   createGeolocationObserver,
   GeolocationPositionError,
+  PERMISSION_DENIED,
   type MutableLocationServices,
 } from "fake-geolocation";
 import type { PermissionStore } from "fake-permissions";
@@ -23,7 +24,7 @@ describe("GeolocationObserver", () => {
     describe("when called with no matchers", () => {
       it("resolves when any coords are already acquired", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -45,7 +46,7 @@ describe("GeolocationObserver", () => {
         expect(isResolved).toBe(false);
 
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
 
         await expect(promise).resolves.toBeUndefined();
       });
@@ -53,7 +54,7 @@ describe("GeolocationObserver", () => {
       it("doesn't resolve when coords are not acquired", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
         locationServices.disable();
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -76,7 +77,7 @@ describe("GeolocationObserver", () => {
     describe("when called with a single matcher", () => {
       it("resolves when the coords already match the matcher", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -88,7 +89,7 @@ describe("GeolocationObserver", () => {
 
       it("resolves when the coords change to match the matcher", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -109,7 +110,7 @@ describe("GeolocationObserver", () => {
 
       it("doesn't resolve when the coords change but don't match the matcher", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -137,7 +138,7 @@ describe("GeolocationObserver", () => {
     describe("when called with multiple matchers", () => {
       it("resolves when the coords already match any of the matchers", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -152,7 +153,7 @@ describe("GeolocationObserver", () => {
 
       it("resolves when the coords change to match any of the matchers", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -175,7 +176,7 @@ describe("GeolocationObserver", () => {
 
       it("doesn't resolve when the coords change but don't match any of the matchers", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -205,7 +206,7 @@ describe("GeolocationObserver", () => {
     describe("when called with a partial matcher", () => {
       it("resolves when the coords match", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -217,7 +218,7 @@ describe("GeolocationObserver", () => {
 
       it("doesn't resolve when the coords don't match", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -247,7 +248,7 @@ describe("GeolocationObserver", () => {
     describe("when called with an async task function", () => {
       it("runs the task while waiting", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -263,7 +264,7 @@ describe("GeolocationObserver", () => {
     describe("when called with position options", () => {
       it("uses the provided options", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -290,7 +291,7 @@ describe("GeolocationObserver", () => {
     describe("when an error has been received after a position was acquired", () => {
       it("doesn't resolve until a new position is acquired", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -317,7 +318,7 @@ describe("GeolocationObserver", () => {
   describe("waitForPositionError()", () => {
     describe("when called with no codes", () => {
       it("resolves when any error has already been received", async () => {
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -327,7 +328,7 @@ describe("GeolocationObserver", () => {
 
       it("resolves when any error is subsequently received", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -342,14 +343,14 @@ describe("GeolocationObserver", () => {
 
         expect(isResolved).toBe(false);
 
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
 
         await expect(promise).resolves.toBeUndefined();
       });
 
       it("doesn't resolve when no error is received", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -364,7 +365,7 @@ describe("GeolocationObserver", () => {
 
         expect(isResolved).toBe(false);
 
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
 
         await expect(promise).resolves.toBeUndefined();
       });
@@ -372,7 +373,7 @@ describe("GeolocationObserver", () => {
 
     describe("when called with a single code", () => {
       it("resolves when the most recently received error already matches the code", async () => {
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -385,7 +386,7 @@ describe("GeolocationObserver", () => {
       });
 
       it("resolves when an error is received that matches the code", async () => {
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -401,14 +402,14 @@ describe("GeolocationObserver", () => {
 
         expect(isResolved).toBe(false);
 
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
 
         await expect(promise).resolves.toBeUndefined();
       });
 
       it("doesn't resolve when an error is received that doesn't match the code", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -424,13 +425,13 @@ describe("GeolocationObserver", () => {
 
         expect(isResolved).toBe(false);
 
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
         await runTaskQueue();
 
         expect(isResolved).toBe(false);
 
         locationServices.disable();
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
 
         await expect(promise).resolves.toBeUndefined();
       });
@@ -438,7 +439,7 @@ describe("GeolocationObserver", () => {
 
     describe("when called with multiple codes", () => {
       it("resolves when the most recently received error already matches any of the codes", async () => {
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -459,7 +460,7 @@ describe("GeolocationObserver", () => {
 
       it("resolves when an error is received that matches any of the codes", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -478,14 +479,14 @@ describe("GeolocationObserver", () => {
 
         expect(isResolved).toBe(false);
 
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
 
         await expect(promise).resolves.toBeUndefined();
       });
 
       it("doesn't resolve when an error is received that doesn't match any of the codes", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -509,7 +510,7 @@ describe("GeolocationObserver", () => {
 
         expect(isResolved).toBe(false);
 
-        permissionStore.set({ name: "geolocation" }, "denied");
+        permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
 
         await expect(promise).resolves.toBeUndefined();
       });
@@ -518,7 +519,7 @@ describe("GeolocationObserver", () => {
     describe("when called with an async task function", () => {
       it("runs the task while waiting", async () => {
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -526,7 +527,7 @@ describe("GeolocationObserver", () => {
           observer.waitForPositionError(
             GeolocationPositionError.PERMISSION_DENIED,
             async () => {
-              permissionStore.set({ name: "geolocation" }, "denied");
+              permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
             },
           ),
         ).resolves.toBeUndefined();
@@ -539,7 +540,7 @@ describe("GeolocationObserver", () => {
           acquireDelay: 0,
         }));
         locationServices.setLowAccuracyCoordinates(coordsA);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -558,7 +559,7 @@ describe("GeolocationObserver", () => {
     describe("when a coords have been acquired after an error was received", () => {
       it("doesn't resolve until a new error is received", async () => {
         locationServices.setLowAccuracyCoordinates(undefined);
-        permissionStore.set({ name: "geolocation" }, "granted");
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         await runTaskQueue();
         const observer = createGeolocationObserver(geolocation, permissions);
         await runTaskQueue();
@@ -580,18 +581,34 @@ describe("GeolocationObserver", () => {
         await expect(promise).resolves.toBeUndefined();
       });
     });
+
+    describe("Regression tests", () => {
+      it("can wait for a PERMISSION_DENIED error caused by resetting the permission during an active watch", async () => {
+        locationServices.setLowAccuracyCoordinates(coordsA);
+        permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
+        await runTaskQueue();
+        const observer = createGeolocationObserver(geolocation, permissions);
+        await runTaskQueue();
+
+        await expect(
+          observer.waitForPositionError(PERMISSION_DENIED, async () => {
+            permissionStore.setStatus({ name: "geolocation" }, "PROMPT");
+          }),
+        ).resolves.toBeUndefined();
+      });
+    });
   });
 
   describe("waitForPermissionState()", () => {
     it("delegates to the permission observer", async () => {
-      permissionStore.set({ name: "geolocation" }, "denied");
+      permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
       await runTaskQueue();
       const observer = createGeolocationObserver(geolocation, permissions);
       await runTaskQueue();
 
       await expect(
         observer.waitForPermissionState("granted", async () => {
-          permissionStore.set({ name: "geolocation" }, "granted");
+          permissionStore.setStatus({ name: "geolocation" }, "GRANTED");
         }),
       ).resolves.toBeUndefined();
     });

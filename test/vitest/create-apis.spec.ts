@@ -39,7 +39,7 @@ describe("createAPIs()", () => {
 
     await expect(
       observer.waitForPermissionState("granted", async () => {
-        user.grantPermission({ name: "geolocation" });
+        user.grantAccess({ name: "geolocation" });
       }),
     ).resolves.toBeUndefined();
     expect((await permissions.query({ name: "geolocation" })).state).toBe(

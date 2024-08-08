@@ -24,7 +24,7 @@ describe("Geolocation observers", () => {
 
     // Jump to some coords and grant permission
     user.jumpToCoordinates(coordsA);
-    user.grantPermission({ name: "geolocation" });
+    user.grantAccess({ name: "geolocation" });
 
     // Start watching the position
     let position: GeolocationPosition | undefined;
@@ -87,14 +87,14 @@ describe("Geolocation observers", () => {
 
     // Wait for a PERMISSION_DENIED error, while running a task
     await observer.waitForPositionError(PERMISSION_DENIED, async () => {
-      user.denyPermission({ name: "geolocation" });
+      user.blockAccess({ name: "geolocation" });
     });
     // Outputs "true"
     console.log(error?.code === PERMISSION_DENIED);
 
     // You can also wait for geolocation permission states
     await observer.waitForPermissionState("granted", async () => {
-      user.grantPermission({ name: "geolocation" });
+      user.grantAccess({ name: "geolocation" });
     });
     // Outputs "true"
     console.log(status.state === "granted");

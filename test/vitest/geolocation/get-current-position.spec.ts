@@ -46,7 +46,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
   describe("when permission has not been requested", () => {
     beforeEach(() => {
-      user.resetPermission({ name: "geolocation" });
+      user.resetAccess({ name: "geolocation" });
     });
 
     describe("when coords can be acquired", () => {
@@ -310,7 +310,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
   describe("when permission is denied", () => {
     beforeEach(() => {
-      user.denyPermission({ name: "geolocation" });
+      user.blockAccess({ name: "geolocation" });
     });
 
     describe("when reading the position", () => {
@@ -330,7 +330,7 @@ describe("Geolocation.getCurrentPosition()", () => {
 
   describe("when permission is granted", () => {
     beforeEach(() => {
-      user.grantPermission({ name: "geolocation" });
+      user.grantAccess({ name: "geolocation" });
     });
 
     describe("when acquiring coords throws an error", () => {

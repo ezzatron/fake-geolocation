@@ -16,7 +16,7 @@ describe("User", () => {
   beforeEach(() => {
     locationServices = createLocationServices();
     permissionStore = createPermissionStore({
-      initialStates: new Map([[{ name: "geolocation" }, "prompt"]]),
+      initialStates: new Map([[{ name: "geolocation" }, "PROMPT"]]),
     });
 
     user = createUser({ locationServices, permissionStore });

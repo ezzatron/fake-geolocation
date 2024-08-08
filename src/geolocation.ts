@@ -7,14 +7,13 @@ import {
 } from "./geolocation-position-error.js";
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
 import { LocationServices, Unsubscribe } from "./location-services.js";
-import type { User } from "./user.js";
 
 type GeolocationParameters = {
   locationServices: LocationServices;
   permissionStore: PermissionStore;
-  user: User;
 };
 
+const descriptor: PermissionDescriptor = { name: "geolocation" };
 let canConstruct = false;
 
 export function createGeolocation(
@@ -26,17 +25,12 @@ export function createGeolocation(
 }
 
 export class Geolocation {
-  constructor({
-    locationServices,
-    permissionStore,
-    user,
-  }: GeolocationParameters) {
+  constructor({ locationServices, permissionStore }: GeolocationParameters) {
     if (!canConstruct) throw new TypeError("Illegal constructor");
     canConstruct = false;
 
     this.#locationServices = locationServices;
     this.#permissionStore = permissionStore;
-    this.#user = user;
     this.#cachedPosition = null;
     this.#watchIds = [];
     this.#watchUnsubscribers = {};
@@ -191,14 +185,12 @@ export class Geolocation {
      * 5. Let descriptor be a new PermissionDescriptor whose name is
      *    "geolocation".
      */
-    const descriptor: PermissionDescriptor = {
-      name: "geolocation",
-    };
+    // descriptor is defined as a constant at the top of the file
 
     /*
      * 6. Set permission to request permission to use descriptor.
      */
-    const isAllowed = await this.#user.requestAccess(descriptor);
+    const isAllowed = await this.#permissionStore.requestAccess(descriptor);
 
     /*
      * 7. If permission is "denied", then:
@@ -275,12 +267,12 @@ export class Geolocation {
     );
 
     const unsubscribePermission = this.#permissionStore.subscribe(
-      (descriptor, toState) => {
+      (descriptor, { hasAccess, hadAccess }) => {
         if (descriptor.name !== "geolocation") return;
+        if (hasAccess === hadAccess) return;
 
-        if (toState === "granted") {
-          // Produce a new position immediately when the permission changes to
-          // "granted".
+        if (hasAccess) {
+          // Produce a new position immediately when access is granted.
           this.#acquirePosition(
             successCallback,
             errorCallback,
@@ -292,9 +284,9 @@ export class Geolocation {
             /* v8 ignore stop */
           );
         } else {
-          // Produce PERMISSION_DENIED errors immediately when the permission
-          // changes to something other than "granted". This is not part of the
-          // spec, but Chrome does it, and it's useful for testing.
+          // Produce PERMISSION_DENIED errors immediately when access is
+          // revoked. This is not part of the spec, but Chrome does it, and it's
+          // useful for testing.
           this.#invokeErrorCallback(
             errorCallback,
             createPermissionDeniedError(""),
@@ -372,13 +364,13 @@ export class Geolocation {
        *    1. Let permission be get the current permission state of
        *       "geolocation".
        */
-      const permission = this.#permissionStore.get({ name: "geolocation" });
+      const hasAccess = this.#permissionStore.hasAccess(descriptor);
 
       /*
        * 5. (cont.)
        *    2. If permission is "denied":
        */
-      if (permission === "denied") {
+      if (!hasAccess) {
         /*
          * 5. (cont.)
          *    2. (cont.)
@@ -482,9 +474,8 @@ export class Geolocation {
 
           new Promise<never>((_resolve, reject) => {
             const unsubscribePermission = this.#permissionStore.subscribe(
-              (descriptor, toState) => {
-                if (descriptor.name !== "geolocation") return;
-                if (toState === "granted") return;
+              (descriptor, { hasAccess }) => {
+                if (descriptor.name !== "geolocation" || hasAccess) return;
 
                 // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                 reject(GeolocationPositionError.PERMISSION_DENIED);
@@ -642,7 +633,6 @@ export class Geolocation {
 
   #locationServices: LocationServices;
   #permissionStore: PermissionStore;
-  #user: User;
   #cachedPosition: GeolocationPosition | null;
   #watchIds: number[];
   #watchUnsubscribers: Record<number, Unsubscribe>;

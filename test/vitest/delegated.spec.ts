@@ -10,7 +10,11 @@ import {
   createPosition,
   createUser,
 } from "fake-geolocation";
-import { createPermissionStore, createPermissions } from "fake-permissions";
+import {
+  createPermissionStore,
+  createPermissions,
+  type PermissionStore,
+} from "fake-permissions";
 import {
   afterEach,
   beforeEach,
@@ -30,6 +34,8 @@ describe("Delegated geolocation", () => {
   const startTime = 100;
   let locationServicesA: MutableLocationServices;
   let locationServicesB: MutableLocationServices;
+  let permissionStoreA: PermissionStore;
+  let permissionStoreB: PermissionStore;
   let permissionsA: Permissions;
   let permissionsB: Permissions;
   let userA: User;
@@ -52,11 +58,11 @@ describe("Delegated geolocation", () => {
     locationServicesA = createLocationServices();
     locationServicesB = createLocationServices();
 
-    const permissionStoreA = createPermissionStore({
-      initialStates: new Map([[{ name: "geolocation" }, "granted"]]),
+    permissionStoreA = createPermissionStore({
+      initialStates: new Map([[{ name: "geolocation" }, "GRANTED"]]),
     });
-    const permissionStoreB = createPermissionStore({
-      initialStates: new Map([[{ name: "geolocation" }, "granted"]]),
+    permissionStoreB = createPermissionStore({
+      initialStates: new Map([[{ name: "geolocation" }, "GRANTED"]]),
     });
 
     permissionsA = createPermissions({ permissionStore: permissionStoreA });
@@ -77,12 +83,10 @@ describe("Delegated geolocation", () => {
     delegateA = createGeolocation({
       locationServices: locationServicesA,
       permissionStore: permissionStoreA,
-      user: userA,
     });
     delegateB = createGeolocation({
       locationServices: locationServicesB,
       permissionStore: permissionStoreB,
-      user: userB,
     });
 
     ({ geolocation, selectDelegate, isDelegateSelected } =
@@ -288,10 +292,10 @@ describe("Delegated geolocation", () => {
         beforeEach(async () => {
           await vi.runOnlyPendingTimersAsync(); // ensure that the first position is acquired
           await sleep(delay);
-          userB.resetPermission({ name: "geolocation" });
+          userB.resetAccess({ name: "geolocation" });
           successCallback.mockClear();
           errorCallback.mockClear();
-          vi.spyOn(userB, "requestAccess");
+          vi.spyOn(permissionStoreB, "requestAccess");
           selectDelegate(delegateB);
         });
 
@@ -304,15 +308,14 @@ describe("Delegated geolocation", () => {
         });
 
         it("does not cause an access request", () => {
-          // eslint-disable-next-line @typescript-eslint/unbound-method
-          expect(userB.requestAccess).not.toBeCalled();
+          expect(permissionStoreB.requestAccess).not.toBeCalled();
         });
 
         describe("when permission is granted", () => {
           beforeEach(() => {
             successCallback.mockClear();
             errorCallback.mockClear();
-            userB.grantPermission({ name: "geolocation" });
+            userB.grantAccess({ name: "geolocation" });
           });
 
           it("calls the success callback with a position that matches the selected delegate", async () => {
@@ -330,7 +333,7 @@ describe("Delegated geolocation", () => {
           beforeEach(async () => {
             successCallback.mockClear();
             errorCallback.mockClear();
-            userB.denyPermission({ name: "geolocation" });
+            userB.blockAccess({ name: "geolocation" });
             await vi.runOnlyPendingTimersAsync();
           });
 
@@ -411,7 +414,7 @@ describe("Delegated geolocation", () => {
 
     describe("when the first delegate's permission becomes denied", () => {
       beforeEach(() => {
-        userA.denyPermission({ name: "geolocation" });
+        userA.blockAccess({ name: "geolocation" });
       });
 
       describe("when reading the position", () => {
@@ -630,7 +633,7 @@ describe("Delegated geolocation", () => {
 
     describe("when the selected delegate's permission becomes denied", () => {
       beforeEach(() => {
-        userB.denyPermission({ name: "geolocation" });
+        userB.blockAccess({ name: "geolocation" });
       });
 
       describe("when reading the position", () => {
