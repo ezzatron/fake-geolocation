@@ -42,7 +42,8 @@ describe("createWrappedAPIs()", () => {
 
     const supplied = createAPIs({
       handleAccessRequest: async (dialog) => {
-        dialog.deny(true);
+        dialog.remember(true);
+        dialog.deny();
       },
     });
     suppliedPermissionStore = supplied.permissionStore;
@@ -54,7 +55,8 @@ describe("createWrappedAPIs()", () => {
       geolocation: supplied.geolocation,
       permissions: supplied.permissions,
       handleAccessRequest: async (dialog) => {
-        dialog.allow(true);
+        dialog.remember(true);
+        dialog.allow();
       },
     });
     geolocation = wrapped.geolocation;

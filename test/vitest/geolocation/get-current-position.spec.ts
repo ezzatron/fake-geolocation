@@ -113,7 +113,8 @@ describe("Geolocation.getCurrentPosition()", () => {
       describe("when the user permanently denies access", () => {
         beforeEach(() => {
           user.setAccessRequestHandler(async (dialog) => {
-            dialog.deny(true);
+            dialog.remember(true);
+            dialog.deny();
           });
         });
 
@@ -139,7 +140,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       describe("when the user temporarily denies access", () => {
         beforeEach(() => {
           user.setAccessRequestHandler(async (dialog) => {
-            dialog.deny(false);
+            dialog.deny();
           });
         });
 
@@ -166,7 +167,8 @@ describe("Geolocation.getCurrentPosition()", () => {
         beforeEach(() => {
           user.setAccessRequestHandler(async (dialog) => {
             await sleep(60);
-            dialog.deny(true);
+            dialog.remember(true);
+            dialog.deny();
           });
         });
 
@@ -195,7 +197,8 @@ describe("Geolocation.getCurrentPosition()", () => {
       describe("when the user permanently allows access", () => {
         beforeEach(() => {
           user.setAccessRequestHandler(async (dialog) => {
-            dialog.allow(true);
+            dialog.remember(true);
+            dialog.allow();
           });
         });
 
@@ -221,7 +224,7 @@ describe("Geolocation.getCurrentPosition()", () => {
       describe("when the user temporarily allows access", () => {
         beforeEach(() => {
           user.setAccessRequestHandler(async (dialog) => {
-            dialog.allow(false);
+            dialog.allow();
           });
         });
 
@@ -250,7 +253,8 @@ describe("Geolocation.getCurrentPosition()", () => {
         beforeEach(() => {
           user.setAccessRequestHandler(async (dialog) => {
             await sleep(delay);
-            dialog.allow(true);
+            dialog.remember(true);
+            dialog.allow();
           });
         });
 
@@ -283,7 +287,8 @@ describe("Geolocation.getCurrentPosition()", () => {
       describe("when the user allows access", () => {
         beforeEach(() => {
           user.setAccessRequestHandler(async (dialog) => {
-            dialog.allow(true);
+            dialog.remember(true);
+            dialog.allow();
           });
         });
 
@@ -955,7 +960,8 @@ describe("Geolocation.getCurrentPosition()", () => {
   describe("when reading the position will result in an error", () => {
     beforeEach(() => {
       user.setAccessRequestHandler(async (dialog) => {
-        dialog.deny(true);
+        dialog.remember(true);
+        dialog.deny();
       });
     });
 

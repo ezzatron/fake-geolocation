@@ -18,7 +18,8 @@ describe("createAPIs()", () => {
   it("creates APIs that handle access requests for geolocation", async () => {
     const { geolocation, permissions, user } = createAPIs({
       handleAccessRequest: async (dialog) => {
-        dialog.allow(true);
+        dialog.remember(true);
+        dialog.allow();
       },
     });
     user.jumpToCoordinates(coordsA);
