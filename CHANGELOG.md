@@ -10,6 +10,15 @@ Versioning].
 
 ## Unreleased
 
+### Changed
+
+- **\[BREAKING]** This release updates the version of `fake-permissions` used
+  for permissions handling to `v0.14.x`, which includes breaking changes. See
+  the [`fake-permissions@v0.14.0` release notes] for details and updated usage
+  examples.
+
+[`fake-permissions@v0.14.0` release notes]: https://github.com/ezzatron/fake-permissions/releases/v0.14.0
+
 ## [v0.14.0] - 2024-08-19
 
 [v0.14.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.14.0
