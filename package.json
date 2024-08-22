@@ -36,7 +36,7 @@
     "prepublishOnly": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "fake-permissions": "^0.14.0"
+    "fake-permissions": "^0.14.1"
   },
   "devDependencies": {
     "@types/web": "^0.0.154",
