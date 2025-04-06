@@ -42,7 +42,6 @@ export class GeolocationPosition {
 
   toJSON() {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       coords: this.coords.toJSON() as object,
       timestamp: this.timestamp,
     };

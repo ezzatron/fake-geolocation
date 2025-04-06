@@ -373,7 +373,6 @@ export class Geolocation {
     if (Number.isFinite(timeoutDelay)) {
       timeoutTask = new Promise<never>((_resolve, reject) => {
         timeoutId = setTimeout(() => {
-          // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
           reject(GeolocationPositionError.TIMEOUT);
         }, timeoutDelay);
       });
@@ -404,7 +403,7 @@ export class Geolocation {
          *    2. (cont.)
          *       2. Do the user or system denied permission failure case step.
          */
-        // eslint-disable-next-line @typescript-eslint/only-throw-error
+
         throw GeolocationPositionError.PERMISSION_DENIED;
       }
 
@@ -488,7 +487,7 @@ export class Geolocation {
                *          2. Go to dealing with failures.
                *          3. Terminate this algorithm.
                */
-              // eslint-disable-next-line @typescript-eslint/only-throw-error
+
               throw GeolocationPositionError.POSITION_UNAVAILABLE;
             }
           })(),
@@ -498,7 +497,6 @@ export class Geolocation {
               (descriptor, { hasAccess }) => {
                 if (descriptor.name !== "geolocation" || hasAccess) return;
 
-                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                 reject(GeolocationPositionError.PERMISSION_DENIED);
                 unsubscribePermission();
               },

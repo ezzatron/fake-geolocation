@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { GeolocationCoordinatesParameters } from "fake-geolocation";
 import { describe, expectTypeOf, it } from "vitest";

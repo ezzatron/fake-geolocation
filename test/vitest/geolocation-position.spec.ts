@@ -55,7 +55,6 @@ describe("GeolocationPosition", () => {
   });
 
   it("has a toJSON method", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const json = position.toJSON() as object;
 
     expect(json).toEqual({

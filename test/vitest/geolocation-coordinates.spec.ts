@@ -70,7 +70,6 @@ describe("GeolocationCoordinates", () => {
   });
 
   it("has a toJSON method", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const json = coordinates.toJSON() as GeolocationCoordinatesParameters;
 
     expect(json).toEqual(parameters);
@@ -87,7 +86,7 @@ describe("GeolocationCoordinates", () => {
     // location services on the device.
 
     const coordinates = createCoordinates({ heading: NaN });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
     const json = coordinates.toJSON() as GeolocationCoordinatesParameters;
 
     expect(json.heading).toBeNaN();
