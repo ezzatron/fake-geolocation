@@ -21,7 +21,8 @@ Versioning].
   the [`fake-permissions@v0.14.0` release notes] for details and updated usage
   examples.
 
-[`fake-permissions@v0.14.0` release notes]: https://github.com/ezzatron/fake-permissions/releases/v0.14.0
+[`fake-permissions@v0.14.0` release notes]:
+  https://github.com/ezzatron/fake-permissions/releases/v0.14.0
 
 ## [v0.14.0] - 2024-08-19
 
@@ -34,7 +35,8 @@ Versioning].
   the [`fake-permissions@v0.13.0` release notes] for details and updated usage
   examples.
 
-[`fake-permissions@v0.13.0` release notes]: https://github.com/ezzatron/fake-permissions/releases/v0.13.0
+[`fake-permissions@v0.13.0` release notes]:
+  https://github.com/ezzatron/fake-permissions/releases/v0.13.0
 
 ## [v0.13.2] - 2024-08-09
 
@@ -68,7 +70,8 @@ Versioning].
 - **\[BREAKING]** The `createGeolocation()` function no longer takes a `user`
   option. Access requests are now handled by the `permissionStore` object.
 
-[`fake-permissions` releases]: https://github.com/ezzatron/fake-permissions/releases
+[`fake-permissions` releases]:
+  https://github.com/ezzatron/fake-permissions/releases
 
 ## [v0.12.0] - 2024-08-08
 
@@ -85,8 +88,8 @@ Versioning].
 ### Changed
 
 - **\[BREAKING]** Location services will no longer delay acquisition of
-  coordinates unless the `acquireDelay` option is explicitly set to an amount
-  of milliseconds. This makes coordinate jumps more predictable when using
+  coordinates unless the `acquireDelay` option is explicitly set to an amount of
+  milliseconds. This makes coordinate jumps more predictable when using
   `fake-geolocation` in tests.
 
 ### Added
@@ -247,7 +250,8 @@ console.log(status.state === "granted");
   an interface.
 - **\[BREAKING]** The `User` type is now a type, instead of an interface.
 
-[`fake-permissions@v0.7.0` release notes]: https://github.com/ezzatron/fake-permissions/releases/v0.7.0
+[`fake-permissions@v0.7.0` release notes]:
+  https://github.com/ezzatron/fake-permissions/releases/v0.7.0
 
 ## [v0.10.1] - 2024-07-10
 
@@ -319,7 +323,8 @@ console.log(status.state === "granted");
   `GeolocationPosition`, `GeolocationCoordinates`, and
   `GeolocationPositionError` objects.
 
-[`Symbol.toStringTag`]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol/toStringTag
+[`Symbol.toStringTag`]:
+  https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol/toStringTag
 
 ## [v0.7.0] - 2023-12-05
 
@@ -358,8 +363,8 @@ console.log(status.state === "granted");
 - Changing the `geolocation` permission from `granted` while watching a position
   will now cause an immediate call to the error callback with a
   `PERMISSION_DENIED` error. This should be ergonomic for testing, as previously
-  you'd have to change the permission _and_ jump to a new location to trigger
-  an error.
+  you'd have to change the permission _and_ jump to a new location to trigger an
+  error.
 
 ## [v0.5.2] - 2023-11-28
 
