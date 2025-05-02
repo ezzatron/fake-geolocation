@@ -6,11 +6,10 @@ export type LocationServices = {
   acquireCoordinates(
     enableHighAccuracy: boolean,
   ): Promise<GeolocationCoordinates>;
-  subscribe(subscriber: Subscriber): Unsubscribe;
+  subscribe(subscriber: LocationServicesSubscriber): () => void;
 };
 
-export type Unsubscribe = () => void;
-export type Subscriber = (isHighAccuracy: boolean) => void;
+export type LocationServicesSubscriber = (isHighAccuracy: boolean) => void;
 
 export type MutableLocationServices = LocationServices & {
   enable(): void;
@@ -22,7 +21,7 @@ export type MutableLocationServices = LocationServices & {
 export function createLocationServices({
   acquireDelay,
 }: { acquireDelay?: number } = {}): MutableLocationServices {
-  const subscribers = new Set<Subscriber>();
+  const subscribers = new Set<LocationServicesSubscriber>();
   let isEnabled = true;
   let highAccuracyCoords: GeolocationCoordinates | undefined;
   let lowAccuracyCoords: GeolocationCoordinates | undefined;

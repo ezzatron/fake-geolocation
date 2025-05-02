@@ -8,7 +8,7 @@ import {
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
 import { LocationServices } from "./location-services.js";
 
-type GeolocationParameters = {
+export type GeolocationParameters = {
   locationServices: LocationServices;
   permissionStore: PermissionStore;
 };

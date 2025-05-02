@@ -25,9 +25,11 @@ export {
 export { GeolocationPosition, createPosition } from "./geolocation-position.js";
 export type { GeolocationPositionParameters } from "./geolocation-position.js";
 export { Geolocation, createGeolocation } from "./geolocation.js";
+export type { GeolocationParameters } from "./geolocation.js";
 export { createLocationServices } from "./location-services.js";
 export type {
   LocationServices,
+  LocationServicesSubscriber,
   MutableLocationServices,
 } from "./location-services.js";
 export { createUser } from "./user.js";
