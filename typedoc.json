@@ -3,5 +3,7 @@
 
   "navigationLinks": {
     "GitHub": "https://github.com/ezzatron/fake-geolocation"
-  }
+  },
+
+  "plugin": ["typedoc-plugin-mdn-links"]
 }
