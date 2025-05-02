@@ -10,6 +10,15 @@ Versioning].
 
 ## Unreleased
 
+## [v0.16.0] - 2025-05-02
+
+[v0.16.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.16.0
+
+### Added
+
+- Added the `GeolocationParameters` type.
+- Added the `LocationServicesSubscriber` type.
+
 ## [v0.15.0] - 2024-08-21
 
 [v0.15.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.15.0
