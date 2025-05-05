@@ -1,9 +1,9 @@
 import {
   createCoordinates,
-  GeolocationCoordinates,
   type GeolocationCoordinatesParameters,
 } from "fake-geolocation";
 import { describe, expect, it } from "vitest";
+import { GeolocationCoordinates } from "../../src/geolocation-coordinates.js";
 
 describe("createCoordinates()", () => {
   describe("when all properties are provided", () => {
@@ -35,7 +35,7 @@ describe("createCoordinates()", () => {
   });
 
   describe("when some properties are provided", () => {
-    const properties: Partial<GeolocationCoordinates> = {
+    const properties: Partial<GeolocationCoordinatesParameters> = {
       latitude: 11,
       longitude: 22,
       accuracy: 33,
@@ -77,7 +77,7 @@ describe("createCoordinates()", () => {
   });
 
   describe("when explicit undefined properties are provided", () => {
-    const properties: Partial<GeolocationCoordinates> = {
+    const properties: Partial<GeolocationCoordinatesParameters> = {
       latitude: undefined,
       longitude: undefined,
       altitude: undefined,

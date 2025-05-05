@@ -3,13 +3,18 @@ import {
   createUser as createPermissionsUser,
   type UserParameters as PermissionsUserParameters,
 } from "fake-permissions";
-import { createCoordinates } from "./geolocation-coordinates.js";
+import {
+  createCoordinates,
+  type GeolocationCoordinatesParameters,
+} from "./geolocation-coordinates.js";
 import { MutableLocationServices } from "./location-services.js";
 
 export type User = PermissionsUser & {
   enableLocationServices: () => void;
   disableLocationServices: () => void;
-  jumpToCoordinates: (coords: Partial<GeolocationCoordinates>) => void;
+  jumpToCoordinates: (
+    coords: Partial<GeolocationCoordinatesParameters>,
+  ) => void;
 };
 
 /**
@@ -21,7 +26,7 @@ export type UserParameters = PermissionsUserParameters & {
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
   normalizeCoordinates?: (
-    coords: Partial<GeolocationCoordinates>,
+    coords: Partial<GeolocationCoordinatesParameters>,
   ) => GeolocationCoordinates;
 };
 

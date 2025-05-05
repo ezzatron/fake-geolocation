@@ -1,10 +1,10 @@
-import {
-  GeolocationCoordinates,
-  GeolocationPosition,
-  createPosition,
-} from "fake-geolocation";
+import { createPosition } from "fake-geolocation";
 import { describe, expect, it } from "vitest";
-import { isHighAccuracy } from "../../src/geolocation-position.js";
+import { GeolocationCoordinates } from "../../src/geolocation-coordinates.js";
+import {
+  GeolocationPosition,
+  isHighAccuracy,
+} from "../../src/geolocation-position.js";
 
 describe("createPosition()", () => {
   describe("when all arguments and properties are provided", () => {

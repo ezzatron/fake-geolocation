@@ -8,15 +8,11 @@ export type {
   IsDelegateSelected,
   SelectDelegate,
 } from "./delegated-geolocation.js";
-export {
-  GeolocationCoordinates,
-  createCoordinates,
-} from "./geolocation-coordinates.js";
+export { createCoordinates } from "./geolocation-coordinates.js";
 export type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 export { createGeolocationObserver } from "./geolocation-observer.js";
 export type { GeolocationObserver } from "./geolocation-observer.js";
 export {
-  GeolocationPositionError,
   GeolocationPositionErrorCode,
   PERMISSION_DENIED,
   POSITION_UNAVAILABLE,
@@ -25,9 +21,9 @@ export {
   createPositionUnavailableError,
   createTimeoutError,
 } from "./geolocation-position-error.js";
-export { GeolocationPosition, createPosition } from "./geolocation-position.js";
+export { createPosition } from "./geolocation-position.js";
 export type { GeolocationPositionParameters } from "./geolocation-position.js";
-export { Geolocation, createGeolocation } from "./geolocation.js";
+export { createGeolocation } from "./geolocation.js";
 export type { GeolocationParameters } from "./geolocation.js";
 export { createLocationServices } from "./location-services.js";
 export type {

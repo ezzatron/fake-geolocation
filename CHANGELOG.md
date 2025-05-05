@@ -18,6 +18,14 @@ Versioning].
 - Added the `LocationServicesParameters` type.
 - Added the `UserParameters` type.
 
+### Removed
+
+- **\[BREAKING]** Stopped exporting internal classes that shadow W3C classes:
+  - `GeolocationCoordinates`
+  - `GeolocationPositionError`
+  - `GeolocationPosition`
+  - `Geolocation`
+
 ## [v0.16.0] - 2025-05-02
 
 [v0.16.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.16.0

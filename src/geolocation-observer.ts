@@ -1,11 +1,12 @@
 import { createPermissionObserver } from "fake-permissions";
+import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 import { type GeolocationPositionErrorCode } from "./geolocation-position-error.js";
 
 export type GeolocationObserver = {
   waitForCoordinates: (
     matcherOrMatchers?:
-      | Partial<GeolocationCoordinates>
-      | Partial<GeolocationCoordinates>[],
+      | Partial<GeolocationCoordinatesParameters>
+      | Partial<GeolocationCoordinatesParameters>[],
     task?: () => Promise<void>,
     positionOptions?: PositionOptions,
   ) => Promise<void>;
@@ -71,7 +72,7 @@ export function createGeolocationObserver(
   };
 
   function isMatchingCoords(
-    matchers: Partial<GeolocationCoordinates>[],
+    matchers: Partial<GeolocationCoordinatesParameters>[],
     coords: GeolocationCoordinates,
   ): boolean {
     if (matchers.length < 1) return true;
@@ -149,8 +150,10 @@ export function createGeolocationObserver(
 }
 
 function normalizeMatchers(
-  matchers: Partial<GeolocationCoordinates> | Partial<GeolocationCoordinates>[],
-): Partial<GeolocationCoordinates>[] {
+  matchers:
+    | Partial<GeolocationCoordinatesParameters>
+    | Partial<GeolocationCoordinatesParameters>[],
+): Partial<GeolocationCoordinatesParameters>[] {
   return Array.isArray(matchers) ? matchers : [matchers];
 }
 

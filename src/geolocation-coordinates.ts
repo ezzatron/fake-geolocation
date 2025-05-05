@@ -12,7 +12,7 @@ export type GeolocationCoordinatesParameters = Pick<
 >;
 
 export function createCoordinates(
-  params: Partial<GeolocationCoordinates> = {},
+  params: Partial<GeolocationCoordinatesParameters> = {},
 ): globalThis.GeolocationCoordinates {
   const {
     latitude = 0,

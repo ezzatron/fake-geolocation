@@ -1,7 +1,9 @@
 import {
   createAPIs,
   createGeolocationObserver,
-  GeolocationPositionError,
+  PERMISSION_DENIED,
+  POSITION_UNAVAILABLE,
+  TIMEOUT,
   type MutableLocationServices,
 } from "fake-geolocation";
 import type { PermissionStore } from "fake-permissions";
@@ -395,9 +397,7 @@ describe("GeolocationObserver", () => {
         await runTaskQueue();
 
         await expect(
-          observer.waitForPositionError(
-            GeolocationPositionError.PERMISSION_DENIED,
-          ),
+          observer.waitForPositionError(PERMISSION_DENIED),
         ).resolves.toBeUndefined();
       });
 
@@ -408,7 +408,7 @@ describe("GeolocationObserver", () => {
 
         let isResolved = false;
         const promise = observer
-          .waitForPositionError(GeolocationPositionError.PERMISSION_DENIED)
+          .waitForPositionError(PERMISSION_DENIED)
           .then(() => {
             isResolved = true;
 
@@ -431,7 +431,7 @@ describe("GeolocationObserver", () => {
 
         let isResolved = false;
         const promise = observer
-          .waitForPositionError(GeolocationPositionError.POSITION_UNAVAILABLE)
+          .waitForPositionError(POSITION_UNAVAILABLE)
           .then(() => {
             isResolved = true;
 
@@ -462,14 +462,14 @@ describe("GeolocationObserver", () => {
 
         await expect(
           observer.waitForPositionError([
-            GeolocationPositionError.PERMISSION_DENIED,
-            GeolocationPositionError.POSITION_UNAVAILABLE,
+            PERMISSION_DENIED,
+            POSITION_UNAVAILABLE,
           ]),
         ).resolves.toBeUndefined();
         await expect(
           observer.waitForPositionError([
-            GeolocationPositionError.POSITION_UNAVAILABLE,
-            GeolocationPositionError.PERMISSION_DENIED,
+            POSITION_UNAVAILABLE,
+            PERMISSION_DENIED,
           ]),
         ).resolves.toBeUndefined();
       });
@@ -482,10 +482,7 @@ describe("GeolocationObserver", () => {
 
         let isResolved = false;
         const promise = observer
-          .waitForPositionError([
-            GeolocationPositionError.POSITION_UNAVAILABLE,
-            GeolocationPositionError.PERMISSION_DENIED,
-          ])
+          .waitForPositionError([POSITION_UNAVAILABLE, PERMISSION_DENIED])
           .then(() => {
             isResolved = true;
 
@@ -508,10 +505,7 @@ describe("GeolocationObserver", () => {
 
         let isResolved = false;
         const promise = observer
-          .waitForPositionError([
-            GeolocationPositionError.TIMEOUT,
-            GeolocationPositionError.PERMISSION_DENIED,
-          ])
+          .waitForPositionError([TIMEOUT, PERMISSION_DENIED])
           .then(() => {
             isResolved = true;
 
@@ -540,12 +534,9 @@ describe("GeolocationObserver", () => {
         const observer = createGeolocationObserver(geolocation, permissions);
 
         await expect(
-          observer.waitForPositionError(
-            GeolocationPositionError.PERMISSION_DENIED,
-            async () => {
-              permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
-            },
-          ),
+          observer.waitForPositionError(PERMISSION_DENIED, async () => {
+            permissionStore.setStatus({ name: "geolocation" }, "BLOCKED");
+          }),
         ).resolves.toBeUndefined();
       });
     });
@@ -561,13 +552,7 @@ describe("GeolocationObserver", () => {
         const observer = createGeolocationObserver(geolocation, permissions);
 
         await expect(
-          observer.waitForPositionError(
-            GeolocationPositionError.TIMEOUT,
-            undefined,
-            {
-              timeout: 0,
-            },
-          ),
+          observer.waitForPositionError(TIMEOUT, undefined, { timeout: 0 }),
         ).resolves.toBeUndefined();
       });
     });
