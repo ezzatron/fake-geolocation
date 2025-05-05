@@ -1,14 +1,11 @@
 let canConstruct = false;
 
-export type GeolocationCoordinatesParameters = Pick<
+/**
+ * Parameters for creating a {@link @types/web!GeolocationCoordinates} object.
+ */
+export type GeolocationCoordinatesParameters = Omit<
   globalThis.GeolocationCoordinates,
-  | "latitude"
-  | "longitude"
-  | "altitude"
-  | "accuracy"
-  | "altitudeAccuracy"
-  | "heading"
-  | "speed"
+  "toJSON"
 >;
 
 export function createCoordinates(

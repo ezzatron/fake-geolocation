@@ -1,9 +1,15 @@
 import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
 
-export type GeolocationPositionParameters = {
+/**
+ * Parameters for creating a {@link @types/web!GeolocationPosition} object.
+ */
+export type GeolocationPositionParameters = Omit<
+  globalThis.GeolocationPosition,
+  "coords" | "toJSON"
+> & {
   coords: GeolocationCoordinatesParameters;
-} & Pick<globalThis.GeolocationPosition, "timestamp">;
+};
 
 const internal = new WeakMap<
   globalThis.GeolocationPosition,
