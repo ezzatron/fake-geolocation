@@ -18,6 +18,16 @@ const internal = new WeakMap<
 
 let canConstruct = false;
 
+/**
+ * Create a fake W3C {@link @types/web!GeolocationPosition} object.
+ *
+ * @param coords - The coordinates to use.
+ * @param timestamp - The timestamp to use.
+ * @param isHighAccuracy - Whether the position should be considered "high
+ *   accuracy".
+ *
+ * @returns The position object.
+ */
 export function createPosition(
   coords: Partial<GeolocationCoordinatesParameters> = {},
   timestamp: number = 0,

@@ -8,6 +8,13 @@ export type GeolocationCoordinatesParameters = Omit<
   "toJSON"
 >;
 
+/**
+ * Create a fake W3C {@link @types/web!GeolocationCoordinates} object.
+ *
+ * @param params - The parameters to use.
+ *
+ * @returns The coordinates object.
+ */
 export function createCoordinates(
   params: Partial<GeolocationCoordinatesParameters> = {},
 ): globalThis.GeolocationCoordinates {
