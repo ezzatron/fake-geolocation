@@ -1,34 +1,112 @@
 import { sleep } from "./async.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
 
+/**
+ * A virtual location services API that fake {@link Geolocation} APIs can use to
+ * acquire the coordinates, and subscribe changes in the coordinates.
+ */
 export type LocationServices = {
+  /**
+   * Whether the location services are enabled.
+   */
   readonly isEnabled: boolean;
+
+  /**
+   * Acquire the coordinates.
+   *
+   * @param enableHighAccuracy - Whether to acquire high accuracy coordinates.
+   *
+   * @returns The coordinates.
+   * @throws {@link @types/web!Error} if the location services are disabled, or
+   *   if the coordinates are unavailable.
+   */
   acquireCoordinates: (
     enableHighAccuracy: boolean,
   ) => Promise<GeolocationCoordinates>;
+
+  /**
+   * Subscribe to changes in the coordinates.
+   *
+   * @param subscriber - A subscriber function that will be called when the
+   *   coordinates change.
+   *
+   * @returns A function to unsubscribe the subscriber.
+   */
   subscribe: (subscriber: LocationServicesSubscriber) => () => void;
 };
 
+/**
+ * A function that is called when the location services coordinates change.
+ *
+ * The function will be called separately for high accuracy and low accuracy
+ * coordinates. The actual coordinates are not supplied to the function. To read
+ * the new coordinates, use {@link LocationServices.acquireCoordinates}.
+ *
+ * @param isHighAccuracy - Whether the coordinates are high accuracy.
+ */
 export type LocationServicesSubscriber = (isHighAccuracy: boolean) => void;
 
+/**
+ * A mutable virtual location services API that virtual users can use to
+ * manipulate the location services status and coordinates.
+ *
+ * @see {@link createUser} for how to supply this to a virtual user.
+ *
+ * @expandType LocationServices
+ */
 export type MutableLocationServices = LocationServices & {
+  /**
+   * Enable the location services.
+   *
+   * @see {@link User | `User.enableLocationServices`}
+   */
   enable: () => void;
+
+  /**
+   * Disable the location services.
+   *
+   * @see {@link User | `User.disableLocationServices`}
+   */
   disable: () => void;
+
+  /**
+   * Set the high accuracy coordinates.
+   *
+   * @param coords - The high accuracy coordinates.
+   */
   setHighAccuracyCoordinates: (
     coords: GeolocationCoordinates | undefined,
   ) => void;
+
+  /**
+   * Set the low accuracy coordinates.
+   *
+   * @param coords - The low accuracy coordinates.
+   */
   setLowAccuracyCoordinates: (
     coords: GeolocationCoordinates | undefined,
   ) => void;
 };
 
 /**
+ * Parameters for creating a virtual location services API.
+ *
  * @inline
+ * @see {@link createLocationServices} to create a virtual location services
+ *   API.
  */
 export type LocationServicesParameters = {
   acquireDelay?: number;
 };
 
+/**
+ * Create a virtual location services API.
+ *
+ * @param params - The parameters for creating the virtual location services
+ *   API.
+ *
+ * @returns A virtual location services API.
+ */
 export function createLocationServices(
   params: LocationServicesParameters = {},
 ): MutableLocationServices {
