@@ -18,6 +18,11 @@ Versioning].
 - Added the `LocationServicesParameters` type.
 - Added the `UserParameters` type.
 
+### Changed
+
+- **\[BREAKING]** The `normalizeCoordinates` option of the `createUser()`
+  function was renamed to `createCoordinates`.
+
 ### Removed
 
 - **\[BREAKING]** Stopped exporting internal classes that shadow W3C classes:

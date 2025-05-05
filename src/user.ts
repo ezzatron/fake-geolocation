@@ -9,32 +9,103 @@ import {
 } from "./geolocation-coordinates.js";
 import { MutableLocationServices } from "./location-services.js";
 
+/**
+ * A virtual user that can affect geolocation and permissions.
+ */
 export type User = PermissionsUser & {
+  /**
+   * Enable location services.
+   *
+   * This is equivalent to enabling location services at the device, operating
+   * system, or browser level.
+   */
   enableLocationServices: () => void;
+
+  /**
+   * Disable location services.
+   *
+   * This is equivalent to disabling location services at the device, operating
+   * system, or browser level.
+   *
+   * When location services are disabled, the {@link Geolocation} API will
+   * produce {@link GeolocationPositionError} errors with the code
+   * {@link POSITION_UNAVAILABLE}.
+   */
   disableLocationServices: () => void;
+
+  /**
+   * Jump to the given coordinates.
+   *
+   * This will cause an immediate update to both high and low accuracy
+   * coordinates, which will be reflected via the fake {@link Geolocation} API
+   * in subsequent position retrievals, and will also cause calls to any active
+   * position watch callbacks.
+   *
+   * The supplied parameters will first be passed to the user's
+   * {@link UserParameters | `createCoordinates`} function to create the high
+   * accuracy coordinates. The low accuracy coordinates will then be created by
+   * passing the high accuracy coordinates to the user's
+   * {@link UserParameters | `lowAccuracyTransform`} function.
+   *
+   * @param coordsParams The parameters of the high accuracy coordinates to jump
+   *   to.
+   */
   jumpToCoordinates: (
-    coords: Partial<GeolocationCoordinatesParameters>,
+    coordsParams: Partial<GeolocationCoordinatesParameters>,
   ) => void;
 };
 
 /**
+ * Parameters for creating a virtual user.
+ *
  * @inline
+ * @see {@link createUser} to create a virtual user.
  */
 export type UserParameters = PermissionsUserParameters & {
+  /**
+   * A factory function to create coordinates objects.
+   *
+   * @param params - The parameters to use.
+   *
+   * @returns The coordinates object.
+   *
+   * @defaultValue A function that behaves like {@link createCoordinates},
+   *   except that `accuracy` defaults to 10 meters.
+   */
+  createCoordinates?: (
+    params: Partial<GeolocationCoordinatesParameters>,
+  ) => GeolocationCoordinates;
+
+  /**
+   * The location services to use.
+   */
   locationServices: MutableLocationServices;
+
+  /**
+   * A function to transform high accuracy coordinates to low accuracy
+   * coordinates.
+   *
+   * @param coords - The high accuracy coordinates.
+   *
+   * @returns The low accuracy coordinates.
+   *
+   * @defaultValue (coords) => coords
+   */
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
-  normalizeCoordinates?: (
-    coords: Partial<GeolocationCoordinatesParameters>,
-  ) => GeolocationCoordinates;
 };
 
+/**
+ * Create a virtual user that can affect geolocation and permissions.
+ *
+ * @param params - The parameters for creating the user.
+ *
+ * @returns A virtual user.
+ */
 export function createUser(params: UserParameters): User {
   const {
-    locationServices,
-    lowAccuracyTransform = (coords) => coords,
-    normalizeCoordinates = ({
+    createCoordinates: createCoordinatesFn = ({
       latitude = 0,
       longitude = 0,
       altitude = null,
@@ -52,6 +123,8 @@ export function createUser(params: UserParameters): User {
         heading,
         speed,
       }),
+    locationServices,
+    lowAccuracyTransform = (coords) => coords,
     ...permissionsParams
   } = params;
 
@@ -66,13 +139,11 @@ export function createUser(params: UserParameters): User {
       locationServices.disable();
     },
 
-    jumpToCoordinates(coords) {
-      const normalized = normalizeCoordinates(coords);
+    jumpToCoordinates(coordsParams) {
+      const coords = createCoordinatesFn(coordsParams);
 
-      locationServices.setHighAccuracyCoordinates(normalized);
-      locationServices.setLowAccuracyCoordinates(
-        lowAccuracyTransform(normalized),
-      );
+      locationServices.setHighAccuracyCoordinates(coords);
+      locationServices.setLowAccuracyCoordinates(lowAccuracyTransform(coords));
     },
   };
 }
