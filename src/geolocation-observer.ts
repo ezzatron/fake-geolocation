@@ -1,7 +1,4 @@
-import {
-  createPermissionObserver,
-  type PermissionObserver,
-} from "fake-permissions";
+import { createPermissionObserver } from "fake-permissions";
 import { type GeolocationPositionErrorCode } from "./geolocation-position-error.js";
 
 export type GeolocationObserver = {
@@ -17,7 +14,10 @@ export type GeolocationObserver = {
     task?: () => Promise<void>,
     positionOptions?: PositionOptions,
   ) => Promise<void>;
-  waitForPermissionState: PermissionObserver["waitForState"];
+  waitForPermissionState: (
+    stateOrStates: PermissionState | PermissionState[],
+    task?: () => Promise<void>,
+  ) => Promise<void>;
 };
 
 export function createGeolocationObserver(
