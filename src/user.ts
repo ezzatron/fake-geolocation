@@ -7,9 +7,9 @@ import { createCoordinates } from "./geolocation-coordinates.js";
 import { MutableLocationServices } from "./location-services.js";
 
 export type User = PermissionsUser & {
-  enableLocationServices(): void;
-  disableLocationServices(): void;
-  jumpToCoordinates(coords: Partial<GeolocationCoordinates>): void;
+  enableLocationServices: () => void;
+  disableLocationServices: () => void;
+  jumpToCoordinates: (coords: Partial<GeolocationCoordinates>) => void;
 };
 
 /**

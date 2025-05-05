@@ -3,19 +3,23 @@ import { createCoordinates } from "./geolocation-coordinates.js";
 
 export type LocationServices = {
   readonly isEnabled: boolean;
-  acquireCoordinates(
+  acquireCoordinates: (
     enableHighAccuracy: boolean,
-  ): Promise<GeolocationCoordinates>;
-  subscribe(subscriber: LocationServicesSubscriber): () => void;
+  ) => Promise<GeolocationCoordinates>;
+  subscribe: (subscriber: LocationServicesSubscriber) => () => void;
 };
 
 export type LocationServicesSubscriber = (isHighAccuracy: boolean) => void;
 
 export type MutableLocationServices = LocationServices & {
-  enable(): void;
-  disable(): void;
-  setHighAccuracyCoordinates(coords: GeolocationCoordinates | undefined): void;
-  setLowAccuracyCoordinates(coords: GeolocationCoordinates | undefined): void;
+  enable: () => void;
+  disable: () => void;
+  setHighAccuracyCoordinates: (
+    coords: GeolocationCoordinates | undefined,
+  ) => void;
+  setLowAccuracyCoordinates: (
+    coords: GeolocationCoordinates | undefined,
+  ) => void;
 };
 
 /**

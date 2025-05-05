@@ -5,18 +5,18 @@ import {
 import { type GeolocationPositionErrorCode } from "./geolocation-position-error.js";
 
 export type GeolocationObserver = {
-  waitForCoordinates(
+  waitForCoordinates: (
     matcherOrMatchers?:
       | Partial<GeolocationCoordinates>
       | Partial<GeolocationCoordinates>[],
     task?: () => Promise<void>,
     positionOptions?: PositionOptions,
-  ): Promise<void>;
-  waitForPositionError(
+  ) => Promise<void>;
+  waitForPositionError: (
     codeOrCodes?: GeolocationPositionErrorCode | GeolocationPositionErrorCode[],
     task?: () => Promise<void>,
     positionOptions?: PositionOptions,
-  ): Promise<void>;
+  ) => Promise<void>;
   waitForPermissionState: PermissionObserver["waitForState"];
 };
 
