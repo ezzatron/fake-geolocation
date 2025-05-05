@@ -1,9 +1,5 @@
-import {
-  PermissionStore,
-  createDelegatedPermissions,
-  type HandleAccessRequest,
-} from "fake-permissions";
-import { createAPIs } from "./create-apis.js";
+import { PermissionStore, createDelegatedPermissions } from "fake-permissions";
+import { createAPIs, type CreateAPIsParameters } from "./create-apis.js";
 import { createDelegatedGeolocation } from "./delegated-geolocation.js";
 import {
   createGeolocationObserver,
@@ -12,23 +8,15 @@ import {
 import { MutableLocationServices } from "./location-services.js";
 import { User } from "./user.js";
 
-export function createWrappedAPIs({
-  acquireDelay,
-  geolocation: suppliedGeolocation,
-  handleAccessRequest,
-  lowAccuracyTransform,
-  permissions: suppliedPermissions,
-  permissionStore: suppliedPermissionStore,
-}: {
-  acquireDelay?: number;
+/**
+ * @inline
+ */
+export type CreateWrappedAPIsParameters = CreateAPIsParameters & {
   geolocation: Geolocation;
-  handleAccessRequest?: HandleAccessRequest;
-  lowAccuracyTransform?: (
-    coords: GeolocationCoordinates,
-  ) => GeolocationCoordinates;
   permissions: Permissions;
-  permissionStore?: PermissionStore;
-}): {
+};
+
+export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
   geolocation: Geolocation;
   isUsingSuppliedAPIs: () => boolean;
   locationServices: MutableLocationServices;
@@ -39,17 +27,18 @@ export function createWrappedAPIs({
   user: User;
 } {
   const {
+    geolocation: suppliedGeolocation,
+    permissions: suppliedPermissions,
+    ...createAPIsParams
+  } = params;
+
+  const {
     geolocation: fakeGeolocation,
     locationServices,
     permissions: fakePermissions,
     permissionStore,
     user,
-  } = createAPIs({
-    acquireDelay,
-    handleAccessRequest,
-    lowAccuracyTransform,
-    permissionStore: suppliedPermissionStore,
-  });
+  } = createAPIs(createAPIsParams);
 
   const {
     geolocation,

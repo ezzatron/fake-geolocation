@@ -5,11 +5,11 @@ import {
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("GeolocationCoordinates", () => {
-  let parameters: GeolocationCoordinatesParameters;
+  let params: GeolocationCoordinatesParameters;
   let coordinates: GeolocationCoordinates;
 
   beforeEach(() => {
-    parameters = {
+    params = {
       latitude: 40.71703581534977,
       longitude: -74.03457283319447,
       altitude: 22.27227783203125,
@@ -19,7 +19,7 @@ describe("GeolocationCoordinates", () => {
       speed: 111,
     };
 
-    coordinates = createCoordinates(parameters);
+    coordinates = createCoordinates(params);
   });
 
   it("has a string tag", () => {
@@ -38,7 +38,7 @@ describe("GeolocationCoordinates", () => {
   });
 
   it("copies the coords", () => {
-    expect(coordinates).not.toBe(parameters);
+    expect(coordinates).not.toBe(params);
   });
 
   it("has a latitude property", () => {
@@ -72,8 +72,8 @@ describe("GeolocationCoordinates", () => {
   it("has a toJSON method", () => {
     const json = coordinates.toJSON() as GeolocationCoordinatesParameters;
 
-    expect(json).toEqual(parameters);
-    expect(JSON.parse(JSON.stringify(coordinates))).toEqual(parameters);
+    expect(json).toEqual(params);
+    expect(JSON.parse(JSON.stringify(coordinates))).toEqual(params);
   });
 
   it("has a toJSON method that handles NaN heading values", () => {

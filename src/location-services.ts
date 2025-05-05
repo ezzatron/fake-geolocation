@@ -18,9 +18,17 @@ export type MutableLocationServices = LocationServices & {
   setLowAccuracyCoordinates(coords: GeolocationCoordinates | undefined): void;
 };
 
-export function createLocationServices({
-  acquireDelay,
-}: { acquireDelay?: number } = {}): MutableLocationServices {
+/**
+ * @inline
+ */
+export type LocationServicesParameters = {
+  acquireDelay?: number;
+};
+
+export function createLocationServices(
+  params: LocationServicesParameters = {},
+): MutableLocationServices {
+  const { acquireDelay } = params;
   const subscribers = new Set<LocationServicesSubscriber>();
   let isEnabled = true;
   let highAccuracyCoords: GeolocationCoordinates | undefined;

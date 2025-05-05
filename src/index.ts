@@ -1,7 +1,10 @@
 export { createAPIs } from "./create-apis.js";
+export type { CreateAPIsParameters } from "./create-apis.js";
 export { createWrappedAPIs } from "./create-wrapped-apis.js";
+export type { CreateWrappedAPIsParameters } from "./create-wrapped-apis.js";
 export { createDelegatedGeolocation } from "./delegated-geolocation.js";
 export type {
+  DelegatedGeolocationParameters,
   IsDelegateSelected,
   SelectDelegate,
 } from "./delegated-geolocation.js";
@@ -29,8 +32,9 @@ export type { GeolocationParameters } from "./geolocation.js";
 export { createLocationServices } from "./location-services.js";
 export type {
   LocationServices,
+  LocationServicesParameters,
   LocationServicesSubscriber,
   MutableLocationServices,
 } from "./location-services.js";
 export { createUser } from "./user.js";
-export type { User } from "./user.js";
+export type { User, UserParameters } from "./user.js";

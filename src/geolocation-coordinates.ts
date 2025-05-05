@@ -11,15 +11,19 @@ export type GeolocationCoordinatesParameters = Pick<
   | "speed"
 >;
 
-export function createCoordinates({
-  latitude = 0,
-  longitude = 0,
-  altitude = null,
-  accuracy = 0,
-  altitudeAccuracy = null,
-  heading = null,
-  speed = null,
-}: Partial<GeolocationCoordinates> = {}): globalThis.GeolocationCoordinates {
+export function createCoordinates(
+  params: Partial<GeolocationCoordinates> = {},
+): globalThis.GeolocationCoordinates {
+  const {
+    latitude = 0,
+    longitude = 0,
+    altitude = null,
+    accuracy = 0,
+    altitudeAccuracy = null,
+    heading = null,
+    speed = null,
+  } = params;
+
   canConstruct = true;
 
   return new GeolocationCoordinates({

@@ -10,6 +10,14 @@ Versioning].
 
 ## Unreleased
 
+### Added
+
+- Added the `CreateAPIsParameters` type.
+- Added the `CreateWrappedAPIsParameters` type.
+- Added the `DelegatedGeolocationParameters` type.
+- Added the `LocationServicesParameters` type.
+- Added the `UserParameters` type.
+
 ## [v0.16.0] - 2025-05-02
 
 [v0.16.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.16.0

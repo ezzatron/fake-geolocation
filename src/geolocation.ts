@@ -8,6 +8,9 @@ import {
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
 import { LocationServices } from "./location-services.js";
 
+/**
+ * @inline
+ */
 export type GeolocationParameters = {
   locationServices: LocationServices;
   permissionStore: PermissionStore;
@@ -17,11 +20,11 @@ const descriptor: PermissionDescriptor = { name: "geolocation" };
 let canConstruct = false;
 
 export function createGeolocation(
-  parameters: GeolocationParameters,
+  params: GeolocationParameters,
 ): globalThis.Geolocation {
   canConstruct = true;
 
-  return new Geolocation(parameters);
+  return new Geolocation(params);
 }
 
 export class Geolocation {

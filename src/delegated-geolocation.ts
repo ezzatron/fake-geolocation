@@ -2,17 +2,22 @@ import { createPermissionDeniedError } from "./geolocation-position-error.js";
 
 let canConstruct = false;
 
-export function createDelegatedGeolocation({
-  delegates,
-  permissionsDelegates,
-}: {
+/**
+ * @inline
+ */
+export type DelegatedGeolocationParameters = {
   delegates: globalThis.Geolocation[];
   permissionsDelegates: Map<globalThis.Geolocation, globalThis.Permissions>;
-}): {
+};
+
+export function createDelegatedGeolocation(
+  params: DelegatedGeolocationParameters,
+): {
   geolocation: globalThis.Geolocation;
   selectDelegate: SelectDelegate;
   isDelegateSelected: IsDelegateSelected;
 } {
+  const { delegates, permissionsDelegates } = params;
   let [delegate] = delegates;
   if (!delegate) throw new TypeError("No delegates provided");
 

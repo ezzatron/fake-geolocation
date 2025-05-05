@@ -1,8 +1,7 @@
 import {
-  PermissionStore,
   User as PermissionsUser,
   createUser as createPermissionsUser,
-  type HandleAccessRequest,
+  type UserParameters as PermissionsUserParameters,
 } from "fake-permissions";
 import { createCoordinates } from "./geolocation-coordinates.js";
 import { MutableLocationServices } from "./location-services.js";
@@ -13,31 +12,10 @@ export type User = PermissionsUser & {
   jumpToCoordinates(coords: Partial<GeolocationCoordinates>): void;
 };
 
-export function createUser({
-  handleAccessRequest,
-  locationServices,
-  lowAccuracyTransform = (coords) => coords,
-  normalizeCoordinates = ({
-    latitude = 0,
-    longitude = 0,
-    altitude = null,
-    accuracy = 10,
-    altitudeAccuracy = null,
-    heading = null,
-    speed = null,
-  }) =>
-    createCoordinates({
-      latitude,
-      longitude,
-      altitude,
-      accuracy,
-      altitudeAccuracy,
-      heading,
-      speed,
-    }),
-  permissionStore,
-}: {
-  handleAccessRequest?: HandleAccessRequest;
+/**
+ * @inline
+ */
+export type UserParameters = PermissionsUserParameters & {
   locationServices: MutableLocationServices;
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
@@ -45,10 +23,35 @@ export function createUser({
   normalizeCoordinates?: (
     coords: Partial<GeolocationCoordinates>,
   ) => GeolocationCoordinates;
-  permissionStore: PermissionStore;
-}): User {
+};
+
+export function createUser(params: UserParameters): User {
+  const {
+    locationServices,
+    lowAccuracyTransform = (coords) => coords,
+    normalizeCoordinates = ({
+      latitude = 0,
+      longitude = 0,
+      altitude = null,
+      accuracy = 10,
+      altitudeAccuracy = null,
+      heading = null,
+      speed = null,
+    }) =>
+      createCoordinates({
+        latitude,
+        longitude,
+        altitude,
+        accuracy,
+        altitudeAccuracy,
+        heading,
+        speed,
+      }),
+    ...permissionsParams
+  } = params;
+
   return {
-    ...createPermissionsUser({ permissionStore, handleAccessRequest }),
+    ...createPermissionsUser(permissionsParams),
 
     enableLocationServices() {
       locationServices.enable();
