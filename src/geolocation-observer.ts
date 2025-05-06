@@ -85,6 +85,14 @@ export interface GeolocationObserver {
   ) => Promise<void>;
 }
 
+/**
+ * Create a geolocation observer.
+ *
+ * @param geolocation - The Geolocation API to use.
+ * @param permissions - The Permissions API to use.
+ *
+ * @returns A geolocation observer.
+ */
 export function createGeolocationObserver(
   geolocation: Geolocation,
   permissions: Permissions,
