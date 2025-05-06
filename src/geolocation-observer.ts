@@ -2,7 +2,31 @@ import { createPermissionObserver } from "fake-permissions";
 import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 import { type GeolocationPositionErrorCode } from "./geolocation-position-error.js";
 
+/**
+ * An observer for geolocation and permissions changes.
+ */
 export interface GeolocationObserver {
+  /**
+   * Wait for the geolocation coordinates to match one of the supplied matchers.
+   *
+   * Watches the geolocation position with the {@link Geolocation} API supplied
+   * to {@link createGeolocationObserver} and resolves when coordinates are
+   * acquired that match one of the supplied matchers.
+   *
+   * The acquired coordinates must match all properties of at least one supplied
+   * matcher in order to be considered a match. If no matchers are supplied,
+   * then _any_ acquired coordinates will be considered a match.
+   *
+   * @param matcherOrMatchers - The matcher(s) to match against.
+   * @param task - An optional task to execute while waiting for the acquired
+   *   coordinates to match. You can use this to guarantee that certain actions
+   *   are performed after observation has started.
+   * @param positionOptions - The options to pass to
+   *   {@link Geolocation.watchPosition}.
+   *
+   * @returns A promise that resolves when coordinates are acquired that match
+   *   one of the matchers.
+   */
   waitForCoordinates: (
     matcherOrMatchers?:
       | Partial<GeolocationCoordinatesParameters>
@@ -10,11 +34,51 @@ export interface GeolocationObserver {
     task?: () => Promise<void>,
     positionOptions?: PositionOptions,
   ) => Promise<void>;
+
+  /**
+   * Wait for the geolocation position error to match one of the supplied
+   * {@link GeolocationPositionError.code} codes.
+   *
+   * Watches the geolocation position with the {@link Geolocation} API supplied
+   * to {@link createGeolocationObserver} and resolves when a position error is
+   * received that has a {@link GeolocationPositionError.code | code} that is
+   * one of the supplied codes.
+   *
+   * If no codes are supplied, then _any_ received position error will be
+   * considered a match.
+   *
+   * @param codeOrCodes - The {@link GeolocationPositionError.code} code(s) to
+   *   match against.
+   * @param task - An optional task to execute while waiting for the received
+   *   position error to match. You can use this to guarantee that certain
+   *   actions are performed after observation has started.
+   * @param positionOptions - The options to pass to
+   *   {@link Geolocation.watchPosition}.
+   *
+   * @returns A promise that resolves when a position error is received that has
+   *   a {@link GeolocationPositionError.code | code} that is one of the
+   *   supplied codes.
+   */
   waitForPositionError: (
     codeOrCodes?: GeolocationPositionErrorCode | GeolocationPositionErrorCode[],
     task?: () => Promise<void>,
     positionOptions?: PositionOptions,
   ) => Promise<void>;
+
+  /**
+   * Wait for the geolocation permission state to change to one of the specified
+   * states.
+   *
+   * @param stateOrStates - The desired permission state(s).
+   * @param task - An optional task to execute while waiting for the state
+   *   change. You can use this to guarantee that certain actions are performed
+   *   after observation has started.
+   *
+   * @returns A promise that resolves when the geolocation permission state
+   *   matches one of the desired states. If the state is already one of the
+   *   desired states, the promise resolves immediately.
+   * @throws A {@link TypeError} if no states are provided.
+   */
   waitForPermissionState: (
     stateOrStates: PermissionState | PermissionState[],
     task?: () => Promise<void>,
