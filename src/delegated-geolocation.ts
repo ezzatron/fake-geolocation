@@ -2,14 +2,14 @@ import { createPermissionDeniedError } from "./geolocation-position-error.js";
 
 let canConstruct = false;
 
-/**
- * @inline
- */
 export interface DelegatedGeolocationParameters {
   delegates: globalThis.Geolocation[];
   permissionsDelegates: Map<globalThis.Geolocation, globalThis.Permissions>;
 }
 
+/**
+ * @inlineType DelegatedGeolocationParameters
+ */
 export function createDelegatedGeolocation(
   params: DelegatedGeolocationParameters,
 ): {

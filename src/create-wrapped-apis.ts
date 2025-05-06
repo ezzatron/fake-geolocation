@@ -8,14 +8,14 @@ import {
 import { MutableLocationServices } from "./location-services.js";
 import { User } from "./user.js";
 
-/**
- * @inline
- */
 export type CreateWrappedAPIsParameters = CreateAPIsParameters & {
   geolocation: Geolocation;
   permissions: Permissions;
 };
 
+/**
+ * @inlineType CreateWrappedAPIsParameters
+ */
 export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
   geolocation: Geolocation;
   isUsingSuppliedAPIs: () => boolean;

@@ -1,5 +1,8 @@
 import { sleep } from "./async.js";
 import { createCoordinates } from "./geolocation-coordinates.js";
+import type { createUser, User } from "./user.js";
+
+export type _DocsTypes = typeof createUser | User;
 
 /**
  * A virtual location services API that fake {@link Geolocation} APIs can use to
@@ -17,8 +20,8 @@ export interface LocationServices {
    * @param enableHighAccuracy - Whether to acquire high accuracy coordinates.
    *
    * @returns The coordinates.
-   * @throws {@link @types/web!Error} if the location services are disabled, or
-   *   if the coordinates are unavailable.
+   * @throws An {@link Error} if the location services are disabled, or if the
+   *   coordinates are unavailable.
    */
   acquireCoordinates: (
     enableHighAccuracy: boolean,
@@ -58,14 +61,14 @@ export type MutableLocationServices = LocationServices & {
   /**
    * Enable the location services.
    *
-   * @see {@link User | `User.enableLocationServices`}
+   * @see {@link User.enableLocationServices}
    */
   enable: () => void;
 
   /**
    * Disable the location services.
    *
-   * @see {@link User | `User.disableLocationServices`}
+   * @see {@link User.disableLocationServices}
    */
   disable: () => void;
 
@@ -91,7 +94,6 @@ export type MutableLocationServices = LocationServices & {
 /**
  * Parameters for creating a virtual location services API.
  *
- * @inline
  * @see {@link createLocationServices} to create a virtual location services
  *   API.
  */
@@ -106,6 +108,8 @@ export interface LocationServicesParameters {
  *   API.
  *
  * @returns A virtual location services API.
+ *
+ * @inlineType LocationServicesParameters
  */
 export function createLocationServices(
   params: LocationServicesParameters = {},

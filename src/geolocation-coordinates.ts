@@ -1,7 +1,8 @@
 let canConstruct = false;
 
 /**
- * Parameters for creating a {@link @types/web!GeolocationCoordinates} object.
+ * Parameters for creating a
+ * {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
  */
 export type GeolocationCoordinatesParameters = Omit<
   globalThis.GeolocationCoordinates,
@@ -9,11 +10,13 @@ export type GeolocationCoordinatesParameters = Omit<
 >;
 
 /**
- * Create a fake W3C {@link @types/web!GeolocationCoordinates} object.
+ * Create a fake W3C
+ * {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
  *
  * @param params - The parameters to use.
  *
- * @returns The coordinates object.
+ * @returns The
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
  */
 export function createCoordinates(
   params: Partial<GeolocationCoordinatesParameters> = {},

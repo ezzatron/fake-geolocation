@@ -2,7 +2,8 @@ import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates
 import { createCoordinates } from "./geolocation-coordinates.js";
 
 /**
- * Parameters for creating a {@link @types/web!GeolocationPosition} object.
+ * Parameters for creating a
+ * {@link globalThis.GeolocationPosition | GeolocationPosition} object.
  */
 export type GeolocationPositionParameters = Omit<
   globalThis.GeolocationPosition,
@@ -19,14 +20,16 @@ const internal = new WeakMap<
 let canConstruct = false;
 
 /**
- * Create a fake W3C {@link @types/web!GeolocationPosition} object.
+ * Create a fake W3C
+ * {@link globalThis.GeolocationPosition | GeolocationPosition} object.
  *
  * @param coords - The coordinates to use.
  * @param timestamp - The timestamp to use.
  * @param isHighAccuracy - Whether the position should be considered "high
  *   accuracy".
  *
- * @returns The position object.
+ * @returns The
+ *   {@link globalThis.GeolocationPosition | GeolocationPosition} object.
  */
 export function createPosition(
   coords: Partial<GeolocationCoordinatesParameters> = {},

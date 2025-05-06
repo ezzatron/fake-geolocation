@@ -15,9 +15,6 @@ import {
 } from "./location-services.js";
 import { User, createUser } from "./user.js";
 
-/**
- * @inline
- */
 export interface CreateAPIsParameters {
   acquireDelay?: number;
   handleAccessRequest?: HandleAccessRequest;
@@ -27,6 +24,9 @@ export interface CreateAPIsParameters {
   permissionStore?: PermissionStore;
 }
 
+/**
+ * @inlineType CreateAPIsParameters
+ */
 export function createAPIs(params: CreateAPIsParameters = {}): {
   geolocation: Geolocation;
   locationServices: MutableLocationServices;

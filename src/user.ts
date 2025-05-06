@@ -29,7 +29,7 @@ export interface User extends PermissionsUser {
    *
    * When location services are disabled, the {@link Geolocation} API will
    * produce {@link GeolocationPositionError} errors with the code
-   * {@link POSITION_UNAVAILABLE}.
+   * {@link GeolocationPositionError.code | `2` (position unavailable)}.
    */
   disableLocationServices: () => void;
 
@@ -42,10 +42,10 @@ export interface User extends PermissionsUser {
    * position watch callbacks.
    *
    * The supplied parameters will first be passed to the user's
-   * {@link UserParameters | `createCoordinates`} function to create the high
+   * {@link UserParameters.createCoordinates} function to create the high
    * accuracy coordinates. The low accuracy coordinates will then be created by
    * passing the high accuracy coordinates to the user's
-   * {@link UserParameters | `lowAccuracyTransform`} function.
+   * {@link UserParameters.lowAccuracyTransform} function.
    *
    * @param coordsParams The parameters of the high accuracy coordinates to jump
    *   to.
@@ -58,7 +58,6 @@ export interface User extends PermissionsUser {
 /**
  * Parameters for creating a virtual user.
  *
- * @inline
  * @see {@link createUser} to create a virtual user.
  */
 export interface UserParameters extends PermissionsUserParameters {
@@ -102,6 +101,8 @@ export interface UserParameters extends PermissionsUserParameters {
  * @param params - The parameters for creating the user.
  *
  * @returns A virtual user.
+ *
+ * @inlineType UserParameters
  */
 export function createUser(params: UserParameters): User {
   const {
