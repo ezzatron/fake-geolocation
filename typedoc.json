@@ -11,6 +11,9 @@
     },
     "fake-permissions": {
       "HandleAccessRequest": "https://ezzatron.com/fake-permissions/types/HandleAccessRequest.html",
+      "PermissionAccessStatusBlocked": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusBlocked.html",
+      "PermissionAccessStatusGranted": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusGranted.html",
+      "PermissionAccessStatusPrompt": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusPrompt.html",
       "PermissionObserver": "https://ezzatron.com/fake-permissions/interfaces/PermissionObserver.html",
       "PermissionStore": "https://ezzatron.com/fake-permissions/interfaces/PermissionStore.html",
       "User": "https://ezzatron.com/fake-permissions/interfaces/User.html",
