@@ -11,10 +11,10 @@
     },
     "fake-permissions": {
       "HandleAccessRequest": "https://ezzatron.com/fake-permissions/types/HandleAccessRequest.html",
-      "PermissionObserver": "https://ezzatron.com/fake-permissions/types/PermissionObserver.html",
-      "PermissionStore": "https://ezzatron.com/fake-permissions/types/PermissionStore.html",
-      "User": "https://ezzatron.com/fake-permissions/types/User.html",
-      "UserParameters": "https://ezzatron.com/fake-permissions/types/UserParameters.html"
+      "PermissionObserver": "https://ezzatron.com/fake-permissions/interfaces/PermissionObserver.html",
+      "PermissionStore": "https://ezzatron.com/fake-permissions/interfaces/PermissionStore.html",
+      "User": "https://ezzatron.com/fake-permissions/interfaces/User.html",
+      "UserParameters": "https://ezzatron.com/fake-permissions/interfaces/UserParameters.html"
     }
   },
   "navigationLinks": {
