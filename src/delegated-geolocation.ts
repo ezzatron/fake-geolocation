@@ -5,10 +5,10 @@ let canConstruct = false;
 /**
  * @inline
  */
-export type DelegatedGeolocationParameters = {
+export interface DelegatedGeolocationParameters {
   delegates: globalThis.Geolocation[];
   permissionsDelegates: Map<globalThis.Geolocation, globalThis.Permissions>;
-};
+}
 
 export function createDelegatedGeolocation(
   params: DelegatedGeolocationParameters,
@@ -84,12 +84,12 @@ export function createDelegatedGeolocation(
 export type SelectDelegate = (delegate: globalThis.Geolocation) => void;
 export type IsDelegateSelected = (delegate: globalThis.Geolocation) => boolean;
 
-type GeolocationParameters = {
+interface GeolocationParameters {
   delegate: () => globalThis.Geolocation;
   permissionsDelegate: () => globalThis.Permissions;
   subscribe: (subscriber: Subscriber) => void;
   unsubscribe: (subscriber: Subscriber) => void;
-};
+}
 
 export class Geolocation {
   /**
@@ -215,10 +215,10 @@ export class Geolocation {
 
 type Subscriber = () => void;
 
-type Watch = {
+interface Watch {
   readonly args: WatchPositionParameters;
   clear: () => void;
-};
+}
 
 type GetCurrentPositionParameters = Parameters<
   globalThis.Geolocation["getCurrentPosition"]

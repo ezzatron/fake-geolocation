@@ -12,7 +12,7 @@ import { MutableLocationServices } from "./location-services.js";
 /**
  * A virtual user that can affect geolocation and permissions.
  */
-export type User = PermissionsUser & {
+export interface User extends PermissionsUser {
   /**
    * Enable location services.
    *
@@ -53,7 +53,7 @@ export type User = PermissionsUser & {
   jumpToCoordinates: (
     coordsParams: Partial<GeolocationCoordinatesParameters>,
   ) => void;
-};
+}
 
 /**
  * Parameters for creating a virtual user.
@@ -61,7 +61,7 @@ export type User = PermissionsUser & {
  * @inline
  * @see {@link createUser} to create a virtual user.
  */
-export type UserParameters = PermissionsUserParameters & {
+export interface UserParameters extends PermissionsUserParameters {
   /**
    * A factory function to create coordinates objects.
    *
@@ -94,7 +94,7 @@ export type UserParameters = PermissionsUserParameters & {
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
-};
+}
 
 /**
  * Create a virtual user that can affect geolocation and permissions.

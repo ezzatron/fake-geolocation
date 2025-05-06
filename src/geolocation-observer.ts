@@ -2,7 +2,7 @@ import { createPermissionObserver } from "fake-permissions";
 import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 import { type GeolocationPositionErrorCode } from "./geolocation-position-error.js";
 
-export type GeolocationObserver = {
+export interface GeolocationObserver {
   waitForCoordinates: (
     matcherOrMatchers?:
       | Partial<GeolocationCoordinatesParameters>
@@ -19,7 +19,7 @@ export type GeolocationObserver = {
     stateOrStates: PermissionState | PermissionState[],
     task?: () => Promise<void>,
   ) => Promise<void>;
-};
+}
 
 export function createGeolocationObserver(
   geolocation: Geolocation,

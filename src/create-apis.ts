@@ -18,14 +18,14 @@ import { User, createUser } from "./user.js";
 /**
  * @inline
  */
-export type CreateAPIsParameters = {
+export interface CreateAPIsParameters {
   acquireDelay?: number;
   handleAccessRequest?: HandleAccessRequest;
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
   permissionStore?: PermissionStore;
-};
+}
 
 export function createAPIs(params: CreateAPIsParameters = {}): {
   geolocation: Geolocation;

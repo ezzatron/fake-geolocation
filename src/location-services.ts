@@ -5,7 +5,7 @@ import { createCoordinates } from "./geolocation-coordinates.js";
  * A virtual location services API that fake {@link Geolocation} APIs can use to
  * acquire the coordinates, and subscribe changes in the coordinates.
  */
-export type LocationServices = {
+export interface LocationServices {
   /**
    * Whether the location services are enabled.
    */
@@ -33,7 +33,7 @@ export type LocationServices = {
    * @returns A function to unsubscribe the subscriber.
    */
   subscribe: (subscriber: LocationServicesSubscriber) => () => void;
-};
+}
 
 /**
  * A function that is called when the location services coordinates change.
@@ -95,9 +95,9 @@ export type MutableLocationServices = LocationServices & {
  * @see {@link createLocationServices} to create a virtual location services
  *   API.
  */
-export type LocationServicesParameters = {
+export interface LocationServicesParameters {
   acquireDelay?: number;
-};
+}
 
 /**
  * Create a virtual location services API.

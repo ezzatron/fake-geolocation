@@ -11,10 +11,10 @@ import { LocationServices } from "./location-services.js";
 /**
  * @inline
  */
-export type GeolocationParameters = {
+export interface GeolocationParameters {
   locationServices: LocationServices;
   permissionStore: PermissionStore;
-};
+}
 
 const descriptor: PermissionDescriptor = { name: "geolocation" };
 let canConstruct = false;
