@@ -23,7 +23,7 @@ let canConstruct = false;
  * Create a fake W3C
  * {@link globalThis.GeolocationPosition | GeolocationPosition} object.
  *
- * @param coords - The coordinates to use.
+ * @param coordsParams - The coordinates to use.
  * @param timestamp - The timestamp to use.
  * @param isHighAccuracy - Whether the position should be considered "high
  *   accuracy".
@@ -32,14 +32,14 @@ let canConstruct = false;
  *   {@link globalThis.GeolocationPosition | GeolocationPosition} object.
  */
 export function createPosition(
-  coords: Partial<GeolocationCoordinatesParameters> = {},
+  coordsParams: Partial<GeolocationCoordinatesParameters> = {},
   timestamp: number = 0,
   isHighAccuracy: boolean = true,
 ): globalThis.GeolocationPosition {
   canConstruct = true;
 
   const position = new GeolocationPosition(
-    createCoordinates(coords),
+    createCoordinates(coordsParams),
     timestamp,
   );
   internal.set(position, { isHighAccuracy });

@@ -3,6 +3,8 @@ let canConstruct = false;
 /**
  * Parameters for creating a
  * {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
+ *
+ * @inline
  */
 export type GeolocationCoordinatesParameters = Omit<
   globalThis.GeolocationCoordinates,
@@ -13,13 +15,13 @@ export type GeolocationCoordinatesParameters = Omit<
  * Create a fake W3C
  * {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
  *
- * @param params - The parameters to use.
+ * @param coordsParams - The parameters to use.
  *
  * @returns The
  *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
  */
 export function createCoordinates(
-  params: Partial<GeolocationCoordinatesParameters> = {},
+  coordsParams: Partial<GeolocationCoordinatesParameters> = {},
 ): globalThis.GeolocationCoordinates {
   const {
     latitude = 0,
@@ -29,7 +31,7 @@ export function createCoordinates(
     altitudeAccuracy = null,
     heading = null,
     speed = null,
-  } = params;
+  } = coordsParams;
 
   canConstruct = true;
 
