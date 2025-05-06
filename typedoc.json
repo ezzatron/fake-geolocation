@@ -11,6 +11,7 @@
       "PositionOptions": "https://developer.mozilla.org/docs/Web/API/Geolocation/getCurrentPosition#options"
     },
     "fake-permissions": {
+      "AccessRequestRecord": "https://ezzatron.com/fake-permissions/interfaces/AccessRequestRecord.html",
       "HandleAccessRequest": "https://ezzatron.com/fake-permissions/types/HandleAccessRequest.html",
       "PermissionAccessStatusBlocked": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusBlocked.html",
       "PermissionAccessStatusGranted": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusGranted.html",
