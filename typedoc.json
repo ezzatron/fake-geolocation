@@ -4,6 +4,7 @@
   "excludeInternal": true,
   "externalSymbolLinkMappings": {
     "@types/web": {
+      "PermissionDescriptor": "https://developer.mozilla.org/docs/Web/API/Permissions/query#permissiondescriptor",
       "PermissionState": "https://developer.mozilla.org/docs/Web/API/PermissionStatus/state",
       "PositionCallback": "https://developer.mozilla.org/docs/Web/API/Geolocation/getCurrentPosition#success",
       "PositionErrorCallback": "https://developer.mozilla.org/docs/Web/API/Geolocation/getCurrentPosition#error",
