@@ -8,8 +8,22 @@ import {
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
 import { LocationServices } from "./location-services.js";
 
+/**
+ * Parameters for creating a fake W3C
+ * {@link globalThis.Geolocation | Geolocation} API.
+ *
+ * @see {@link createGeolocation} to create a fake W3C
+ *   {@link globalThis.Geolocation | Geolocation} API.
+ */
 export interface GeolocationParameters {
+  /**
+   * The location services to use.
+   */
   locationServices: LocationServices;
+
+  /**
+   * The permission store to use.
+   */
   permissionStore: PermissionStore;
 }
 
@@ -17,6 +31,13 @@ const descriptor: PermissionDescriptor = { name: "geolocation" };
 let canConstruct = false;
 
 /**
+ * Create a fake W3C {@link globalThis.Geolocation | Geolocation} API.
+ *
+ * @param params - The parameters for creating the fake W3C
+ *   {@link globalThis.Geolocation | Geolocation} API.
+ *
+ * @returns A fake W3C {@link globalThis.Geolocation | Geolocation} API.
+ *
  * @inlineType GeolocationParameters
  */
 export function createGeolocation(
