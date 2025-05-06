@@ -49,6 +49,8 @@ export interface User extends PermissionsUser {
    *
    * @param coordsParams The parameters of the high accuracy coordinates to jump
    *   to.
+   *
+   * @inlineType GeolocationCoordinatesParameters
    */
   jumpToCoordinates: (
     coordsParams: Partial<GeolocationCoordinatesParameters>,
@@ -70,6 +72,8 @@ export interface UserParameters extends PermissionsUserParameters {
    *
    * @defaultValue A function that behaves like {@link createCoordinates},
    *   except that `accuracy` defaults to 10 meters.
+   *
+   * @inlineType GeolocationCoordinatesParameters
    */
   createCoordinates?: (
     params: Partial<GeolocationCoordinatesParameters>,

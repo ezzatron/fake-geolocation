@@ -3,8 +3,6 @@ let canConstruct = false;
 /**
  * Parameters for creating a
  * {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
- *
- * @inline
  */
 export type GeolocationCoordinatesParameters = Omit<
   globalThis.GeolocationCoordinates,
@@ -19,6 +17,8 @@ export type GeolocationCoordinatesParameters = Omit<
  *
  * @returns The
  *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
+ *
+ * @inlineType GeolocationCoordinatesParameters
  */
 export function createCoordinates(
   coordsParams: Partial<GeolocationCoordinatesParameters> = {},

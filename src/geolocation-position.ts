@@ -30,6 +30,8 @@ let canConstruct = false;
  *
  * @returns The
  *   {@link globalThis.GeolocationPosition | GeolocationPosition} object.
+ *
+ * @inlineType GeolocationCoordinatesParameters
  */
 export function createPosition(
   coordsParams: Partial<GeolocationCoordinatesParameters> = {},
