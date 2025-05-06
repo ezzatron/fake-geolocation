@@ -98,6 +98,20 @@ export type MutableLocationServices = LocationServices & {
  *   API.
  */
 export interface LocationServicesParameters {
+  /**
+   * An optional delay in milliseconds to wait for all coordinates to be
+   * acquired.
+   *
+   * If a number is provided, all calls to
+   * {@link LocationServices.acquireCoordinates} will wait for this number of
+   * milliseconds via {@link setTimeout} before returning the coordinates. If
+   * omitted, no timeout will be used.
+   *
+   * This is useful for simulating a delay in acquiring coordinates, which in
+   * the real world never happens instantly. Adding a delay can make your tests
+   * more realistic, but can result in slower tests, and introduce issues when
+   * fake timers are used.
+   */
   acquireDelay?: number;
 }
 
