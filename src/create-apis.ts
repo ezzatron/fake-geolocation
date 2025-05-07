@@ -4,6 +4,7 @@ import {
   createPermissionStore,
   createPermissions,
 } from "fake-permissions";
+import type { createWrappedAPIs } from "./create-wrapped-apis.js";
 import {
   createGeolocationObserver,
   type GeolocationObserver,
@@ -16,7 +17,10 @@ import {
 } from "./location-services.js";
 import { User, createUser, type UserParameters } from "./user.js";
 
-export type _DocsTypes = LocationServicesParameters | UserParameters;
+export type _DocsTypes =
+  | LocationServicesParameters
+  | UserParameters
+  | typeof createWrappedAPIs;
 
 /**
  * Parameters for creating paired fake W3C {@link Permissions} and
@@ -84,6 +88,9 @@ export interface CreateAPIsParameters {
  *   {@link Permissions} and {@link Geolocation} APIs.
  *
  * @returns The paired APIs, along with other useful objects.
+ *
+ * @see {@link createWrappedAPIs} to create paired fake APIs that wrap existing
+ *    APIs.
  *
  * @inlineType CreateAPIsParameters
  */
