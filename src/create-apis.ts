@@ -66,14 +66,6 @@ export interface CreateAPIsParameters {
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
-
-  /**
-   * An optional permission store to use.
-   *
-   * @defaultValue The result of calling {@link createPermissionStore} with no
-   *   arguments.
-   */
-  permissionStore?: PermissionStore;
 }
 
 /**
@@ -125,18 +117,15 @@ export function createAPIs(params: CreateAPIsParameters = {}): {
    */
   user: User;
 } {
-  const {
-    acquireDelay,
-    handleAccessRequest,
-    lowAccuracyTransform,
-    permissionStore = createPermissionStore(),
-  } = params;
+  const { acquireDelay, handleAccessRequest, lowAccuracyTransform } = params;
 
   const locationServices = createLocationServices({ acquireDelay });
-  const permissions = createPermissions({ permissionStore });
-  const geolocation = createGeolocation({ locationServices, permissionStore });
-  const observer = createGeolocationObserver(geolocation, permissions);
+  const permissionStore = createPermissionStore();
 
+  const geolocation = createGeolocation({ locationServices, permissionStore });
+  const permissions = createPermissions({ permissionStore });
+
+  const observer = createGeolocationObserver(geolocation, permissions);
   const user = createUser({
     handleAccessRequest,
     locationServices,

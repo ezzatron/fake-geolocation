@@ -28,6 +28,8 @@ Versioning].
 
 ### Removed
 
+- **\[BREAKING]** Removed the `permissionStore` property from
+  `CreateAPIsParameters` and `CreateWrappedAPIsParameters`.
 - **\[BREAKING]** Removed the `IsDelegateSelected` type.
 - **\[BREAKING]** Removed the `SelectDelegate` type.
 - **\[BREAKING]** Stopped exporting internal classes that shadow W3C classes:
