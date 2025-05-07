@@ -12,6 +12,7 @@
     },
     "fake-permissions": {
       "AccessRequestRecord": "https://ezzatron.com/fake-permissions/interfaces/AccessRequestRecord.html",
+      "createPermissionStore": "https://ezzatron.com/fake-permissions/functions/createPermissionStore.html",
       "HandleAccessRequest": "https://ezzatron.com/fake-permissions/types/HandleAccessRequest.html",
       "PermissionAccessStatusBlocked": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusBlocked.html",
       "PermissionAccessStatusGranted": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusGranted.html",

@@ -3,7 +3,7 @@ import type { GeolocationCoordinatesParameters } from "./geolocation-coordinates
 import { type GeolocationPositionErrorCode } from "./geolocation-position-error.js";
 
 /**
- * An observer for geolocation and permissions changes.
+ * An observer for geolocation changes.
  */
 export interface GeolocationObserver {
   /**
