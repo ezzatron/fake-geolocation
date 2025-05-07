@@ -25,6 +25,7 @@
   "navigationLinks": {
     "GitHub": "https://github.com/ezzatron/fake-geolocation"
   },
+  "visibilityFilters": {},
 
   "plugin": ["typedoc-plugin-mdn-links"]
 }
