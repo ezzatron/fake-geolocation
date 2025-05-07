@@ -12,6 +12,9 @@ Versioning].
 
 ### Added
 
+- The `createAPIs()` and `createWrappedAPIs()` functions accept new options:
+  - `permissionStoreParams` - Parameters to use when creating the permission
+    store.
 - Added the `selectedDelegate` property of the return value of
   `createDelegatedGeolocation()`, which is a function that returns the currently
   selected delegate.

@@ -3,6 +3,7 @@ import {
   PermissionStore,
   createPermissionStore,
   createPermissions,
+  type PermissionStoreParameters,
 } from "fake-permissions";
 import type { createWrappedAPIs } from "./create-wrapped-apis.js";
 import {
@@ -66,6 +67,13 @@ export interface CreateAPIsParameters {
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,
   ) => GeolocationCoordinates;
+
+  /**
+   * Optional parameters to use when creating the permission store.
+   *
+   * @defaultValue `undefined`
+   */
+  permissionStoreParams?: PermissionStoreParameters;
 }
 
 /**
@@ -117,10 +125,15 @@ export function createAPIs(params: CreateAPIsParameters = {}): {
    */
   user: User;
 } {
-  const { acquireDelay, handleAccessRequest, lowAccuracyTransform } = params;
+  const {
+    acquireDelay,
+    handleAccessRequest,
+    lowAccuracyTransform,
+    permissionStoreParams,
+  } = params;
 
   const locationServices = createLocationServices({ acquireDelay });
-  const permissionStore = createPermissionStore();
+  const permissionStore = createPermissionStore(permissionStoreParams);
 
   const geolocation = createGeolocation({ locationServices, permissionStore });
   const permissions = createPermissions({ permissionStore });

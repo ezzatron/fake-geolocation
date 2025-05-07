@@ -20,6 +20,7 @@
       "PermissionAccessStatusPrompt": "https://ezzatron.com/fake-permissions/types/PermissionAccessStatusPrompt.html",
       "PermissionObserver": "https://ezzatron.com/fake-permissions/interfaces/PermissionObserver.html",
       "PermissionStore": "https://ezzatron.com/fake-permissions/interfaces/PermissionStore.html",
+      "PermissionStoreParameters": "https://ezzatron.com/fake-permissions/interfaces/PermissionStoreParameters.html",
       "User": "https://ezzatron.com/fake-permissions/interfaces/User.html",
       "UserParameters": "https://ezzatron.com/fake-permissions/interfaces/UserParameters.html"
     }
