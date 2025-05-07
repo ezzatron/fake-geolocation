@@ -8,10 +8,10 @@ import {
 import { MutableLocationServices } from "./location-services.js";
 import { User } from "./user.js";
 
-export type CreateWrappedAPIsParameters = CreateAPIsParameters & {
+export interface CreateWrappedAPIsParameters extends CreateAPIsParameters {
   geolocation: Geolocation;
   permissions: Permissions;
-};
+}
 
 /**
  * @inlineType CreateWrappedAPIsParameters

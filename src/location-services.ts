@@ -57,7 +57,7 @@ export type LocationServicesSubscriber = (isHighAccuracy: boolean) => void;
  *
  * @expandType LocationServices
  */
-export type MutableLocationServices = LocationServices & {
+export interface MutableLocationServices extends LocationServices {
   /**
    * Enable the location services.
    *
@@ -89,7 +89,7 @@ export type MutableLocationServices = LocationServices & {
   setLowAccuracyCoordinates: (
     coords: GeolocationCoordinates | undefined,
   ) => void;
-};
+}
 
 /**
  * Parameters for creating a virtual location services API.
