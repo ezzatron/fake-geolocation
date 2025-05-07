@@ -8,10 +8,12 @@ describe("Simple waitForPosition regression", () => {
 
   beforeEach(async () => {
     fakeAPIs = createAPIs({
-      handleAccessRequest: async (dialog) => {
-        // Nothing in this test should trigger an access request
-        dialog.remember(true);
-        dialog.deny();
+      userParams: {
+        handleAccessRequest: async (dialog) => {
+          // Nothing in this test should trigger an access request
+          dialog.remember(true);
+          dialog.deny();
+        },
       },
     });
     fakeAPIs.user.grantAccess({ name: "geolocation" });

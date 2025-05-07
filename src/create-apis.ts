@@ -1,5 +1,4 @@
 import {
-  HandleAccessRequest,
   PermissionStore,
   createPermissionStore,
   createPermissions,
@@ -42,38 +41,18 @@ export interface CreateAPIsParameters {
   acquireDelay?: number;
 
   /**
-   * An optional handler to use for permission access requests.
-   *
-   * If omitted, permission access requests will be immediately dismissed.
-   *
-   * @defaultValue `async () => {}`
-   *
-   * @see {@link HandleAccessRequest}
-   */
-  handleAccessRequest?: HandleAccessRequest;
-
-  /**
-   * An optional function to transform high accuracy coordinates to low accuracy
-   * coordinates.
-   *
-   * @param coords - The high accuracy coordinates.
-   *
-   * @returns The low accuracy coordinates.
-   *
-   * @defaultValue `(coords) => coords`
-   *
-   * @see {@link UserParameters.lowAccuracyTransform}
-   */
-  lowAccuracyTransform?: (
-    coords: GeolocationCoordinates,
-  ) => GeolocationCoordinates;
-
-  /**
    * Optional parameters to use when creating the permission store.
    *
    * @defaultValue `undefined`
    */
   permissionStoreParams?: PermissionStoreParameters;
+
+  /**
+   * Optional parameters to use when creating the user.
+   *
+   * @defaultValue `undefined`
+   */
+  userParams?: Omit<UserParameters, "locationServices" | "permissionStore">;
 }
 
 /**
@@ -125,12 +104,7 @@ export function createAPIs(params: CreateAPIsParameters = {}): {
    */
   user: User;
 } {
-  const {
-    acquireDelay,
-    handleAccessRequest,
-    lowAccuracyTransform,
-    permissionStoreParams,
-  } = params;
+  const { acquireDelay, permissionStoreParams, userParams } = params;
 
   const locationServices = createLocationServices({ acquireDelay });
   const permissionStore = createPermissionStore(permissionStoreParams);
@@ -140,9 +114,8 @@ export function createAPIs(params: CreateAPIsParameters = {}): {
 
   const observer = createGeolocationObserver(geolocation, permissions);
   const user = createUser({
-    handleAccessRequest,
+    ...userParams,
     locationServices,
-    lowAccuracyTransform,
     permissionStore,
   });
 

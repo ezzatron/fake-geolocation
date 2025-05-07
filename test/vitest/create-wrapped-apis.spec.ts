@@ -41,9 +41,11 @@ describe("createWrappedAPIs()", () => {
     vi.setSystemTime(startTime);
 
     const supplied = createAPIs({
-      handleAccessRequest: async (dialog) => {
-        dialog.remember(true);
-        dialog.deny();
+      userParams: {
+        handleAccessRequest: async (dialog) => {
+          dialog.remember(true);
+          dialog.deny();
+        },
       },
     });
     suppliedPermissionStore = supplied.permissionStore;
@@ -54,9 +56,11 @@ describe("createWrappedAPIs()", () => {
     const wrapped = createWrappedAPIs({
       geolocation: supplied.geolocation,
       permissions: supplied.permissions,
-      handleAccessRequest: async (dialog) => {
-        dialog.remember(true);
-        dialog.allow();
+      userParams: {
+        handleAccessRequest: async (dialog) => {
+          dialog.remember(true);
+          dialog.allow();
+        },
       },
     });
     geolocation = wrapped.geolocation;

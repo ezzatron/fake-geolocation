@@ -15,6 +15,7 @@ Versioning].
 - The `createAPIs()` and `createWrappedAPIs()` functions accept new options:
   - `permissionStoreParams` - Parameters to use when creating the permission
     store.
+  - `userParams` - Parameters to use when creating the user.
 - Added the `selectedDelegate` property of the return value of
   `createDelegatedGeolocation()`, which is a function that returns the currently
   selected delegate.
@@ -31,8 +32,11 @@ Versioning].
 
 ### Removed
 
-- **\[BREAKING]** Removed the `permissionStore` property from
-  `CreateAPIsParameters` and `CreateWrappedAPIsParameters`.
+- **\[BREAKING]** Removed some properties from `CreateAPIsParameters` and
+  `CreateWrappedAPIsParameters`:
+  - `handleAccessRequest` - use `userParams` instead
+  - `lowAccuracyTransform` - use `userParams` instead
+  - `permissionStore` - use `permissionStoreParams` instead
 - **\[BREAKING]** Removed the `IsDelegateSelected` type.
 - **\[BREAKING]** Removed the `SelectDelegate` type.
 - **\[BREAKING]** Stopped exporting internal classes that shadow W3C classes:
