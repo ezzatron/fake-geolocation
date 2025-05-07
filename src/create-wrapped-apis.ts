@@ -41,7 +41,7 @@ export interface CreateWrappedAPIsParameters extends CreateAPIsParameters {
  *   {@link Permissions} and {@link Geolocation} APIs that wrap the supplied
  *   APIs.
  *
- * @returns The wrapped APIs, along with other useful objects.
+ * @returns The wrapped APIs, along with other useful services.
  *
  * @see {@link createAPIs} to create paired fake APIs without wrapping existing
  *   APIs.

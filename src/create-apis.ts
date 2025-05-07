@@ -53,24 +53,9 @@ export interface CreateAPIsParameters {
 }
 
 /**
- * Create paired fake W3C {@link Permissions} and {@link Geolocation} APIs.
- *
- * The permission access state of the geolocation permission in the permission
- * store is used by the fake {@link Geolocation} API. This allows you to
- * simulate how real browser permissions affect the behavior of the
- * {@link Geolocation} API.
- *
- * @param params - The parameters for creating paired fake W3C
- *   {@link Permissions} and {@link Geolocation} APIs.
- *
- * @returns The paired APIs, along with other useful objects.
- *
- * @see {@link createWrappedAPIs} to create paired fake APIs that wrap existing
- *    APIs.
- *
- * @inlineType CreateAPIsParameters
+ * The result of calling {@link createAPIs}.
  */
-export function createAPIs(params: CreateAPIsParameters = {}): {
+export interface CreateAPIsResult {
   /**
    * The fake W3C {@link Geolocation} API.
    */
@@ -100,7 +85,30 @@ export function createAPIs(params: CreateAPIsParameters = {}): {
    * a virtual user that can affect geolocation and permissions.
    */
   user: User;
-} {
+}
+
+/**
+ * Create paired fake W3C {@link Permissions} and {@link Geolocation} APIs.
+ *
+ * The permission access state of the geolocation permission in the permission
+ * store is used by the fake {@link Geolocation} API. This allows you to
+ * simulate how real browser permissions affect the behavior of the
+ * {@link Geolocation} API.
+ *
+ * @param params - The parameters for creating paired fake W3C
+ *   {@link Permissions} and {@link Geolocation} APIs.
+ *
+ * @returns The paired APIs, along with other useful services.
+ *
+ * @see {@link createWrappedAPIs} to create paired fake APIs that wrap existing
+ *    APIs.
+ *
+ * @inlineType CreateAPIsParameters
+ * @inlineType CreateAPIsResult
+ */
+export function createAPIs(
+  params: CreateAPIsParameters = {},
+): CreateAPIsResult {
   const locationServices = createLocationServices(
     params.locationServicesParams,
   );
