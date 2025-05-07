@@ -4,6 +4,7 @@ import {
   createPosition,
   createWrappedAPIs,
   type GeolocationObserver,
+  type WrappedAPIsHandle,
 } from "fake-geolocation";
 import type { PermissionStore } from "fake-permissions";
 import {
@@ -30,8 +31,7 @@ describe("createWrappedAPIs()", () => {
   let permissionStore: PermissionStore;
   let permissions: Permissions;
   let user: User;
-  let selectAPIs: (useSuppliedAPIs: boolean) => void;
-  let isUsingSuppliedAPIs: () => boolean;
+  let handle: WrappedAPIsHandle;
 
   let successCallback: Mock<PositionCallback>;
   let errorCallback: Mock<PositionErrorCallback>;
@@ -68,8 +68,7 @@ describe("createWrappedAPIs()", () => {
     permissionStore = wrapped.permissionStore;
     permissions = wrapped.permissions;
     user = wrapped.user;
-    selectAPIs = wrapped.selectAPIs;
-    isUsingSuppliedAPIs = wrapped.isUsingSuppliedAPIs;
+    handle = wrapped.handle;
     user.jumpToCoordinates(coordsB);
     user.grantAccess({ name: "geolocation" });
 
@@ -83,7 +82,7 @@ describe("createWrappedAPIs()", () => {
 
   describe("before selecting APIs", () => {
     it("has selected the fake APIs", () => {
-      expect(isUsingSuppliedAPIs()).toBe(false);
+      expect(handle.isUsingSuppliedAPIs()).toBe(false);
     });
 
     it("delegates to the fake Geolocation API", async () => {
@@ -104,11 +103,11 @@ describe("createWrappedAPIs()", () => {
 
   describe("after selecting the supplied APIs", () => {
     beforeEach(() => {
-      selectAPIs(true);
+      handle.selectAPIs(true);
     });
 
     it("has selected the supplied APIs", () => {
-      expect(isUsingSuppliedAPIs()).toBe(true);
+      expect(handle.isUsingSuppliedAPIs()).toBe(true);
     });
 
     it("delegates to the supplied Geolocation API", async () => {
@@ -146,7 +145,7 @@ describe("createWrappedAPIs()", () => {
 
     describe("after selecting the fake APIs", () => {
       beforeEach(() => {
-        selectAPIs(false);
+        handle.selectAPIs(false);
       });
 
       it("delegates to the fake Geolocation API", async () => {
@@ -172,11 +171,11 @@ describe("createWrappedAPIs()", () => {
 
   describe("after selecting the fake APIs", () => {
     beforeEach(() => {
-      selectAPIs(false);
+      handle.selectAPIs(false);
     });
 
     it("has selected the fake APIs", () => {
-      expect(isUsingSuppliedAPIs()).toBe(false);
+      expect(handle.isUsingSuppliedAPIs()).toBe(false);
     });
 
     it("delegates to the fake Geolocation API", async () => {
@@ -212,7 +211,7 @@ describe("createWrappedAPIs()", () => {
 
     describe("after selecting the supplied APIs", () => {
       beforeEach(() => {
-        selectAPIs(true);
+        handle.selectAPIs(true);
       });
 
       it("delegates to the supplied Geolocation API", async () => {

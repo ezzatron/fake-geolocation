@@ -34,8 +34,44 @@ export interface CreateWrappedAPIsResult {
   /**
    * The wrapped W3C {@link Geolocation} API.
    */
-  geolocation: Geolocation;
+  readonly geolocation: Geolocation;
 
+  /**
+   * A handle for controlling the wrapped APIs.
+   */
+  readonly handle: WrappedAPIsHandle;
+
+  /**
+   * The virtual location services.
+   */
+  readonly locationServices: MutableLocationServices;
+
+  /**
+   * An observer for geolocation changes.
+   */
+  readonly observer: GeolocationObserver;
+
+  /**
+   * The wrapped W3C {@link Permissions} API.
+   */
+  readonly permissions: Permissions;
+
+  /**
+   * A store for managing permission access.
+   */
+  readonly permissionStore: PermissionStore;
+
+  /**
+   * a virtual user that can affect geolocation and permissions.
+   */
+  readonly user: User;
+}
+
+/**
+ * A handle for controlling wrapped {@link Permissions} and {@link Geolocation}
+ * APIs.
+ */
+export interface WrappedAPIsHandle {
   /**
    * Check if the wrapped APIs are using the originally supplied APIs, or the
    * fake APIs.
@@ -46,37 +82,12 @@ export interface CreateWrappedAPIsResult {
   isUsingSuppliedAPIs: () => boolean;
 
   /**
-   * The virtual location services.
-   */
-  locationServices: MutableLocationServices;
-
-  /**
-   * An observer for geolocation changes.
-   */
-  observer: GeolocationObserver;
-
-  /**
-   * The wrapped W3C {@link Permissions} API.
-   */
-  permissions: Permissions;
-
-  /**
-   * A store for managing permission access.
-   */
-  permissionStore: PermissionStore;
-
-  /**
    * Select the APIs to use.
    *
    * @param useSuppliedAPIs - If `true`, the originally supplied APIs are used.
    *   If `false`, the fake APIs are used.
    */
   selectAPIs: (useSuppliedAPIs: boolean) => void;
-
-  /**
-   * a virtual user that can affect geolocation and permissions.
-   */
-  user: User;
 }
 
 /**
@@ -93,7 +104,8 @@ export interface CreateWrappedAPIsResult {
  *   {@link Permissions} and {@link Geolocation} APIs that wrap the supplied
  *   APIs.
  *
- * @returns The wrapped APIs, along with other useful services.
+ * @returns The wrapped APIs, and a handle for controlling them, along with
+ *   other useful services.
  *
  * @see {@link createAPIs} to create paired fake APIs without wrapping existing
  *   APIs.
@@ -136,14 +148,7 @@ export function createWrappedAPIs(
 
   const observer = createGeolocationObserver(geolocation, permissions);
 
-  return {
-    geolocation,
-    locationServices,
-    observer,
-    permissions,
-    permissionStore,
-    user,
-
+  const handle: WrappedAPIsHandle = {
     selectAPIs(useSuppliedAPIs) {
       geolocationHandle.selectDelegate(
         useSuppliedAPIs ? suppliedGeolocation : fakeGeolocation,
@@ -156,5 +161,15 @@ export function createWrappedAPIs(
     isUsingSuppliedAPIs() {
       return geolocationHandle.isSelectedDelegate(suppliedGeolocation);
     },
+  };
+
+  return {
+    geolocation,
+    handle,
+    locationServices,
+    observer,
+    permissions,
+    permissionStore,
+    user,
   };
 }

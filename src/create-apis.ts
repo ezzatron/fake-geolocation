@@ -59,32 +59,32 @@ export interface CreateAPIsResult {
   /**
    * The fake W3C {@link Geolocation} API.
    */
-  geolocation: Geolocation;
+  readonly geolocation: Geolocation;
 
   /**
    * The virtual location services.
    */
-  locationServices: MutableLocationServices;
+  readonly locationServices: MutableLocationServices;
 
   /**
    * An observer for geolocation changes.
    */
-  observer: GeolocationObserver;
+  readonly observer: GeolocationObserver;
 
   /**
    * The fake W3C {@link Permissions} API.
    */
-  permissions: Permissions;
+  readonly permissions: Permissions;
 
   /**
    * A store for managing permission access.
    */
-  permissionStore: PermissionStore;
+  readonly permissionStore: PermissionStore;
 
   /**
    * a virtual user that can affect geolocation and permissions.
    */
-  user: User;
+  readonly user: User;
 }
 
 /**

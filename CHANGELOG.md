@@ -16,6 +16,7 @@ Versioning].
 - Added the `CreateWrappedAPIsResult` type.
 - Added the `DelegatedGeolocationHandle` type.
 - Added the `DelegatedGeolocationResult` type.
+- Added the `WrappedAPIsHandle` type.
 
 ### Changed
 
@@ -23,6 +24,9 @@ Versioning].
   has a `handle` object which contains the `selectDelegate`, `selectedDelegate`,
   and `isSelectedDelegate` (renamed from `isDelegateSelected`) methods, which
   were previously on the return value itself.
+- **[BREAKING]** The `createWrappedAPIs()` function's return value now has a
+  `handle` object which contains the `isUsingSuppliedAPIs` and `selectAPIs`
+  methods, which were previously on the return value itself.
 
 ## [v0.17.0] - 2025-05-07
 
