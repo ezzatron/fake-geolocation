@@ -31,14 +31,11 @@ export type _DocsTypes =
  */
 export interface CreateAPIsParameters {
   /**
-   * An optional delay in milliseconds to wait for all coordinates to be
-   * acquired.
+   * Optional parameters to use when creating the location services.
    *
    * @defaultValue `undefined`
-   *
-   * @see {@link LocationServicesParameters.acquireDelay}
    */
-  acquireDelay?: number;
+  locationServicesParams?: LocationServicesParameters;
 
   /**
    * Optional parameters to use when creating the permission store.
@@ -104,17 +101,17 @@ export function createAPIs(params: CreateAPIsParameters = {}): {
    */
   user: User;
 } {
-  const { acquireDelay, permissionStoreParams, userParams } = params;
-
-  const locationServices = createLocationServices({ acquireDelay });
-  const permissionStore = createPermissionStore(permissionStoreParams);
+  const locationServices = createLocationServices(
+    params.locationServicesParams,
+  );
+  const permissionStore = createPermissionStore(params.permissionStoreParams);
 
   const geolocation = createGeolocation({ locationServices, permissionStore });
   const permissions = createPermissions({ permissionStore });
 
   const observer = createGeolocationObserver(geolocation, permissions);
   const user = createUser({
-    ...userParams,
+    ...params.userParams,
     locationServices,
     permissionStore,
   });

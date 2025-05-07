@@ -544,7 +544,7 @@ describe("GeolocationObserver", () => {
     describe("when called with position options", () => {
       it("uses the provided options", async () => {
         ({ permissionStore, locationServices, geolocation } = createAPIs({
-          acquireDelay: 0,
+          locationServicesParams: { acquireDelay: 0 },
         }));
         locationServices.setLowAccuracyCoordinates(coordsA);
         permissionStore.setStatus({ name: "geolocation" }, "GRANTED");

@@ -37,7 +37,9 @@ describe("Geolocation.watchPosition()", () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.setSystemTime(startTime);
 
-    ({ geolocation, locationServices, user } = createAPIs({ acquireDelay: 0 }));
+    ({ geolocation, locationServices, user } = createAPIs({
+      locationServicesParams: { acquireDelay: 0 },
+    }));
 
     successCallback = vi.fn();
     errorCallback = vi.fn();

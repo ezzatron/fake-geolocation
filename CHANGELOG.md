@@ -13,6 +13,8 @@ Versioning].
 ### Added
 
 - The `createAPIs()` and `createWrappedAPIs()` functions accept new options:
+  - `locationServicesParams` - Parameters to use when creating the location
+    services.
   - `permissionStoreParams` - Parameters to use when creating the permission
     store.
   - `userParams` - Parameters to use when creating the user.
@@ -32,8 +34,9 @@ Versioning].
 
 ### Removed
 
-- **\[BREAKING]** Removed some properties from `CreateAPIsParameters` and
-  `CreateWrappedAPIsParameters`:
+- **\[BREAKING]** Removed some options from `createAPIs()` and
+  `createWrappedAPIs()` :
+  - `acquireDelay` - use `locationServicesParams` instead
   - `handleAccessRequest` - use `userParams` instead
   - `lowAccuracyTransform` - use `userParams` instead
   - `permissionStore` - use `permissionStoreParams` instead
