@@ -10,6 +10,10 @@ Versioning].
 
 ## Unreleased
 
+## [v0.17.0] - 2025-05-07
+
+[v0.17.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.17.0
+
 ### Added
 
 - The `createAPIs()` and `createWrappedAPIs()` functions accept new options:
