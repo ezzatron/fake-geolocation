@@ -1,4 +1,7 @@
-import type { PermissionStore } from "fake-permissions";
+import type {
+  PermissionStore,
+  PermissionStoreSubscriberDetails,
+} from "fake-permissions";
 import {
   GeolocationPositionError,
   createPermissionDeniedError,
@@ -319,7 +322,7 @@ export class Geolocation {
 
     function handlePermissionChange(
       descriptor: PermissionDescriptor,
-      { hasAccess, hadAccess }: { hasAccess: boolean; hadAccess: boolean },
+      { hasAccess, hadAccess }: PermissionStoreSubscriberDetails,
     ): void {
       if (!isEstablished) return;
       if (descriptor.name !== "geolocation") return;
