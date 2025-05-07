@@ -13,6 +13,7 @@ Versioning].
 ### Added
 
 - Added the `CreateAPIsResult` type.
+- Added the `CreateWrappedAPIsResult` type.
 - Added the `DelegatedGeolocationHandle` type.
 - Added the `DelegatedGeolocationResult` type.
 

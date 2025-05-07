@@ -1,7 +1,10 @@
 export { createAPIs } from "./create-apis.js";
 export type { CreateAPIsParameters, CreateAPIsResult } from "./create-apis.js";
 export { createWrappedAPIs } from "./create-wrapped-apis.js";
-export type { CreateWrappedAPIsParameters } from "./create-wrapped-apis.js";
+export type {
+  CreateWrappedAPIsParameters,
+  CreateWrappedAPIsResult,
+} from "./create-wrapped-apis.js";
 export { createDelegatedGeolocation } from "./delegated-geolocation.js";
 export type {
   DelegatedGeolocationHandle,

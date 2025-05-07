@@ -28,27 +28,9 @@ export interface CreateWrappedAPIsParameters extends CreateAPIsParameters {
 }
 
 /**
- * Create paired fake W3C {@link Permissions} and {@link Geolocation} APIs that
- * wrap the supplied APIs.
- *
- * Internally, this function creates paired fake APIs using {@link createAPIs}.
- * Then it wraps these APIs and the supplied APIs using
- * {@link createDelegatedPermissions} and {@link createDelegatedGeolocation} to
- * create delegated APIs that can switch between the fake and supplied APIs
- * dynamically.
- *
- * @param params - The parameters for creating paired fake W3C
- *   {@link Permissions} and {@link Geolocation} APIs that wrap the supplied
- *   APIs.
- *
- * @returns The wrapped APIs, along with other useful services.
- *
- * @see {@link createAPIs} to create paired fake APIs without wrapping existing
- *   APIs.
- *
- * @inlineType CreateWrappedAPIsParameters
+ * The result of calling {@link createWrappedAPIs}.
  */
-export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
+export interface CreateWrappedAPIsResult {
   /**
    * The wrapped W3C {@link Geolocation} API.
    */
@@ -95,7 +77,33 @@ export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
    * a virtual user that can affect geolocation and permissions.
    */
   user: User;
-} {
+}
+
+/**
+ * Create paired fake W3C {@link Permissions} and {@link Geolocation} APIs that
+ * wrap the supplied APIs.
+ *
+ * Internally, this function creates paired fake APIs using {@link createAPIs}.
+ * Then it wraps these APIs and the supplied APIs using
+ * {@link createDelegatedPermissions} and {@link createDelegatedGeolocation} to
+ * create delegated APIs that can switch between the fake and supplied APIs
+ * dynamically.
+ *
+ * @param params - The parameters for creating paired fake W3C
+ *   {@link Permissions} and {@link Geolocation} APIs that wrap the supplied
+ *   APIs.
+ *
+ * @returns The wrapped APIs, along with other useful services.
+ *
+ * @see {@link createAPIs} to create paired fake APIs without wrapping existing
+ *   APIs.
+ *
+ * @inlineType CreateWrappedAPIsParameters
+ * @inlineType CreateWrappedAPIsResult
+ */
+export function createWrappedAPIs(
+  params: CreateWrappedAPIsParameters,
+): CreateWrappedAPIsResult {
   const {
     geolocation: suppliedGeolocation,
     permissions: suppliedPermissions,
