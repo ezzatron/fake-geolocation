@@ -8,6 +8,8 @@ import {
 import { MutableLocationServices } from "./location-services.js";
 import { User } from "./user.js";
 
+export type _DocsTypes = typeof createAPIs;
+
 /**
  * Parameters for creating paired fake W3C {@link Permissions} and
  * {@link Geolocation} APIs that wrap the supplied APIs.
