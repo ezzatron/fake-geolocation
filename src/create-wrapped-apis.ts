@@ -122,10 +122,11 @@ export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
     ]),
   });
 
-  const { permissions, selectDelegate: selectPermissionsDelegate } =
-    createDelegatedPermissions({
+  const { permissions, handle: permissionsHandle } = createDelegatedPermissions(
+    {
       delegates: [fakePermissions, suppliedPermissions],
-    });
+    },
+  );
 
   const observer = createGeolocationObserver(geolocation, permissions);
 
@@ -141,7 +142,7 @@ export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
       selectGeolocationDelegate(
         useSuppliedAPIs ? suppliedGeolocation : fakeGeolocation,
       );
-      selectPermissionsDelegate(
+      permissionsHandle.selectDelegate(
         useSuppliedAPIs ? suppliedPermissions : fakePermissions,
       );
     },
