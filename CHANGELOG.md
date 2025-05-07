@@ -10,6 +10,18 @@ Versioning].
 
 ## Unreleased
 
+### Added
+
+- Added the `DelegatedGeolocationHandle` type.
+- Added the `DelegatedGeolocationResult` type.
+
+### Changed
+
+- **[BREAKING]** The `createDelegatedGeolocation()` function's return value now
+  has a `handle` object which contains the `selectDelegate`, `selectedDelegate`,
+  and `isSelectedDelegate` (renamed from `isDelegateSelected`) methods, which
+  were previously on the return value itself.
+
 ## [v0.17.0] - 2025-05-07
 
 [v0.17.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.17.0

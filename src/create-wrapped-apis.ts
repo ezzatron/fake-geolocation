@@ -110,17 +110,15 @@ export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
     user,
   } = createAPIs(createAPIsParams);
 
-  const {
-    geolocation,
-    selectDelegate: selectGeolocationDelegate,
-    isDelegateSelected: isGeolocationDelegateSelected,
-  } = createDelegatedGeolocation({
-    delegates: [fakeGeolocation, suppliedGeolocation],
-    permissionsDelegates: new Map([
-      [fakeGeolocation, fakePermissions],
-      [suppliedGeolocation, suppliedPermissions],
-    ]),
-  });
+  const { geolocation, handle: geolocationHandle } = createDelegatedGeolocation(
+    {
+      delegates: [fakeGeolocation, suppliedGeolocation],
+      permissionsDelegates: new Map([
+        [fakeGeolocation, fakePermissions],
+        [suppliedGeolocation, suppliedPermissions],
+      ]),
+    },
+  );
 
   const { permissions, handle: permissionsHandle } = createDelegatedPermissions(
     {
@@ -139,7 +137,7 @@ export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
     user,
 
     selectAPIs(useSuppliedAPIs) {
-      selectGeolocationDelegate(
+      geolocationHandle.selectDelegate(
         useSuppliedAPIs ? suppliedGeolocation : fakeGeolocation,
       );
       permissionsHandle.selectDelegate(
@@ -148,7 +146,7 @@ export function createWrappedAPIs(params: CreateWrappedAPIsParameters): {
     },
 
     isUsingSuppliedAPIs() {
-      return isGeolocationDelegateSelected(suppliedGeolocation);
+      return geolocationHandle.isSelectedDelegate(suppliedGeolocation);
     },
   };
 }

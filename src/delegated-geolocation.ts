@@ -28,37 +28,24 @@ export interface DelegatedGeolocationParameters {
 }
 
 /**
- * Create a Geolocation API that delegates to other Geolocation APIs.
- *
- * Delegated Geolocation APIs can be used, for example, to dynamically "switch"
- * between a fake Geolocation API and a real Geolocation API.
- *
- * When
- * {@link globalThis.Geolocation.getCurrentPosition | Geolocation.getCurrentPosition}
- * is called on the delegated Geolocation API, the call will be forwarded to the
- * selected delegate.
- *
- * Geolocation API delegates can be selected dynamically at any time, and any
- * position watches created with
- * {@link globalThis.Geolocation.watchPosition | Geolocation.watchPosition} will
- * immediately be called with the new delegate's position.
- *
- * @param params - The parameters for creating the delegated Geolocation API.
- *
- * @returns The delegated Geolocation API, and functions for managing the
- *   selected delegate.
- * @throws A {@link TypeError} if no delegates are provided.
- *
- * @inlineType DelegatedGeolocationParameters
+ * The result of calling {@link createDelegatedGeolocation}.
  */
-export function createDelegatedGeolocation(
-  params: DelegatedGeolocationParameters,
-): {
+export interface DelegatedGeolocationResult {
   /**
    * The delegated Geolocation API.
    */
-  geolocation: globalThis.Geolocation;
+  readonly geolocation: globalThis.Geolocation;
 
+  /**
+   * A handle for controlling the delegated Geolocation API.
+   */
+  readonly handle: DelegatedGeolocationHandle;
+}
+
+/**
+ * A handle for controlling a delegated Geolocation API.
+ */
+export interface DelegatedGeolocationHandle {
   /**
    * Select a Geolocation API delegate.
    *
@@ -80,8 +67,35 @@ export function createDelegatedGeolocation(
    *
    * @returns `true` if the delegate is selected, `false` otherwise.
    */
-  isDelegateSelected: (delegate: globalThis.Geolocation) => boolean;
-} {
+  isSelectedDelegate: (delegate: globalThis.Geolocation) => boolean;
+}
+
+/**
+ * Create a Geolocation API that delegates to other Geolocation APIs.
+ *
+ * Delegated Geolocation APIs can be used, for example, to dynamically "switch"
+ * between a fake Geolocation API and a real Geolocation API.
+ *
+ * When
+ * {@link globalThis.Geolocation.getCurrentPosition | Geolocation.getCurrentPosition}
+ * is called on the delegated Geolocation API, the call will be forwarded to the
+ * selected delegate.
+ *
+ * Geolocation API delegates can be selected dynamically at any time, and any
+ * position watches created with
+ * {@link globalThis.Geolocation.watchPosition | Geolocation.watchPosition} will
+ * immediately be called with the new delegate's position.
+ *
+ * @param params - The parameters for creating the delegated Geolocation API.
+ *
+ * @returns The delegated Geolocation API, and a handle for controlling it.
+ * @throws A {@link TypeError} if no delegates are provided.
+ *
+ * @inlineType DelegatedGeolocationParameters
+ */
+export function createDelegatedGeolocation(
+  params: DelegatedGeolocationParameters,
+): DelegatedGeolocationResult {
   const { delegates, permissionsDelegates } = params;
   let [delegate] = delegates;
   if (!delegate) throw new TypeError("No delegates provided");
@@ -98,30 +112,30 @@ export function createDelegatedGeolocation(
 
   canConstruct = true;
 
-  return {
-    geolocation: new Geolocation({
-      delegate() {
-        return delegate;
-      },
+  const geolocation = new Geolocation({
+    delegate() {
+      return delegate;
+    },
 
-      permissionsDelegate() {
-        const permissions = permissionsDelegates.get(delegate);
-        /* v8 ignore start: unlikely because of constructor assertion */
-        if (!permissions) throw new TypeError("Missing permissions delegate");
-        /* v8 ignore stop */
+    permissionsDelegate() {
+      const permissions = permissionsDelegates.get(delegate);
+      /* v8 ignore start: unlikely because of constructor assertion */
+      if (!permissions) throw new TypeError("Missing permissions delegate");
+      /* v8 ignore stop */
 
-        return permissions;
-      },
+      return permissions;
+    },
 
-      subscribe(subscriber) {
-        subscribers.add(subscriber);
-      },
+    subscribe(subscriber) {
+      subscribers.add(subscriber);
+    },
 
-      unsubscribe(subscriber) {
-        subscribers.delete(subscriber);
-      },
-    }),
+    unsubscribe(subscriber) {
+      subscribers.delete(subscriber);
+    },
+  });
 
+  const handle: DelegatedGeolocationHandle = {
     selectDelegate(nextDelegate) {
       delegate = nextDelegate;
 
@@ -144,9 +158,14 @@ export function createDelegatedGeolocation(
       return delegate;
     },
 
-    isDelegateSelected(query) {
+    isSelectedDelegate(query) {
       return query === delegate;
     },
+  };
+
+  return {
+    geolocation,
+    handle,
   };
 }
 

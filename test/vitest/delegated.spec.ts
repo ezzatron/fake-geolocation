@@ -7,6 +7,7 @@ import {
   createPermissionDeniedError,
   createPosition,
   createUser,
+  type DelegatedGeolocationHandle,
 } from "fake-geolocation";
 import {
   createPermissionStore,
@@ -41,9 +42,7 @@ describe("Delegated geolocation", () => {
   let delegateA: Geolocation;
   let delegateB: Geolocation;
   let geolocation: Geolocation;
-  let selectDelegate: (delegate: Geolocation) => void;
-  let selectedDelegate: () => Geolocation;
-  let isDelegateSelected: (delegate: Geolocation) => boolean;
+  let handle: DelegatedGeolocationHandle;
 
   let successCallback: Mock<PositionCallback>;
   let errorCallback: Mock<PositionErrorCallback>;
@@ -88,14 +87,13 @@ describe("Delegated geolocation", () => {
       permissionStore: permissionStoreB,
     });
 
-    ({ geolocation, selectDelegate, selectedDelegate, isDelegateSelected } =
-      createDelegatedGeolocation({
-        delegates: [delegateA, delegateB],
-        permissionsDelegates: new Map([
-          [delegateA, permissionsA],
-          [delegateB, permissionsB],
-        ]),
-      }));
+    ({ geolocation, handle } = createDelegatedGeolocation({
+      delegates: [delegateA, delegateB],
+      permissionsDelegates: new Map([
+        [delegateA, permissionsA],
+        [delegateB, permissionsB],
+      ]),
+    }));
 
     successCallback = vi.fn();
     errorCallback = vi.fn();
@@ -158,9 +156,9 @@ describe("Delegated geolocation", () => {
 
   describe("before selecting a delegate", () => {
     it("has selected the first delegate", () => {
-      expect(selectedDelegate()).toBe(delegateA);
-      expect(isDelegateSelected(delegateA)).toBe(true);
-      expect(isDelegateSelected(delegateB)).toBe(false);
+      expect(handle.selectedDelegate()).toBe(delegateA);
+      expect(handle.isSelectedDelegate(delegateA)).toBe(true);
+      expect(handle.isSelectedDelegate(delegateB)).toBe(false);
     });
 
     describe("when reading the position", () => {
@@ -248,7 +246,7 @@ describe("Delegated geolocation", () => {
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
-          selectDelegate(delegateB);
+          handle.selectDelegate(delegateB);
         });
 
         it("calls the success callback with a position that matches the selected delegate", async () => {
@@ -296,7 +294,7 @@ describe("Delegated geolocation", () => {
           successCallback.mockClear();
           errorCallback.mockClear();
           vi.spyOn(permissionStoreB, "requestAccess");
-          selectDelegate(delegateB);
+          handle.selectDelegate(delegateB);
         });
 
         it("calls the error callback with a GeolocationPositionError with a code of PERMISSION_DENIED and an empty message", () => {
@@ -435,13 +433,13 @@ describe("Delegated geolocation", () => {
 
   describe("after selecting a delegate", () => {
     beforeEach(() => {
-      selectDelegate(delegateB);
+      handle.selectDelegate(delegateB);
     });
 
     it("has selected the specified delegate", () => {
-      expect(selectedDelegate()).toBe(delegateB);
-      expect(isDelegateSelected(delegateB)).toBe(true);
-      expect(isDelegateSelected(delegateA)).toBe(false);
+      expect(handle.selectedDelegate()).toBe(delegateB);
+      expect(handle.isSelectedDelegate(delegateB)).toBe(true);
+      expect(handle.isSelectedDelegate(delegateA)).toBe(false);
     });
 
     describe("when reading the position", () => {
@@ -529,7 +527,7 @@ describe("Delegated geolocation", () => {
           await sleep(delay);
           successCallback.mockClear();
           errorCallback.mockClear();
-          selectDelegate(delegateA);
+          handle.selectDelegate(delegateA);
         });
 
         it("calls the success callback with a position that matches the selected delegate", async () => {
