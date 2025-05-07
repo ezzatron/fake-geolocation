@@ -10,6 +10,10 @@ Versioning].
 
 ## Unreleased
 
+## [v0.18.0] - 2025-05-08
+
+[v0.18.0]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.18.0
+
 ### Added
 
 - Added the `CreateAPIsResult` type.
