@@ -1,0 +1,8 @@
+{
+  "name": "@ezzatron/fake-geolocation",
+  "version": "0.0.0",
+  "exports": "./src/index.ts",
+  "publish": {
+    "include": ["LICENSE", "README.md", "src/**/*.ts"]
+  }
+}
