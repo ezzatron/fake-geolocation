@@ -92,7 +92,7 @@ export interface UserParameters extends PermissionsUserParameters {
    *
    * @returns The low accuracy coordinates.
    *
-   * @defaultValue (coords) => coords
+   * @defaultValue `(coords) => coords`
    */
   lowAccuracyTransform?: (
     coords: GeolocationCoordinates,

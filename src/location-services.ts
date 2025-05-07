@@ -111,6 +111,8 @@ export interface LocationServicesParameters {
    * the real world never happens instantly. Adding a delay can make your tests
    * more realistic, but can result in slower tests, and introduce issues when
    * fake timers are used.
+   *
+   * @defaultValue `undefined`
    */
   acquireDelay?: number;
 }
