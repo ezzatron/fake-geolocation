@@ -3,6 +3,54 @@ let canConstruct = false;
 /**
  * Parameters for creating a
  * {@link globalThis.GeolocationCoordinates | GeolocationCoordinates} object.
+ *
+ * @interface
+ *
+ * @property accuracy - The accuracy of the `latitude` and `longitude`
+ *   properties, expressed in meters.
+ *
+ *   See
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates.accuracy}
+ *
+ * @property altitude - The position's altitude in meters, relative to nominal
+ *   sea level. This value can be `null` if the implementation cannot provide
+ *   the data.
+ *
+ *   See
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates.altitude}
+ *
+ * @property altitudeAccuracy - The accuracy of the `altitude` expressed in
+ *   meters. This value can be `null` if the implementation cannot provide the
+ *   data.
+ *
+ *   See
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates.altitudeAccuracy}
+ *
+ * @property heading - The direction towards which the device is facing. This
+ *   value, specified in degrees, indicates how far off from heading true north
+ *   the device is. `0` degrees represents true north, and the direction is
+ *   determined clockwise (which means that east is `90` degrees and west is
+ *   `270` degrees). If `speed` is `0` or the device is unable to provide
+ *   `heading` information, `heading` is `null`.
+ *
+ *   See
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates.heading}
+ *
+ * @property latitude - The position's latitude in decimal degrees.
+ *
+ *   See
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates.latitude}
+ *
+ * @property longitude - The position's longitude in decimal degrees.
+ *
+ *   See
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates.longitude}
+ *
+ * @property speed - The velocity of the device in meters per second. This value
+ *   can be `null` if the implementation cannot provide the data.
+ *
+ *   See
+ *   {@link globalThis.GeolocationCoordinates | GeolocationCoordinates.speed}
  */
 export type GeolocationCoordinatesParameters = Omit<
   globalThis.GeolocationCoordinates,

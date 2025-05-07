@@ -4,6 +4,17 @@ import { createCoordinates } from "./geolocation-coordinates.js";
 /**
  * Parameters for creating a
  * {@link globalThis.GeolocationPosition | GeolocationPosition} object.
+ *
+ * @interface
+ *
+ * @property coords - Parameters for creating a {@link GeolocationCoordinates}
+ *   object.
+ *
+ * @property timestamp - A timestamp, given as Unix time in milliseconds,
+ *   representing the time at which the location was retrieved.
+ *
+ *   See
+ *   {@link globalThis.GeolocationPosition | GeolocationPosition.timestamp}
  */
 export type GeolocationPositionParameters = Omit<
   globalThis.GeolocationPosition,
