@@ -2,20 +2,85 @@ import { createPermissionDeniedError } from "./geolocation-position-error.js";
 
 let canConstruct = false;
 
+/**
+ * Parameters for creating a delegated Geolocation API.
+ *
+ * @see {@link createDelegatedGeolocation} to create a delegated Geolocation
+ *   API.
+ */
 export interface DelegatedGeolocationParameters {
+  /**
+   * The Geolocation APIs to delegate to.
+   *
+   * The list must have at least one delegate, which will be selected initially.
+   * The list is static, and cannot be changed after the delegated API is
+   * created.
+   */
   delegates: globalThis.Geolocation[];
+
+  /**
+   * The Permissions APIs associated with each Geolocation API delegate.
+   *
+   * The map must contain a Permissions API for each Geolocation API
+   * delegate.
+   */
   permissionsDelegates: Map<globalThis.Geolocation, globalThis.Permissions>;
 }
 
 /**
+ * Create a Geolocation API that delegates to other Geolocation APIs.
+ *
+ * Delegated Geolocation APIs can be used, for example, to dynamically "switch"
+ * between a fake Geolocation API and a real Geolocation API.
+ *
+ * When
+ * {@link globalThis.Geolocation.getCurrentPosition | Geolocation.getCurrentPosition}
+ * is called on the delegated Geolocation API, the call will be forwarded to the
+ * selected delegate.
+ *
+ * Geolocation API delegates can be selected dynamically at any time, and any
+ * position watches created with
+ * {@link globalThis.Geolocation.watchPosition | Geolocation.watchPosition} will
+ * immediately be called with the new delegate's position.
+ *
+ * @param params - The parameters for creating the delegated Geolocation API.
+ *
+ * @returns The delegated Geolocation API, and functions for managing the
+ *   selected delegate.
+ * @throws A {@link TypeError} if no delegates are provided.
+ *
  * @inlineType DelegatedGeolocationParameters
  */
 export function createDelegatedGeolocation(
   params: DelegatedGeolocationParameters,
 ): {
+  /**
+   * The delegated Geolocation API.
+   */
   geolocation: globalThis.Geolocation;
-  selectDelegate: SelectDelegate;
-  isDelegateSelected: IsDelegateSelected;
+
+  /**
+   * Select a Geolocation API delegate.
+   *
+   * @param delegate - The delegate to select.
+   */
+  selectDelegate: (delegate: globalThis.Geolocation) => void;
+
+  /**
+   * Get the selected Geolocation API delegate.
+   *
+   * @returns The selected delegate.
+   */
+  selectedDelegate: () => globalThis.Geolocation;
+
+  /**
+   * Check if a Geolocation API delegate is selected.
+   *
+   * @param delegate - The delegate to check.
+   *
+   * @returns `true` if the delegate is selected, `false` otherwise.
+   */
+  isDelegateSelected: (delegate: globalThis.Geolocation) => boolean;
 } {
   const { delegates, permissionsDelegates } = params;
   let [delegate] = delegates;
@@ -75,14 +140,15 @@ export function createDelegatedGeolocation(
       }
     },
 
+    selectedDelegate() {
+      return delegate;
+    },
+
     isDelegateSelected(query) {
       return query === delegate;
     },
   };
 }
-
-export type SelectDelegate = (delegate: globalThis.Geolocation) => void;
-export type IsDelegateSelected = (delegate: globalThis.Geolocation) => boolean;
 
 interface GeolocationParameters {
   delegate: () => globalThis.Geolocation;

@@ -12,6 +12,9 @@ Versioning].
 
 ### Added
 
+- Added the `selectedDelegate` property of the return value of
+  `createDelegatedGeolocation()`, which is a function that returns the currently
+  selected delegate.
 - Added the `CreateAPIsParameters` type.
 - Added the `CreateWrappedAPIsParameters` type.
 - Added the `DelegatedGeolocationParameters` type.
@@ -25,6 +28,8 @@ Versioning].
 
 ### Removed
 
+- **\[BREAKING]** Removed the `IsDelegateSelected` type.
+- **\[BREAKING]** Removed the `SelectDelegate` type.
 - **\[BREAKING]** Stopped exporting internal classes that shadow W3C classes:
   - `GeolocationCoordinates`
   - `GeolocationPositionError`

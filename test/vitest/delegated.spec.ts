@@ -1,7 +1,5 @@
 import {
-  IsDelegateSelected,
   MutableLocationServices,
-  SelectDelegate,
   User,
   createDelegatedGeolocation,
   createGeolocation,
@@ -43,8 +41,9 @@ describe("Delegated geolocation", () => {
   let delegateA: Geolocation;
   let delegateB: Geolocation;
   let geolocation: Geolocation;
-  let selectDelegate: SelectDelegate;
-  let isDelegateSelected: IsDelegateSelected;
+  let selectDelegate: (delegate: Geolocation) => void;
+  let selectedDelegate: () => Geolocation;
+  let isDelegateSelected: (delegate: Geolocation) => boolean;
 
   let successCallback: Mock<PositionCallback>;
   let errorCallback: Mock<PositionErrorCallback>;
@@ -89,7 +88,7 @@ describe("Delegated geolocation", () => {
       permissionStore: permissionStoreB,
     });
 
-    ({ geolocation, selectDelegate, isDelegateSelected } =
+    ({ geolocation, selectDelegate, selectedDelegate, isDelegateSelected } =
       createDelegatedGeolocation({
         delegates: [delegateA, delegateB],
         permissionsDelegates: new Map([
@@ -159,6 +158,7 @@ describe("Delegated geolocation", () => {
 
   describe("before selecting a delegate", () => {
     it("has selected the first delegate", () => {
+      expect(selectedDelegate()).toBe(delegateA);
       expect(isDelegateSelected(delegateA)).toBe(true);
       expect(isDelegateSelected(delegateB)).toBe(false);
     });
@@ -439,6 +439,7 @@ describe("Delegated geolocation", () => {
     });
 
     it("has selected the specified delegate", () => {
+      expect(selectedDelegate()).toBe(delegateB);
       expect(isDelegateSelected(delegateB)).toBe(true);
       expect(isDelegateSelected(delegateA)).toBe(false);
     });

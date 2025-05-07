@@ -3,11 +3,7 @@ export type { CreateAPIsParameters } from "./create-apis.js";
 export { createWrappedAPIs } from "./create-wrapped-apis.js";
 export type { CreateWrappedAPIsParameters } from "./create-wrapped-apis.js";
 export { createDelegatedGeolocation } from "./delegated-geolocation.js";
-export type {
-  DelegatedGeolocationParameters,
-  IsDelegateSelected,
-  SelectDelegate,
-} from "./delegated-geolocation.js";
+export type { DelegatedGeolocationParameters } from "./delegated-geolocation.js";
 export { createCoordinates } from "./geolocation-coordinates.js";
 export type { GeolocationCoordinatesParameters } from "./geolocation-coordinates.js";
 export { createGeolocationObserver } from "./geolocation-observer.js";
