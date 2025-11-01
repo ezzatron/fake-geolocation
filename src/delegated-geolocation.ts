@@ -119,9 +119,9 @@ export function createDelegatedGeolocation(
 
     permissionsDelegate() {
       const permissions = permissionsDelegates.get(delegate);
-      /* v8 ignore start: unlikely because of constructor assertion */
+      /* v8 ignore start: unlikely because of constructor assertion -- @preserve */
       if (!permissions) throw new TypeError("Missing permissions delegate");
-      /* v8 ignore stop */
+      /* v8 ignore stop -- @preserve */
 
       return permissions;
     },
@@ -142,7 +142,7 @@ export function createDelegatedGeolocation(
       for (const subscriber of subscribers) {
         try {
           subscriber();
-          /* v8 ignore start: impossible to test under Vitest */
+          /* v8 ignore start: impossible to test under Vitest -- @preserve */
         } catch (error) {
           // Throw subscriber errors asynchronously, so that users will at least
           // see it in the console and notice that their subscriber throws.
@@ -150,7 +150,7 @@ export function createDelegatedGeolocation(
             throw error;
           });
         }
-        /* v8 ignore stop */
+        /* v8 ignore stop -- @preserve */
       }
     },
 
@@ -218,14 +218,14 @@ export class Geolocation {
             // switching delegates should not trigger a permission prompt
             if (permissionStatus.state === "prompt") {
               const [, errorCallback] = watch.args;
-              /* v8 ignore start: difficult to test cases with no error callback */
+              /* v8 ignore start: difficult to test cases with no error callback -- @preserve */
               errorCallback?.(createPermissionDeniedError(""));
-              /* v8 ignore stop */
+              /* v8 ignore stop -- @preserve */
 
               const onPermissionChange = () => {
-                /* v8 ignore start: can't change from "prompt" to "prompt" */
+                /* v8 ignore start: can't change from "prompt" to "prompt" -- @preserve */
                 if (permissionStatus.state === "prompt") return;
-                /* v8 ignore stop */
+                /* v8 ignore stop -- @preserve */
 
                 watch.clear();
                 startWatching();
@@ -242,16 +242,16 @@ export class Geolocation {
               startWatching();
             }
 
-            /* v8 ignore start: hard to deliberately induce an error here */
+            /* v8 ignore start: hard to deliberately induce an error here -- @preserve */
           } catch {
             // ignored
           }
-          /* v8 ignore stop */
+          /* v8 ignore stop -- @preserve */
         }
       })().catch(
-        /* v8 ignore start: promise failsafe, can't occur normally */
+        /* v8 ignore start: promise failsafe, can't occur normally -- @preserve */
         () => {},
-        /* v8 ignore stop */
+        /* v8 ignore stop -- @preserve */
       );
     };
   }

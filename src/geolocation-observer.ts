@@ -156,9 +156,9 @@ export function createGeolocationObserver(
 
         if (
           a !== b &&
-          /* v8 ignore start: can't test without another execution context */
+          /* v8 ignore start: can't test without another execution context -- @preserve */
           !(typeof a === "undefined" && typeof b === "undefined") &&
-          /* v8 ignore stop */
+          /* v8 ignore stop -- @preserve */
           !(Number.isNaN(a) && Number.isNaN(b))
         ) {
           continue nextMatcher;
@@ -195,16 +195,16 @@ export function createGeolocationObserver(
 
       watchId = geolocation.watchPosition(
         (p) => {
-          /* v8 ignore start: race condition failsafe */
+          /* v8 ignore start: race condition failsafe -- @preserve */
           if (isStopped) return;
-          /* v8 ignore stop */
+          /* v8 ignore stop -- @preserve */
 
           successCallback?.(p);
         },
         (e) => {
-          /* v8 ignore start: race condition failsafe */
+          /* v8 ignore start: race condition failsafe -- @preserve */
           if (isStopped) return;
-          /* v8 ignore stop */
+          /* v8 ignore stop -- @preserve */
 
           geolocation.clearWatch(watchId);
           setTimeout(startWatch, 20);

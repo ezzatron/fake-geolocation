@@ -99,9 +99,9 @@ export class Geolocation {
       errorCallback ?? undefined,
       options,
     ).catch(
-      /* v8 ignore start: promise failsafe, can't occur normally */
+      /* v8 ignore start: promise failsafe, can't occur normally -- @preserve */
       () => {},
-      /* v8 ignore stop */
+      /* v8 ignore stop -- @preserve */
     );
   }
 
@@ -153,9 +153,9 @@ export class Geolocation {
       options,
       watchId,
     ).catch(
-      /* v8 ignore start: promise failsafe, can't occur normally */
+      /* v8 ignore start: promise failsafe, can't occur normally -- @preserve */
       () => {},
-      /* v8 ignore stop */
+      /* v8 ignore stop -- @preserve */
     );
 
     /*
@@ -314,9 +314,9 @@ export class Geolocation {
       self
         .#acquirePosition(successCallback, errorCallback, options, watchId)
         .catch(
-          /* v8 ignore start: promise failsafe, can't occur normally */
+          /* v8 ignore start: promise failsafe, can't occur normally -- @preserve */
           () => {},
-          /* v8 ignore stop */
+          /* v8 ignore stop -- @preserve */
         );
     }
 
@@ -333,9 +333,9 @@ export class Geolocation {
         self
           .#acquirePosition(successCallback, errorCallback, options, watchId)
           .catch(
-            /* v8 ignore start: promise failsafe, can't occur normally */
+            /* v8 ignore start: promise failsafe, can't occur normally -- @preserve */
             () => {},
-            /* v8 ignore stop */
+            /* v8 ignore stop -- @preserve */
           );
       } else {
         // Produce PERMISSION_DENIED errors immediately when access is
@@ -366,11 +366,11 @@ export class Geolocation {
      * 1. If watchId was passed and this's [[watchIDs]] does not contain
      *    watchId, terminate this algorithm.
      */
-    /* v8 ignore start: hard to reproduce this race condition */
+    /* v8 ignore start: hard to reproduce this race condition -- @preserve */
     if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
       return;
     }
-    /* v8 ignore stop */
+    /* v8 ignore stop -- @preserve */
 
     /*
      * 2. Let acquisitionTime be a new EpochTimeStamp that represents now.
@@ -575,19 +575,19 @@ export class Geolocation {
     try {
       const position = await Promise.race(tasks);
 
-      /* v8 ignore start: hard to reproduce this race condition */
+      /* v8 ignore start: hard to reproduce this race condition -- @preserve */
       if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
         return;
       }
-      /* v8 ignore stop */
+      /* v8 ignore stop -- @preserve */
 
       this.#invokeSuccessCallback(successCallback, position);
     } catch (condition) {
-      /* v8 ignore start: hard to reproduce this race condition */
+      /* v8 ignore start: hard to reproduce this race condition -- @preserve */
       if (typeof watchId === "number" && !this.#watchIds.includes(watchId)) {
         return;
       }
-      /* v8 ignore stop */
+      /* v8 ignore stop -- @preserve */
 
       /*
        * Dealing with failures:
@@ -600,32 +600,32 @@ export class Geolocation {
          * - User or system denied permission:
          *   - Call back with error passing errorCallback and PERMISSION_DENIED.
          */
-        /* v8 ignore start: difficult to test cases with no error callback */
+        /* v8 ignore start: difficult to test cases with no error callback -- @preserve */
         this.#invokeErrorCallback(
           errorCallback,
           createPermissionDeniedError(""),
         );
-        /* v8 ignore stop */
+        /* v8 ignore stop -- @preserve */
       } else if (condition === GeolocationPositionError.TIMEOUT) {
         /*
          * - Timeout elapsed:
          *   - Call back with error with errorCallback and TIMEOUT.
          */
-        /* v8 ignore start: difficult to test cases with no error callback */
+        /* v8 ignore start: difficult to test cases with no error callback -- @preserve */
         this.#invokeErrorCallback(errorCallback, createTimeoutError(""));
-        /* v8 ignore stop */
+        /* v8 ignore stop -- @preserve */
       } else {
         /*
          * Data acquisition error or any other reason:
          * - Call back with error passing errorCallback and
          *   POSITION_UNAVAILABLE.
          */
-        /* v8 ignore start: difficult to test cases with no error callback */
+        /* v8 ignore start: difficult to test cases with no error callback -- @preserve */
         this.#invokeErrorCallback(
           errorCallback,
           createPositionUnavailableError(""),
         );
-        /* v8 ignore stop */
+        /* v8 ignore stop -- @preserve */
       }
     }
   }
@@ -633,9 +633,9 @@ export class Geolocation {
   #removeWatchId(watchIds: number[], watchId: number): void {
     const watchIdIndex = watchIds.indexOf(watchId);
 
-    /* v8 ignore start: hard to reproduce this race condition */
+    /* v8 ignore start: hard to reproduce this race condition -- @preserve */
     if (watchIdIndex === -1) return;
-    /* v8 ignore stop */
+    /* v8 ignore stop -- @preserve */
 
     watchIds.splice(watchIdIndex, 1);
 
@@ -649,7 +649,7 @@ export class Geolocation {
   ): void {
     try {
       successCallback(position);
-      /* v8 ignore start: impossible to test under Vitest */
+      /* v8 ignore start: impossible to test under Vitest -- @preserve */
     } catch (error) {
       // Throw callback errors asynchronously, so that users will at least see
       // it in the console and notice that their success callback throws.
@@ -657,7 +657,7 @@ export class Geolocation {
         throw error;
       });
     }
-    /* v8 ignore stop */
+    /* v8 ignore stop -- @preserve */
   }
 
   #invokeErrorCallback(
@@ -666,7 +666,7 @@ export class Geolocation {
   ): void {
     try {
       errorCallback?.(error);
-      /* v8 ignore start: impossible to test under Vitest */
+      /* v8 ignore start: impossible to test under Vitest -- @preserve */
     } catch (error) {
       // Throw callback errors asynchronously, so that users will at least see
       // it in the console and notice that their error callback throws.
@@ -674,7 +674,7 @@ export class Geolocation {
         throw error;
       });
     }
-    /* v8 ignore stop */
+    /* v8 ignore stop -- @preserve */
   }
 
   #locationServices: LocationServices;
