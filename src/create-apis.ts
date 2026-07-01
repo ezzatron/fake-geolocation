@@ -18,9 +18,7 @@ import {
 import { User, createUser, type UserParameters } from "./user.js";
 
 export type _DocsTypes =
-  | LocationServicesParameters
-  | UserParameters
-  | typeof createWrappedAPIs;
+  LocationServicesParameters | UserParameters | typeof createWrappedAPIs;
 
 /**
  * Parameters for creating paired fake W3C {@link Permissions} and

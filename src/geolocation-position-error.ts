@@ -29,9 +29,7 @@ export const TIMEOUT: globalThis.GeolocationPositionError["TIMEOUT"] = 3;
  * {@link globalThis.GeolocationPositionError.code | GeolocationPositionError.code}.
  */
 export type GeolocationPositionErrorCode =
-  | typeof PERMISSION_DENIED
-  | typeof POSITION_UNAVAILABLE
-  | typeof TIMEOUT;
+  typeof PERMISSION_DENIED | typeof POSITION_UNAVAILABLE | typeof TIMEOUT;
 
 let canConstruct = false;
 
