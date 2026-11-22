@@ -1,6 +1,4 @@
 import {
-  MutableLocationServices,
-  User,
   createDelegatedGeolocation,
   createGeolocation,
   createLocationServices,
@@ -8,6 +6,8 @@ import {
   createPosition,
   createUser,
   type DelegatedGeolocationHandle,
+  type MutableLocationServices,
+  type User,
 } from "fake-geolocation";
 import {
   createPermissionStore,

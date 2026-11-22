@@ -1,7 +1,7 @@
 import {
-  PermissionStore,
   createPermissionStore,
   createPermissions,
+  type PermissionStore,
   type PermissionStoreParameters,
 } from "fake-permissions";
 import type { createWrappedAPIs } from "./create-wrapped-apis.js";
@@ -12,10 +12,10 @@ import {
 import { createGeolocation } from "./geolocation.js";
 import type { LocationServicesParameters } from "./location-services.js";
 import {
-  MutableLocationServices,
   createLocationServices,
+  type MutableLocationServices,
 } from "./location-services.js";
-import { User, createUser, type UserParameters } from "./user.js";
+import { createUser, type User, type UserParameters } from "./user.js";
 
 export type _DocsTypes =
   LocationServicesParameters | UserParameters | typeof createWrappedAPIs;
