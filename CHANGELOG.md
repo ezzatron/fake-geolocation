@@ -10,6 +10,12 @@ Versioning].
 
 ## Unreleased
 
+_(no unreleased changes)_
+
+## [v0.18.1] - 2026-11-22
+
+[v0.18.1]: https://github.com/ezzatron/fake-geolocation/releases/tag/v0.18.1
+
 ### Fixed
 
 - Fixed importing the package from JSR.
