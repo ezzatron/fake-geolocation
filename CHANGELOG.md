@@ -13,6 +13,8 @@ Versioning].
 ### Fixed
 
 - Fixed importing the package from JSR.
+- Extremely large `timeout` values (exceeding the signed 32-bit integer range)
+  now throw a `RangeError` instead of causing an immediate timeout.
 
 ## [v0.18.0] - 2025-05-08
 

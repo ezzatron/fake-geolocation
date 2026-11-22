@@ -66,6 +66,11 @@ export class Geolocation {
 
   /**
    * § 6.2 getCurrentPosition() method
+   *
+   * The behavior of timeout values outside the signed 32-bit integer range is
+   * not guaranteed.
+   *
+   * @throws A {@link RangeError} if the timeout value is unsupported.
    */
   getCurrentPosition(
     successCallback: PositionCallback,
@@ -76,6 +81,8 @@ export class Geolocation {
       timeout = Infinity,
     }: PositionOptions = {},
   ): void {
+    assertSupportedTimeout(timeout);
+
     const options: Required<PositionOptions> = {
       enableHighAccuracy,
       maximumAge,
@@ -107,6 +114,11 @@ export class Geolocation {
 
   /**
    * § 6.3 watchPosition() method
+   *
+   * The behavior of timeout values outside the signed 32-bit integer range is
+   * not guaranteed.
+   *
+   * @throws A {@link RangeError} if the timeout value is unsupported.
    */
   watchPosition(
     successCallback: PositionCallback,
@@ -117,6 +129,8 @@ export class Geolocation {
       timeout = Infinity,
     }: PositionOptions = {},
   ): number {
+    assertSupportedTimeout(timeout);
+
     const options: Required<PositionOptions> = {
       enableHighAccuracy,
       maximumAge,
@@ -683,4 +697,14 @@ export class Geolocation {
   #watchIds: number[];
   #watchControllers: Record<number, AbortController>;
   #watchId: number;
+}
+
+function assertSupportedTimeout(timeout: number): void {
+  const maxTimeout = 2 ** 31 - 1;
+
+  if (Number.isFinite(timeout) && timeout > maxTimeout) {
+    throw new RangeError(
+      `Timeout exceeds the maximum supported value of ${maxTimeout}ms`,
+    );
+  }
 }

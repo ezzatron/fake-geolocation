@@ -46,6 +46,19 @@ describe("Geolocation.getCurrentPosition()", () => {
     vi.useRealTimers();
   });
 
+  describe("when the timeout is outside the supported range", () => {
+    it("throws a RangeError", () => {
+      const call = () => {
+        geolocation.getCurrentPosition(successCallback, errorCallback, {
+          timeout: 2 ** 31,
+        });
+      };
+
+      expect(call).toThrow(RangeError);
+      expect(call).toThrow("Timeout exceeds the maximum supported value");
+    });
+  });
+
   describe("when permission has not been requested", () => {
     beforeEach(() => {
       user.resetAccess({ name: "geolocation" });
