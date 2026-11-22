@@ -1,13 +1,13 @@
 import {
-  User as PermissionsUser,
   createUser as createPermissionsUser,
+  type User as PermissionsUser,
   type UserParameters as PermissionsUserParameters,
 } from "fake-permissions";
 import {
   createCoordinates,
   type GeolocationCoordinatesParameters,
 } from "./geolocation-coordinates.js";
-import { MutableLocationServices } from "./location-services.js";
+import type { MutableLocationServices } from "./location-services.js";
 
 /**
  * A virtual user that can affect geolocation and permissions.

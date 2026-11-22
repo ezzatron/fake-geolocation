@@ -1,12 +1,15 @@
-import { PermissionStore, createDelegatedPermissions } from "fake-permissions";
+import {
+  createDelegatedPermissions,
+  type PermissionStore,
+} from "fake-permissions";
 import { createAPIs, type CreateAPIsParameters } from "./create-apis.js";
 import { createDelegatedGeolocation } from "./delegated-geolocation.js";
 import {
   createGeolocationObserver,
   type GeolocationObserver,
 } from "./geolocation-observer.js";
-import { MutableLocationServices } from "./location-services.js";
-import { User } from "./user.js";
+import type { MutableLocationServices } from "./location-services.js";
+import type { User } from "./user.js";
 
 export type _DocsTypes = typeof createAPIs;
 

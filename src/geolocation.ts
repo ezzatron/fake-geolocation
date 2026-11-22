@@ -9,7 +9,7 @@ import {
   createTimeoutError,
 } from "./geolocation-position-error.js";
 import { createPosition, isHighAccuracy } from "./geolocation-position.js";
-import { LocationServices } from "./location-services.js";
+import type { LocationServices } from "./location-services.js";
 
 /**
  * Parameters for creating a fake W3C

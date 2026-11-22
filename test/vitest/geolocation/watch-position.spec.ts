@@ -1,11 +1,11 @@
 import {
-  MutableLocationServices,
-  User,
   createAPIs,
   createPermissionDeniedError,
   createPosition,
   createPositionUnavailableError,
   createTimeoutError,
+  type MutableLocationServices,
+  type User,
 } from "fake-geolocation";
 import {
   afterEach,

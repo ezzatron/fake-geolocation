@@ -1,9 +1,9 @@
 import {
-  User,
   createAPIs,
   createPosition,
   createWrappedAPIs,
   type GeolocationObserver,
+  type User,
   type WrappedAPIsHandle,
 } from "fake-geolocation";
 import type { PermissionStore } from "fake-permissions";
